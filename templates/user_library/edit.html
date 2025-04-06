@@ -2,56 +2,104 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="card shadow-sm p-4">
+    <div class="edit-entry-container shadow-sm p-4">
         <h2 class="mb-4 text-center">Edit Library Entry</h2>
 
-        <form method="post" class="needs-validation" novalidate>
-            {% csrf_token %}
-            
-            <!-- status dropdown -->
-            <div class="mb-3">
-                <label for="{{ form.status.id_for_label }}" class="form-label"><strong>Status</strong></label>
-                {{ form.status }}
+        <div class="row">
+            <!-- Left Side: Media Info -->
+            <div class="col-md-4 text-center">
+                <a href="{% url 'media_detail' media_type=form.instance.media.media_type external_id=form.instance.media.external_id %}">
+                    <img src="{{ form.instance.media.cover_image }}" alt="{{ form.instance.media.title }}" class="media-cover">
+                </a>
+                <h3 class="fw-bold mt-3"> {{ form.instance.media.title }} </h3>
+                <p class="small text-muted">
+                    {% if form.instance.media.media_type == "book" %}
+                        <i class="fas fa-book"></i>
+                    {% elif form.instance.media.media_type == "movie" %}
+                        <i class="fas fa-film"></i>
+                    {% elif form.instance.media.media_type == "game" %}
+                        <i class="fas fa-gamepad"></i>
+                    {% endif %}
+                    {% if form.instance.media.media_type == "book" %}
+                        • By <strong>{{ form.instance.media.author }}</strong>
+                    {% elif form.instance.media.media_type == "movie" %}
+                        • Directed by <strong>{{ form.instance.media.director }}</strong>
+                    {% elif form.instance.media.media_type == "game" %}
+                        • Developed by <strong>{{ form.instance.media.studio }}</strong>
+                    {% endif %}
+                    {% if form.instance.media.release_year %} • {{ form.instance.media.release_year }}{% endif %}
+                </p>
             </div>
 
-            <!-- review & rating (hidden by default) -->
-            <div id="rating-review-section" class="mt-3 p-3 border rounded bg-light"
-                style="display: {% if form.instance.status in 'completed dropped' %}block{% else %}none{% endif %}; transition: 0.3s;">
-                
-                <h5 class="mb-3">Final Thoughts</h5>
-                
-                <div class="mb-3">
-                    <label for="{{ form.rating.id_for_label }}" class="form-label"><strong>Rating</strong></label>
-                    {{ form.rating }}
-                </div>
+            <!-- Right Side: Form -->
+            <div class="col-md-8">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Status Dropdown -->
+                    <div class="mb-3">
+                        <label for="{{ form.status.id_for_label }}" class="form-label"><strong>Status</strong></label>
+                        {{ form.status }}
+                    </div>
 
-                <div class="mb-3">
-                    <label for="{{ form.review.id_for_label }}" class="form-label"><strong>Review</strong></label>
-                    {{ form.review }}
-                </div>
-            </div>
+                    <!-- Rating & Review (Only for Completed/Dropped) -->
+                    <div id="rating-review-section" class="mt-3 p-3 border rounded"
+                        style="display: {% if form.instance.status in 'completed dropped' %}block{% else %}none{% endif %};">
+                        
+                        <h5 class="mb-3">Final Thoughts</h5>
 
-            <!-- notes -->
-            <div class="mb-3">
-                <label for="{{ form.notes.id_for_label }}" class="form-label"><strong>Notes</strong></label>
-                {{ form.notes }}
-                <small class="form-text text-muted">Jot down your thoughts as you go.</small>
-            </div>
+                        <!-- Star Rating -->
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Rating</strong></label>
+                            <div class="star-rating">
+                                <input type="radio" name="rating" value="5" id="star5" {% if form.instance.rating == 5 %}checked{% endif %}>
+                                <label for="star5">★</label>
+                            
+                                <input type="radio" name="rating" value="4" id="star4" {% if form.instance.rating == 4 %}checked{% endif %}>
+                                <label for="star4">★</label>
+                            
+                                <input type="radio" name="rating" value="3" id="star3" {% if form.instance.rating == 3 %}checked{% endif %}>
+                                <label for="star3">★</label>
+                            
+                                <input type="radio" name="rating" value="2" id="star2" {% if form.instance.rating == 2 %}checked{% endif %}>
+                                <label for="star2">★</label>
+                            
+                                <input type="radio" name="rating" value="1" id="star1" {% if form.instance.rating == 1 %}checked{% endif %}>
+                                <label for="star1">★</label>
+                            </div>                            
+                        </div>
 
-            <!-- buttons -->
-            <div class="d-flex justify-content-center mt-4">
-                <button type="submit" class="btn btn-primary px-4">Save Changes</button>
-                <a href="{% url 'user_library:index' %}" class="btn btn-outline-secondary ms-3">Cancel</a>
-                <button type="button" class="btn btn-danger ms-3 delete-btn" 
-                    data-bs-toggle="modal" data-bs-target="#deleteModal" 
-                    data-item-id="{{ form.instance.id }}">
-                    Delete
-                </button>
+                        <!-- Review Field -->
+                        <div class="mb-3">
+                            <label for="{{ form.review.id_for_label }}" class="form-label"><strong>Review</strong></label>
+                            {{ form.review }}
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label"><strong>Notes</strong></label>
+                        {{ form.notes }}
+                        <small class="form-text text-muted">Jot down your thoughts as you go.</small>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                        <a href="{% url 'user_library:index' %}" class="btn btn-outline-secondary ms-3">Cancel</a>
+                        <button type="button" class="btn btn-danger ms-3 delete-btn" 
+                            data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                            data-item-id="{{ form.instance.media.id }}">
+                            Delete
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -71,42 +119,110 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const statusField = document.getElementById("{{ form.status.id_for_label }}");
-    const ratingReviewSection = document.getElementById("rating-review-section");
+    document.addEventListener("DOMContentLoaded", function () {
+        const statusField = document.getElementById("{{ form.status.id_for_label }}");
+        const ratingReviewSection = document.getElementById("rating-review-section");
+        const stars = document.querySelectorAll(".star-rating input");
+        const labels = document.querySelectorAll(".star-rating label");
 
-    function toggleReviewFields() {
-        if (statusField.value === "completed" || statusField.value === "dropped") {
-            ratingReviewSection.style.display = "block";
-        } else {
-            ratingReviewSection.style.display = "none";
+        function toggleReviewFields() {
+            if (statusField.value === "completed" || statusField.value === "dropped") {
+                ratingReviewSection.style.display = "block";
+            } else {
+                ratingReviewSection.style.display = "none";
+            }
         }
-    }
-    statusField.addEventListener("change", toggleReviewFields);
+        statusField.addEventListener("change", toggleReviewFields);
 
-    let deleteItemId = null;
-
-    document.querySelector('.delete-btn').addEventListener('click', function () {
-        deleteItemId = this.getAttribute('data-item-id');
-    });
-
-    document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-        if (deleteItemId) {
-            fetch(`/library/delete/${deleteItemId}/`, {
-                method: "POST",
-                headers: { 
-                    "X-CSRFToken": "{{ csrf_token }}",
-                    "Content-Type": "application/x-www-form-urlencoded"
-                }
-            }).then(response => {
-                if (response.ok) {
-                    window.location.href = "{% url 'user_library:index' %}";
-                } else {
-                    alert("Uh-oh! The delete button must be on strike. Try again in a bit.");
-                }
-            })
+        function updateStarColors(selectedValue) {
+            labels.forEach(label => {
+                let labelValue = label.htmlFor.replace("star", "");
+                label.style.color = labelValue <= selectedValue ? "gold" : "#ccc";
+            });
         }
+
+        let savedStar = document.querySelector(".star-rating input:checked");
+        if (savedStar) {
+            updateStarColors(savedStar.value);
+        }
+
+        labels.forEach(label => {
+            label.addEventListener("mouseover", function () {
+                let hoverValue = this.htmlFor.replace("star", "");
+                updateStarColors(hoverValue);
+            });
+        });
+
+        document.querySelector(".star-rating").addEventListener("mouseleave", function () {
+            let checkedStar = document.querySelector(".star-rating input:checked");
+            let savedValue = checkedStar ? checkedStar.value : 0;
+            updateStarColors(savedValue);
+        });
+
+        stars.forEach(star => {
+            star.addEventListener("change", function () {
+                updateStarColors(this.value);
+            });
+        });
     });
-});
 </script>
+
+<style>
+    .edit-entry-container {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .media-cover {
+        border-radius: 10px;
+        width: 100%;
+        max-width: 250px;
+        height: auto;
+        display: block;
+        margin: auto;
+        transition: 0.3s;
+    }
+
+    .media-cover:hover {
+        transform: scale(1.05);
+    }
+
+    /* Star rating container */
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+    }
+
+    .star-rating input {
+        display: none;
+    }
+
+    .star-rating label {
+        font-size: 2rem;
+        cursor: pointer;
+        transition: color 0.3s;
+        color: #ccc;
+    }
+
+    .star-rating label.selected {
+        color: #facc15;
+    }
+
+    .star-rating label.selected {
+        color: #facc15;
+    }
+
+    @media (prefers-color-scheme: dark) {
+    .star-rating label.selected {
+        color: #fbbf24;
+    }}
+
+    h3.fw-bold {
+        margin-bottom: 0.25rem !important;
+    }
+</style>
 {% endblock %}

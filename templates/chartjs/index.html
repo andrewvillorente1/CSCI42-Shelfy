@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+  
+<head> 
+  <meta charset="utf-8"> 
+  <title>chartsjs</title> 
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> 
+  
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
+  
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> 
+</head> 
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3">
+      <p class="text-center">Average Star Rating</p>
+      <p class="text-center">{{ rating }} ★</p>
+    </div>
+    <div class="col-sm">
+      <p class="text-center">Average Movie Star Rating</p>
+      <p class="text-center">{{ movie_rating }} ★</p>
+    </div>
+    <div class="col-sm">
+      <p class="text-center">Average Book Star Rating</p>
+      <p class="text-center">{{ book_rating }} ★</p>
+    </div>
+    <div class="col-sm">
+      <p class="text-center">Average Game Star Rating</p>
+      <p class="text-center">{{ game_rating }} ★</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm">
+      <div id="container" style="width: 100%;">
+        <canvas id="all_count" data-url="{% url 'charts:all_count' %}"></canvas>
+      </div>
+    </div>
+    <div class="col-sm">
+      <div id="container" style="width: 100%;">
+        <canvas id="all_ratings" data-url="{% url 'charts:all_ratings' %}"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+  
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+
+const ctx = document.getElementById('all_count');
+$(function () {
+  var $all_count = $("#all_count");
+
+  console.log("Canvas found:", $all_count[0]);
+  
+  $.ajax({
+      url: $all_count.data("url"),
+      success: function (data) {
+        console.log('AJAX data:', data);  // Debug: Check if data is correct
+
+        // Check if data exists and is in the expected format
+        var ctx = $all_count[0].getContext("2d");
+
+        // Log to ensure that the context is set up correctly
+        console.log('Canvas context:', ctx);
+        console.log('Canvas element:', $all_count[0]);
+
+        // Initialize the chart
+        var allCountChart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: ["Movies", "Books", "Games"],
+            datasets: [{
+              backgroundColor: [
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)'
+              ],
+              data: [data.movie_count, data.book_count, data.game_count]
+            }]
+          },
+          options: {
+            responsive: true,
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: 'Count of All Media'
+            },
+          }
+        });
+      },
+      error: function (err) {
+        console.error("Error fetching data", err);
+      }
+    });
+  });
+
+
+  const ratings = document.getElementById('all_ratings');
+    $(function () {
+    var $all_ratings = $("#all_ratings");
+
+    console.log("Canvas found:", $all_ratings[0]);
+    
+    $.ajax({
+        url: $all_ratings.data("url"),
+        success: function (data) {
+          console.log('AJAX data:', data);  // Debug: Check if data is correct
+
+          var rating = $all_ratings[0].getContext("2d");
+
+          // Log to ensure that the context is set up correctly
+          console.log('Canvas context:', rating);
+          console.log('Canvas element:', $all_ratings[0]);
+
+          // Initialize the chart
+          new Chart(rating, {
+            type: 'bar',
+            data: {
+              labels: data.rating,
+              datasets: [{
+                label: 'Movies',
+                backgroundColor: 'blue',
+                data: data.movie,
+              },
+              {
+                label: 'Books',
+                backgroundColor: 'red',
+                data: data.book,
+              },
+              {
+                label: 'Games',
+                backgroundColor: 'green',
+                data: data.game,
+              }
+            ]
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'All Ratings'
+              },
+              scales: {
+                xAxes: [{
+                  stacked: true
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        precision: 0
+                    },
+                    stacked: true
+                }]
+              }
+            }
+          });
+        },
+        error: function (err) {
+          console.error("Error fetching data", err);
+        }
+      });
+    });
+</script>
+{% endblock scripts %}

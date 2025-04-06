@@ -8,7 +8,7 @@
             {% for entry in library %}
                 <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3 d-flex justify-content-center">
                     <div class="library-card">
-                        <a href="{% url 'media_detail' media_type=entry.media.media_type external_id=entry.media.external_id %}" class="text-decoration-none">
+                        <a class="text-decoration-none">
                             <div class="cover-container">
                                 <img src="{{ entry.media.cover_image }}" alt="{{ entry.media.title }}">
                             </div>
@@ -83,7 +83,7 @@
                 Once you delete this, there's no going back. You sure you wanna do this?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
             </div>
         </div>

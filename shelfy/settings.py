@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = "hc7^x@nl$mcyi!50ba4sn%l3w(#%u@-$^zet0o3j$2&j&hf3mu"
 
 GOOGLE_BOOKS_API_KEY = os.getenv('GOOGLE_BOOKS_API_KEY')
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
@@ -54,15 +54,19 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'chartjs',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user_management',
     'user_library',
     'shelfy',
+    'user_management',
+    'charts',
+    'ai'
 ]
 
 MIDDLEWARE = [
@@ -127,6 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -145,8 +150,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 LOGIN_URL = "/login"
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = '/user/dashboard'
+LOGOUT_REDIRECT_URL = '/login'
+LOGIN_REDIRECT_URL = 'user_management:dashboard'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

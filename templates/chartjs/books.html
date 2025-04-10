@@ -367,7 +367,7 @@
     </div>
     <div class="stats-card-body">
       <div class="chart-container">
-        <canvas id="books_authors" data-url="{% url 'charts:books_authors' %}"></canvas>
+        <canvas id="books_author" data-url="{% url 'charts:books_authors' %}"></canvas>
       </div>
     </div>
   </div>
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
       url: genresCanvas.dataset.url,
       success: function(data) {
         new Chart(genresCanvas, {
-          type: 'horizontalBar',
+          type: 'bar',
           data: {
             labels: data.genre,
             datasets: [{
@@ -561,8 +561,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+
   // Authors Chart
-  const authorsCanvas = document.getElementById('books_authors');
+  const authorsCanvas = document.getElementById('books_author');
   if (authorsCanvas) {
     $.ajax({
       url: authorsCanvas.dataset.url,
@@ -570,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(authorsCanvas, {
           type: 'bar',
           data: {
-            labels: data.authors,
+            labels: data.author,
             datasets: [{
               label: 'Books',
               backgroundColor: 'rgba(52, 199, 89, 0.8)',
@@ -624,7 +625,7 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       error: function(err) {
         console.error("Error fetching authors data:", err);
-      }
+      }   
     });
   }
 

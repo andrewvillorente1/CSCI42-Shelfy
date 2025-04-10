@@ -4,46 +4,81 @@
 
 {% block content %}
 <style>
-    .dashboard-header {
-        padding: 2rem 0;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    
-    .dashboard-header h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-    }
-    
-    .dashboard-header p {
-        color: var(--gray);
-        font-size: 1.1rem;
-    }
-    
+/* Update the background to match the gradient in the image */
+:root {
+    --apple-background: #f5f5f7;
+    --apple-text: #1d1d1f;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #0071e3;
+    --apple-border: #d2d2d7;
+    --apple-card: #ffffff;
+    --apple-shadow: rgba(0, 0, 0, 0.1);
+    --apple-new-tag: #0071e3;
+    --apple-finished-tag: #86868b;
+}
+
+.dark-mode {
+    --apple-background: #000000;
+    --apple-text: #f5f5f7;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #2997ff;
+    --apple-border: #424245;
+    --apple-card: #1d1d1f;
+    --apple-shadow: rgba(0, 0, 0, 0.3);
+    --apple-new-tag: #2997ff;
+    --apple-finished-tag: #86868b;
+}
+
+body {
+    background-color: var(--apple-background);
+    color: var(--apple-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Update the dashboard header for Apple-inspired design */
+.dashboard-header {
+    padding: 2rem 0;
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+    font-size: 42px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+    /* Update the dashboard stats */
     .dashboard-stats {
         margin-bottom: 3rem;
     }
-    
+
     .stat-card {
-        background-color: var(--white);
-        border-radius: 16px;
+        background-color: white;
+        border-radius: 12px;
         padding: 1.5rem;
         height: 100%;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         border-bottom: 4px solid transparent;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
-    
+
     .dark-mode .stat-card {
-        background-color: #16213e;
+        background-color: var(--light-gray);
+        box-shadow: var(--shadow-lg);
     }
-    
+
     .stat-card:hover {
         transform: translateY(-5px);
         border-bottom-color: var(--primary);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
-    
+
     .stat-icon {
         width: 60px;
         height: 60px;
@@ -55,43 +90,44 @@
         font-size: 1.8rem;
         color: white;
     }
-    
+
     .stat-icon.books {
-        background-color: var(--primary);
+        background: linear-gradient(135deg, #5856d6 0%, #7b68ee 100%);
     }
-    
+
     .stat-icon.games {
-        background-color: var(--secondary);
+        background: linear-gradient(135deg, #34c759 0%, #5dde7d 100%);
     }
-    
+
     .stat-icon.movies {
-        background-color: var(--accent);
+        background: linear-gradient(135deg, #ff2d55 0%, #ff6482 100%);
     }
-    
+
     .stat-icon.collections {
-        background-color: var(--success);
+        background: linear-gradient(135deg, #ff9f0a 0%, #ffbd45 100%);
     }
-    
+
     .stat-value {
         font-size: 2rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
         color: var(--dark);
+        letter-spacing: -0.02em;
     }
-    
+
     .dark-mode .stat-value {
         color: var(--light);
     }
-    
+
     .stat-label {
         color: var(--gray);
         font-size: 1rem;
     }
-    
+
     .recent-activity {
         margin-bottom: 3rem;
     }
-    
+
     .section-title {
         font-size: 1.5rem;
         font-weight: 700;
@@ -100,30 +136,33 @@
         display: flex;
         align-items: center;
     }
-    
+
     .section-title i {
         margin-right: 0.5rem;
     }
-    
+
+    /* Update the activity cards */
     .activity-card {
-        background-color: var(--white);
-        border-radius: 16px;
+        background-color: white;
+        border-radius: 12px;
         padding: 1.5rem;
         margin-bottom: 1rem;
         display: flex;
         align-items: center;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
-    
+
     .dark-mode .activity-card {
-        background-color: #16213e;
+        background-color: var(--light-gray);
+        box-shadow: var(--shadow-md);
     }
-    
+
     .activity-card:hover {
         transform: translateX(5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
-    
+
     .activity-icon {
         width: 50px;
         height: 50px;
@@ -136,60 +175,63 @@
         color: white;
         flex-shrink: 0;
     }
-    
+
     .activity-icon.added {
-        background-color: var(--success);
+        background: linear-gradient(135deg, #34c759 0%, #5dde7d 100%);
     }
-    
+
     .activity-icon.updated {
-        background-color: var(--primary);
+        background: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
     }
-    
+
     .activity-icon.completed {
-        background-color: var(--accent);
+        background: linear-gradient(135deg, #ff9f0a 0%, #ffbd45 100%);
     }
-    
+
     .activity-content {
         flex-grow: 1;
     }
-    
+
     .activity-title {
         font-weight: 600;
         margin-bottom: 0.3rem;
         color: var(--dark);
     }
-    
+
     .dark-mode .activity-title {
         color: var(--light);
     }
-    
+
     .activity-time {
         color: var(--gray);
         font-size: 0.9rem;
     }
-    
+
+    /* Update the profile section */
     .profile-section {
-        background-color: var(--white);
-        border-radius: 16px;
+        background-color: white;
+        border-radius: 12px;
         padding: 2rem;
         margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
-    
+
     .dark-mode .profile-section {
-        background-color: #16213e;
+        background-color: var(--light-gray);
+        box-shadow: var(--shadow-lg);
     }
-    
+
     .profile-header {
         display: flex;
         align-items: center;
         margin-bottom: 1.5rem;
     }
-    
+
     .profile-avatar {
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        background-color: var(--primary);
+        background: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
         color: white;
         display: flex;
         align-items: center;
@@ -198,48 +240,64 @@
         margin-right: 1.5rem;
         flex-shrink: 0;
     }
-    
+
     .profile-info h2 {
         font-size: 1.5rem;
         font-weight: 700;
         margin-bottom: 0.3rem;
         color: var(--dark);
+        letter-spacing: -0.015em;
     }
-    
+
     .dark-mode .profile-info h2 {
         color: var(--light);
     }
-    
+
     .profile-info p {
         color: var(--gray);
         margin-bottom: 0;
     }
-    
+
     .profile-actions {
         margin-top: 1rem;
     }
-    
+
+    .profile-actions .btn {
+        border-radius: var(--radius-full);
+        padding: 0.6rem 1.2rem;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .profile-actions .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
     .recommendations {
         margin-bottom: 3rem;
     }
-    
+
+    /* Update the recommendation cards */
     .recommendation-card {
-        background-color: var(--white);
-        border-radius: 16px;
+        background-color: white;
+        border-radius: 12px;
         overflow: hidden;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         height: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
-    
+
     .dark-mode .recommendation-card {
-        background-color: #16213e;
+        background-color: var(--light-gray);
+        box-shadow: var(--shadow-lg);
     }
-    
+
     .recommendation-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
-    
+
     .recommendation-img {
         height: 180px;
         background-color: #f0f0f0;
@@ -248,63 +306,88 @@
         justify-content: center;
         color: var(--gray);
         font-size: 3rem;
+        overflow: hidden;
     }
-    
+
     .dark-mode .recommendation-img {
         background-color: #1e2746;
     }
-    
+
+    .recommendation-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .recommendation-card:hover .recommendation-img img {
+        transform: scale(1.08);
+    }
+
     .recommendation-content {
         padding: 1.5rem;
     }
-    
+
     .recommendation-title {
-        font-weight: 700;
+        font-weight: 600;
         margin-bottom: 0.5rem;
         color: var(--dark);
+        letter-spacing: -0.015em;
     }
-    
+
     .dark-mode .recommendation-title {
         color: var(--light);
     }
-    
+
     .recommendation-category {
         color: var(--primary);
         font-size: 0.9rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
-    
+
     .recommendation-description {
         color: var(--gray);
         font-size: 0.9rem;
         margin-bottom: 1rem;
     }
-    
+
     .recommendation-rating {
-        color: var(--warning);
+        color: #ff9f0a;
         margin-bottom: 1rem;
     }
-    
+
     /* Responsive Adjustments */
     @media (max-width: 768px) {
         .dashboard-header h1 {
             font-size: 2rem;
         }
-        
+
         .stat-card {
             margin-bottom: 1rem;
         }
-        
+
         .profile-header {
             flex-direction: column;
             text-align: center;
         }
-        
+
         .profile-avatar {
             margin-right: 0;
             margin-bottom: 1rem;
         }
+    }
+
+    .get-started .btn {
+        border-radius: var(--radius-full);
+        padding: 0.6rem 1.2rem;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .get-started .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
     }
 </style>
 

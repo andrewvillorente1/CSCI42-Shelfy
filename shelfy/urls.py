@@ -35,4 +35,9 @@ urlpatterns = [
 
    # API endpoints for modal views
     path('api/media/<str:media_type>/<str:external_id>/', media_detail_api, name='media_detail_api'),
+
+    path('books/', books_view, name='books'),
+    path('movies/', movies_view, name='movies'),
+    path('games/', games_view, name='games'),
+
 ]

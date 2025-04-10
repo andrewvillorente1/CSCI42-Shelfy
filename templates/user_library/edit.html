@@ -1,70 +1,515 @@
 {% extends 'base.html' %}
 
+{% block title %}Edit Library Entry - SHELFY{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-sm p-4">
-        <h2 class="mb-4 text-center">Edit Library Entry</h2>
+<style>
+:root {
+    --primary-gradient: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
+    --card-bg: #ffffff;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --border-light: rgba(0, 0, 0, 0.1);
+    --input-bg: #f5f5f7;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-        <form method="post" class="needs-validation" novalidate>
-            {% csrf_token %}
-            
-            <!-- status dropdown -->
-            <div class="mb-3">
-                <label for="{{ form.status.id_for_label }}" class="form-label"><strong>Status</strong></label>
-                {{ form.status }}
+.dark-mode {
+    --card-bg: #1d1d1f;
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --border-light: rgba(255, 255, 255, 0.1);
+    --input-bg: #2c2c2e;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+body {
+    background: linear-gradient(180deg, #c4d3ff 0%, #d8e1ff 100%);
+    min-height: 100vh;
+}
+
+.dark-mode body {
+    background: linear-gradient(180deg, #1a1a1a 0%, #2c2c2e 100%);
+}
+
+.edit-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.edit-card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.edit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.edit-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    position: relative;
+    overflow: hidden;
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.edit-header::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    z-index: 0;
+}
+
+.edit-header h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.edit-body {
+    padding: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all var(--transition-normal);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #0071e3;
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+}
+
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2386868b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+}
+
+.dark-mode .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23a1a1a6' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* Rating Stars */
+.rating-container {
+    margin-top: 1rem;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23d1d1d6' viewBox='0 0 16 16'%3E%3Cpath d='M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    transition: transform 0.2s ease;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23ff9f0a' viewBox='0 0 16 16'%3E%3Cpath d='M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z'/%3E%3C/svg%3E");
+    transform: scale(1.2);
+}
+
+.rating-text {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* Final Thoughts Section */
+.final-thoughts {
+    background-color: rgba(0, 113, 227, 0.05);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #0071e3;
+    transition: all var(--transition-normal);
+}
+
+.dark-mode .final-thoughts {
+    background-color: rgba(41, 151, 255, 0.1);
+}
+
+.final-thoughts h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+/* Buttons */
+.btn-container {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-xl);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 16px rgba(0, 113, 227, 0.3);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+}
+
+.btn-outline:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff3b30 0%, #ff6482 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.2);
+}
+
+.btn-danger:hover {
+    box-shadow: 0 6px 16px rgba(255, 59, 48, 0.3);
+}
+
+/* Delete Modal */
+.modal-content {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-light);
+    padding: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+    color: var(--text-primary);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-light);
+    padding: 1rem 1.5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .edit-body {
+        padding: 1.5rem;
+    }
+    
+    .btn-container {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+/* Media Cover Preview */
+.media-preview {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.media-cover {
+    width: 120px;
+    height: 180px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    flex-shrink: 0;
+}
+
+.media-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-info {
+    flex-grow: 1;
+}
+
+.media-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.media-meta {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.media-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.media-type-book {
+    background-color: rgba(88, 86, 214, 0.1);
+    color: #5856D6;
+}
+
+.media-type-movie {
+    background-color: rgba(255, 45, 85, 0.1);
+    color: #FF2D55;
+}
+
+.media-type-game {
+    background-color: rgba(52, 199, 89, 0.1);
+    color: #34C759;
+}
+
+.dark-mode .media-type-book {
+    background-color: rgba(88, 86, 214, 0.2);
+    color: #7b7aff;
+}
+
+.dark-mode .media-type-movie {
+    background-color: rgba(255, 45, 85, 0.2);
+    color: #ff6482;
+}
+
+.dark-mode .media-type-game {
+    background-color: rgba(52, 199, 89, 0.2);
+    color: #5dde7d;
+}
+</style>
+
+<div class="edit-container">
+    <div class="edit-card fade-in">
+        <div class="edit-header">
+            <h2>Edit Library Entry</h2>
+        </div>
+        
+        <div class="edit-body">
+            {% if form.instance.media %}
+            <div class="media-preview">
+                <div class="media-cover">
+                    <img src="{{ form.instance.media.cover_image }}" alt="{{ form.instance.media.title }}">
+                </div>
+                <div class="media-info">
+                    <h3 class="media-title">{{ form.instance.media.title }}</h3>
+                    <div class="media-meta">
+                        {% if form.instance.media.author %}By {{ form.instance.media.author }}{% endif %}
+                        {% if form.instance.media.director %}Directed by {{ form.instance.media.director }}{% endif %}
+                        {% if form.instance.media.studio %}Developed by {{ form.instance.media.studio }}{% endif %}
+                        {% if form.instance.media.release_year %} • {{ form.instance.media.release_year }}{% endif %}
+                    </div>
+                    <div class="media-type media-type-{{ form.instance.media.media_type }}">
+                        {% if form.instance.media.media_type == "book" %}Book{% elif form.instance.media.media_type == "movie" %}Movie{% elif form.instance.media.media_type == "game" %}Game{% endif %}
+                    </div>
+                </div>
             </div>
+            {% endif %}
 
-            <!-- review & rating (hidden by default) -->
-            <div id="rating-review-section" class="mt-3 p-3 border rounded bg-light"
-                style="display: {% if form.instance.status in 'completed dropped' %}block{% else %}none{% endif %}; transition: 0.3s;">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
                 
-                <h5 class="mb-3">Final Thoughts</h5>
-                
-                <div class="mb-3">
-                    <label for="{{ form.rating.id_for_label }}" class="form-label"><strong>Rating</strong></label>
-                    {{ form.rating }}
+                <!-- Status dropdown -->
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                    {{ form.status.errors }}
+                    <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}" class="form-control form-select">
+                        {% for value, text in form.status.field.choices %}
+                            <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
-                <div class="mb-3">
-                    <label for="{{ form.review.id_for_label }}" class="form-label"><strong>Review</strong></label>
-                    {{ form.review }}
+                <!-- Review & rating (hidden by default) -->
+                <div id="rating-review-section" class="final-thoughts" 
+                    style="display: {% if form.instance.status in 'completed dropped' %}block{% else %}none{% endif %};">
+                    
+                    <h3>Final Thoughts</h3>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.rating.id_for_label }}" class="form-label">Rating</label>
+                        {{ form.rating.errors }}
+                        
+                        <div class="rating-container">
+                            <div class="star-rating">
+                                {% for i in "54321"|make_list %}
+                                <input type="radio" id="star{{ i }}" name="{{ form.rating.name }}" value="{{ i }}" 
+                                    {% if form.rating.value == i %}checked{% endif %}>
+                                <label for="star{{ i }}" title="{{ i }} stars"></label>
+                                {% endfor %}
+                            </div>
+                            <div class="rating-text">Select your rating</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.review.id_for_label }}" class="form-label">Review</label>
+                        {{ form.review.errors }}
+                        <textarea name="{{ form.review.name }}" id="{{ form.review.id_for_label }}" 
+                            class="form-control" rows="4">{{ form.review.value|default:'' }}</textarea>
+                        <div class="form-text">Share your thoughts about this title</div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- notes -->
-            <div class="mb-3">
-                <label for="{{ form.notes.id_for_label }}" class="form-label"><strong>Notes</strong></label>
-                {{ form.notes }}
-                <small class="form-text text-muted">Jot down your thoughts as you go.</small>
-            </div>
+                <!-- Notes -->
+                <div class="form-group">
+                    <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
+                    {{ form.notes.errors }}
+                    <textarea name="{{ form.notes.name }}" id="{{ form.notes.id_for_label }}" 
+                        class="form-control" rows="4">{{ form.notes.value|default:'' }}</textarea>
+                    <div class="form-text">Jot down your thoughts as you go</div>
+                </div>
 
-            <!-- buttons -->
-            <div class="d-flex justify-content-center mt-4">
-                <button type="submit" class="btn btn-primary px-4">Save Changes</button>
-                <a href="{% url 'user_library:index' %}" class="btn btn-outline-secondary ms-3">Cancel</a>
-                <button type="button" class="btn btn-danger ms-3 delete-btn" 
-                    data-bs-toggle="modal" data-bs-target="#deleteModal" 
-                    data-item-id="{{ form.instance.id }}">
-                    Delete
-                </button>
-            </div>
-        </form>
+                <!-- Buttons -->
+                <div class="btn-container">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <a href="{% url 'user_library:index' %}" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="button" class="btn btn-danger" 
+                        data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                        data-item-id="{{ form.instance.id }}">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Once you delete this, there's no going back. You sure you wanna do this?
+                <p>Are you sure you want to remove this item from your library? This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
             </div>
         </div>
@@ -75,7 +520,10 @@
 document.addEventListener("DOMContentLoaded", function () {
     const statusField = document.getElementById("{{ form.status.id_for_label }}");
     const ratingReviewSection = document.getElementById("rating-review-section");
+    const starInputs = document.querySelectorAll('.star-rating input');
+    const ratingText = document.querySelector('.rating-text');
 
+    // Toggle review fields based on status
     function toggleReviewFields() {
         if (statusField.value === "completed" || statusField.value === "dropped") {
             ratingReviewSection.style.display = "block";
@@ -83,11 +531,41 @@ document.addEventListener("DOMContentLoaded", function () {
             ratingReviewSection.style.display = "none";
         }
     }
+    
     statusField.addEventListener("change", toggleReviewFields);
 
+    // Update rating text when stars are clicked
+    starInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const rating = this.value;
+            const ratingTexts = {
+                '1': 'Poor',
+                '2': 'Fair',
+                '3': 'Good',
+                '4': 'Very Good',
+                '5': 'Excellent'
+            };
+            ratingText.textContent = ratingTexts[rating] || 'Select your rating';
+        });
+        
+        // Set initial text based on selected rating
+        if (input.checked) {
+            const rating = input.value;
+            const ratingTexts = {
+                '1': 'Poor',
+                '2': 'Fair',
+                '3': 'Good',
+                '4': 'Very Good',
+                '5': 'Excellent'
+            };
+            ratingText.textContent = ratingTexts[rating] || 'Select your rating';
+        }
+    });
+
+    // Handle delete functionality
     let deleteItemId = null;
 
-    document.querySelector('.delete-btn').addEventListener('click', function () {
+    document.querySelector('.btn-danger').addEventListener('click', function () {
         deleteItemId = this.getAttribute('data-item-id');
     });
 
@@ -103,70 +581,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.ok) {
                     window.location.href = "{% url 'user_library:index' %}";
                 } else {
-                    alert("Uh-oh! The delete button must be on strike. Try again in a bit.");
+                    alert("There was an error deleting this item. Please try again.");
                 }
             })
         }
     });
 });
 </script>
-
-<style>
-    .edit-entry-container {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        max-width: 1000px;
-        margin: auto;
-    }
-
-    .media-cover {
-        border-radius: 10px;
-        width: 100%;
-        max-width: 250px;
-        height: auto;
-        display: block;
-        margin: auto;
-        transition: 0.3s;
-    }
-
-    .media-cover:hover {
-        transform: scale(1.05);
-    }
-
-    /* Star rating container */
-    .star-rating {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: center;
-    }
-
-    .star-rating input {
-        display: none;
-    }
-
-    .star-rating label {
-        font-size: 2rem;
-        cursor: pointer;
-        transition: color 0.3s;
-        color: #ccc;
-    }
-
-    .star-rating label.selected {
-        color: #facc15;
-    }
-
-    .star-rating label.selected {
-        color: #facc15;
-    }
-
-    @media (prefers-color-scheme: dark) {
-    .star-rating label.selected {
-        color: #fbbf24;
-    }}
-
-    h3.fw-bold {
-        margin-bottom: 0.25rem !important;
-    }
-</style>
 {% endblock %}

@@ -1,318 +1,703 @@
 {% extends 'base.html' %}
-  
-<head> 
-  <meta charset="utf-8"> 
-  <title>chartsjs</title> 
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> 
-  
-  <!-- jQuery library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
-  
-  <!-- Latest compiled JavaScript -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> 
-</head> 
+
+{% block title %}Book Statistics - SHELFY{% endblock %}
 
 {% block content %}
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
+    --secondary-gradient: linear-gradient(135deg, #ff2d55 0%, #ff6482 100%);
+    --tertiary-gradient: linear-gradient(135deg, #34c759 0%, #5dde7d 100%);
+    --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    --card-radius: 16px;
+    --card-bg: #ffffff;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --border-light: rgba(0, 0, 0, 0.1);
+  }
 
-<!-- book Charts -->
- <div>
+  .dark-mode {
+    --card-bg: #1d1d1f;
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --border-light: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .stats-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .stats-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+
+  .stats-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .stats-nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stats-nav-item {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+  }
+
+  .stats-nav-item:hover, .stats-nav-item.active {
+    background: var(--primary-gradient);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+  }
+
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stats-card {
+    background-color: var(--card-bg);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .stats-card.col-span-3 {
+    grid-column: span 3;
+  }
+
+  .stats-card.col-span-4 {
+    grid-column: span 4;
+  }
+
+  .stats-card.col-span-6 {
+    grid-column: span 6;
+  }
+
+  .stats-card.col-span-12 {
+    grid-column: span 12;
+  }
+
+  .stats-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .stats-card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stats-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+  }
+
+  .stats-card-icon.primary {
+    background: var(--primary-gradient);
+  }
+
+  .stats-card-icon.secondary {
+    background: var(--secondary-gradient);
+  }
+
+  .stats-card-icon.tertiary {
+    background: var(--tertiary-gradient);
+  }
+
+  .stats-card-body {
+    position: relative;
+    min-height: 100px;
+  }
+
+  .stats-metric {
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+
+  .stats-metric-value {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+
+  .stats-metric-label {
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  .stats-rating-stars {
+    font-size: 1.5rem;
+    color: #ff9f0a;
+    margin-top: 0.5rem;
+  }
+
+  .stats-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+
+  .stats-empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .stats-empty-text {
+    font-size: 1rem;
+    max-width: 250px;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+  }
+
+  @media (max-width: 992px) {
+    .stats-container {
+      grid-template-columns: repeat(6, 1fr);
+    }
+    
+    .stats-card.col-span-3,
+    .stats-card.col-span-4 {
+      grid-column: span 3;
+    }
+    
+    .stats-card.col-span-6,
+    .stats-card.col-span-12 {
+      grid-column: span 6;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stats-card.col-span-3,
+    .stats-card.col-span-4,
+    .stats-card.col-span-6 {
+      grid-column: span 2;
+    }
+    
+    .stats-card.col-span-12 {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .stats-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-card.col-span-3,
+    .stats-card.col-span-4,
+    .stats-card.col-span-6,
+    .stats-card.col-span-12 {
+      grid-column: span 1;
+    }
+  }
+</style>
+
+<div class="stats-header">
+  <h1>Book Statistics</h1>
+  <p>Detailed analytics about your reading habits and preferences</p>
+</div>
+
+<div class="stats-nav">
+  <a href="{% url 'charts:index' %}" class="stats-nav-item">Overview</a>
+  <a href="{% url 'charts:books' %}" class="stats-nav-item active">Books</a>
+  <a href="{% url 'charts:movies' %}" class="stats-nav-item">Movies</a>
+  <a href="{% url 'charts:games' %}" class="stats-nav-item">Games</a>
+</div>
+
 {% if book_count %}
-  <div id="container text-center">
-    <div class="row">
-      <div class="col">
-        <p class="text-center">Number of Books Read</p>
-        <p class="text-center">{{ book_count }}</p>
-      </div>
-      <div class="col">
-        <p class="text-center">Average Book Rating</p>
-        <p class="text-center">{{ book_rating }} ★</p>
+<div class="stats-container">
+  <!-- Book Count Card -->
+  <div class="stats-card col-span-3">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon primary">
+          <i class="fas fa-book"></i>
+        </div>
+        Books Read
       </div>
     </div>
-    
-    <div class="row">
-      <div class="col">
-        <div id="container" style="width: 100%;">
-          <canvas id="books_charts" data-url="{% url 'charts:books_charts' %}"></canvas>
-        </div>
-      </div>
-      <div class="col">
-        <div id="container" style="width: 100%;">
-          <canvas id="books_ratings" data-url="{% url 'charts:books_ratings' %}"></canvas>
-        </div>
-      </div>
-      
-    </div>
-    <div class="row">
-      <div class="col">
-        <div id="container" style="width: 100%;">
-          <canvas id="books_authors" data-url="{% url 'charts:books_authors' %}"></canvas>
-        </div>
-      </div>
-      <div class="col">
-        <div id="container" style="width: 100%;">
-          <canvas id="books_release" data-url="{% url 'charts:books_release' %}"></canvas>
-        </div>
+    <div class="stats-card-body">
+      <div class="stats-metric">
+        <div class="stats-metric-value">{{ book_count }}</div>
+        <div class="stats-metric-label">Total Books</div>
       </div>
     </div>
-    
   </div>
 
- </div>
- {% else %}
- <p>Please rate a book first before viewing your statistics.</p>
- {% endif %}
+  <!-- Book Rating Card -->
+  <div class="stats-card col-span-3">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon secondary">
+          <i class="fas fa-star"></i>
+        </div>
+        Average Rating
+      </div>
+    </div>
+    <div class="stats-card-body">
+      <div class="stats-metric">
+        <div class="stats-metric-value">{{ book_rating }}</div>
+        <div class="stats-rating-stars">
+          {% for i in "12345"|make_list %}
+            {% if forloop.counter <= book_rating|floatformat:"0" %}
+              <i class="fas fa-star"></i>
+            {% elif forloop.counter <= book_rating|add:"0.5"|floatformat:"0" %}
+              <i class="fas fa-star-half-alt"></i>
+            {% else %}
+              <i class="far fa-star"></i>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="stats-metric-label">Average Book Rating</div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Book Genres Chart -->
+  <div class="stats-card col-span-6">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon primary">
+          <i class="fas fa-tags"></i>
+        </div>
+        Top Genres
+      </div>
+    </div>
+    <div class="stats-card-body">
+      <div class="chart-container">
+        <canvas id="books_charts" data-url="{% url 'charts:books_charts' %}"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Book Ratings Distribution -->
+  <div class="stats-card col-span-6">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon secondary">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        Rating Distribution
+      </div>
+    </div>
+    <div class="stats-card-body">
+      <div class="chart-container">
+        <canvas id="books_ratings" data-url="{% url 'charts:books_ratings' %}"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Authors -->
+  <div class="stats-card col-span-6">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon tertiary">
+          <i class="fas fa-user-edit"></i>
+        </div>
+        Top Authors
+      </div>
+    </div>
+    <div class="stats-card-body">
+      <div class="chart-container">
+        <canvas id="books_authors" data-url="{% url 'charts:books_authors' %}"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Publication Years -->
+  <div class="stats-card col-span-6">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon primary">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        Publication Years
+      </div>
+    </div>
+    <div class="stats-card-body">
+      <div class="chart-container">
+        <canvas id="books_release" data-url="{% url 'charts:books_release' %}"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="stats-card col-span-12">
+  <div class="stats-empty" style="padding: 4rem 2rem;">
+    <div class="stats-empty-icon">
+      <i class="fas fa-book"></i>
+    </div>
+    <div class="stats-empty-text" style="max-width: 400px; font-size: 1.1rem;">
+      Please rate at least one book before viewing your book statistics.
+    </div>
+    <a href="{% url 'media_search' %}?q=&media_type=book" class="btn btn-primary mt-4">
+      <i class="fas fa-search me-2"></i>Discover Books
+    </a>
+  </div>
+</div>
+{% endif %}
 {% endblock content %}
 
-  
 {% block scripts %}
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script>
-
-  const ctx = document.getElementById('books_charts');
-  $(function () {
-    var $books_charts = $("#books_charts");
-
-    console.log("Canvas found:", $books_charts[0]);
-    
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if dark mode is enabled
+  const isDarkMode = document.body.classList.contains('dark-mode');
+  
+  // Set chart text color based on theme
+  const textColor = isDarkMode ? '#f5f5f7' : '#1d1d1f';
+  const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  
+  // Chart.js global defaults
+  Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = textColor;
+  
+  // Book Genres Chart
+  const genresCanvas = document.getElementById('books_charts');
+  if (genresCanvas) {
     $.ajax({
-        url: $books_charts.data("url"),
-        success: function (data) {
-          console.log('AJAX data:', data);  // Debug: Check if data is correct
-
-          // Check if data exists and is in the expected format
-          if (data && Array.isArray(data.genre) && Array.isArray(data.book)) {
-            var ctx = $books_charts[0].getContext("2d");
-
-            // Log to ensure that the context is set up correctly
-            console.log('Canvas context:', ctx);
-            console.log('Canvas element:', $books_charts[0]);
-
-            // Initialize the chart
-            new Chart(ctx, {
-              type: 'horizontalBar',
-              data: {
-                labels: data.genre,
-                datasets: [{
-                  axis: 'y',
-                  label: 'Books',
-                  backgroundColor: 'blue',
-                  data: data.book
-                }]
+      url: genresCanvas.dataset.url,
+      success: function(data) {
+        new Chart(genresCanvas, {
+          type: 'horizontalBar',
+          data: {
+            labels: data.genre,
+            datasets: [{
+              label: 'Books',
+              backgroundColor: 'rgba(0, 113, 227, 0.8)',
+              borderColor: 'rgb(0, 113, 227)',
+              borderWidth: 1,
+              borderRadius: 4,
+              data: data.book
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
               },
-              options: {
-                indexAxis: 'y',
-                responsive: true,
-                legend: {
-                  position: 'top',
+              tooltip: {
+                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: {
+                  color: gridColor
                 },
                 title: {
                   display: true,
-                  text: 'Top 10 Book Genres'
+                  text: 'Number of Books',
+                  color: textColor
                 },
-                scales: {
-                  xAxes: [{
-                      ticks: {
-                          beginAtZero: true,
-                          precision: 0
-                      }
-                  }]
+                ticks: {
+                  precision: 0
+                }
+              },
+              y: {
+                grid: {
+                  display: false
                 }
               }
-            });
-
-          } else {
-            console.error('Invalid data format:', data);
+            }
           }
-        },
-        error: function (err) {
-          console.error("Error fetching data", err);
-        }
-      });
+        });
+      },
+      error: function(err) {
+        console.error("Error fetching book genres data:", err);
+      }
     });
+  }
 
-    // ratings chart
-    const ratings = document.getElementById('books_ratings');
-    $(function () {
-    var $books_ratings = $("#books_ratings");
-
-    console.log("Canvas found:", $books_ratings[0]);
-    
+  // Book Ratings Chart
+  const ratingsCanvas = document.getElementById('books_ratings');
+  if (ratingsCanvas) {
     $.ajax({
-        url: $books_ratings.data("url"),
-        success: function (data) {
-          console.log('AJAX data:', data);  // Debug: Check if data is correct
-
-          // Check if data exists and is in the expected format
-          if (data && Array.isArray(data.rating) && Array.isArray(data.book)) {
-            var rating = $books_ratings[0].getContext("2d");
-
-            // Log to ensure that the context is set up correctly
-            console.log('Canvas context:', rating);
-            console.log('Canvas element:', $books_ratings[0]);
-
-            // Initialize the chart
-            new Chart(rating, {
-              type: 'bar',
-              data: {
-                labels: data.rating,
-                datasets: [{
-                  label: 'Books',
-                  backgroundColor: 'blue',
-                  data: data.book
-                }]
+      url: ratingsCanvas.dataset.url,
+      success: function(data) {
+        new Chart(ratingsCanvas, {
+          type: 'bar',
+          data: {
+            labels: data.rating,
+            datasets: [{
+              label: 'Books',
+              backgroundColor: 'rgba(0, 113, 227, 0.8)',
+              borderColor: 'rgb(0, 113, 227)',
+              borderWidth: 1,
+              borderRadius: 4,
+              data: data.book
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
               },
-              options: {
-                responsive: true,
-                legend: {
-                  position: 'top',
-                },
+              tooltip: {
+                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6
+              }
+            },
+            scales: {
+              x: {
                 title: {
                   display: true,
-                  text: 'Book Ratings'
+                  text: 'Rating',
+                  color: textColor
                 },
-                scales: {
-                  yAxes: [{
-                      ticks: {
-                          beginAtZero: true,
-                          precision: 0
-                      }
-                  }]
+                grid: {
+                  display: false
+                }
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Number of Books',
+                  color: textColor
+                },
+                ticks: {
+                  precision: 0
+                },
+                grid: {
+                  color: gridColor
                 }
               }
-            });
-          } else {
-            console.error('Invalid data format:', data);
+            }
           }
-        },
-        error: function (err) {
-          console.error("Error fetching data", err);
-        }
-      });
+        });
+      },
+      error: function(err) {
+        console.error("Error fetching book ratings data:", err);
+      }
     });
+  }
 
-    // authors chart
-    const authors = document.getElementById('books_authors');
-    $(function () {
-    var $books_authors = $("#books_authors");
-
-    console.log("Canvas found:", $books_authors[0]);
-    
+  // Authors Chart
+  const authorsCanvas = document.getElementById('books_authors');
+  if (authorsCanvas) {
     $.ajax({
-        url: $books_authors.data("url"),
-        success: function (data) {
-          console.log('AJAX data:', data);  // Debug: Check if data is correct
-
-          // Check if data exists and is in the expected format
-          if (data && Array.isArray(data.author) && Array.isArray(data.book)) {
-            var author = $books_authors[0].getContext("2d");
-
-            // Log to ensure that the context is set up correctly
-            console.log('Canvas context:', author);
-            console.log('Canvas element:', $books_authors[0]);
-
-            // Initialize the chart
-            new Chart(author, {
-              type: 'bar',
-              data: {
-                labels: data.authors,
-                datasets: [{
-                  label: 'books',
-                  backgroundColor: 'blue',
-                  data: data.book
-                }]
+      url: authorsCanvas.dataset.url,
+      success: function(data) {
+        new Chart(authorsCanvas, {
+          type: 'bar',
+          data: {
+            labels: data.authors,
+            datasets: [{
+              label: 'Books',
+              backgroundColor: 'rgba(52, 199, 89, 0.8)',
+              borderColor: 'rgb(52, 199, 89)',
+              borderWidth: 1,
+              borderRadius: 4,
+              data: data.book
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
               },
-              options: {
-                indexAxis: 'y',
-                responsive: true,
-                legend: {
-                  position: 'top',
+              tooltip: {
+                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: {
+                  color: gridColor
                 },
                 title: {
                   display: true,
-                  text: 'Book Authors'
+                  text: 'Number of Books',
+                  color: textColor
                 },
-                scales: {
-                  yAxes: [{
-                      ticks: {
-                          beginAtZero: true,
-                          precision: 0
-                      }
-                  }]
-                },
-              }
-            });
-          } else {
-            console.error('Invalid data format:', data);
-          }
-        },
-        error: function (err) {
-          console.error("Error fetching data", err);
-        }
-      });
-    });
-
-    // scatter chart for release year
-    const release_year = document.getElementById('books_release');
-    $(function () {
-    var $books_release = $("#books_release");
-
-    console.log("Canvas found:", $books_release[0]);
-    
-    $.ajax({
-        url: $books_release.data("url"),
-        success: function (data) {
-          console.log('AJAX data:', data);  // Debug: Check if data is correct
-
-          // Check if data exists and is in the expected format
-          if (data && Array.isArray(data.release_year) && Array.isArray(data.book)) {
-            var release_year = $books_release[0].getContext("2d");
-
-            // Log to ensure that the context is set up correctly
-            console.log('Canvas context:', release_year);
-            console.log('Canvas element:', $books_release[0]);
-
-            // Initialize the chart
-            new Chart(release_year, {
-              type: 'bar',
-              data: {
-                labels: data.release_year,
-                datasets: [{
-                  label: 'Books',
-                  backgroundColor: 'blue',
-                  data: data.book
-                }]
+                ticks: {
+                  precision: 0
+                }
               },
-              options: {
-                indexAxis: 'y',
-                responsive: true,
-                legend: {
-                  position: 'top',
+              y: {
+                grid: {
+                  display: false
+                }
+              }
+            }
+          }
+        });
+      },
+      error: function(err) {
+        console.error("Error fetching authors data:", err);
+      }
+    });
+  }
+
+  // Release Years Chart
+  const releaseCanvas = document.getElementById('books_release');
+  if (releaseCanvas) {
+    $.ajax({
+      url: releaseCanvas.dataset.url,
+      success: function(data) {
+        new Chart(releaseCanvas, {
+          type: 'bar',
+          data: {
+            labels: data.release_year,
+            datasets: [{
+              label: 'Books',
+              backgroundColor: 'rgba(0, 113, 227, 0.8)',
+              borderColor: 'rgb(0, 113, 227)',
+              borderWidth: 1,
+              borderRadius: 4,
+              data: data.book
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
                 },
                 title: {
                   display: true,
-                  text: 'Book Release Years'
+                  text: 'Publication Year',
+                  color: textColor
+                }
+              },
+              y: {
+                beginAtZero: true,
+                grid: {
+                  color: gridColor
                 },
-                scales: {
-                  yAxes: [{
-                      ticks: {
-                          beginAtZero: true,
-                          precision: 0
-                      }
-                  }]
+                title: {
+                  display: true,
+                  text: 'Number of Books',
+                  color: textColor
                 },
+                ticks: {
+                  precision: 0
+                }
               }
-            });
-          } else {
-            console.error('Invalid data format:', data);
+            }
           }
-        },
-        error: function (err) {
-          console.error("Error fetching data", err);
-        }
-      });
+        });
+      },
+      error: function(err) {
+        console.error("Error fetching release year data:", err);
+      }
     });
+  }
+});
 </script>
 {% endblock scripts %}

@@ -4,421 +4,838 @@
 
 {% block content %}
 <style>
-.media-header {
-    background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
-    padding: 4rem 0;
-    border-radius: 24px;
-    margin-bottom: 3rem;
-    position: relative;
-    overflow: hidden;
-    color: white;
-    box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+:root {
+    --apple-background: #f5f5f7;
+    --apple-text: #1d1d1f;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #0071e3;
+    --apple-border: #d2d2d7;
+    --apple-card: #ffffff;
+    --apple-shadow: rgba(0, 0, 0, 0.1);
+    --apple-new-tag: #0071e3;
+    --apple-finished-tag: #86868b;
 }
 
-.dark-mode .media-header {
-    background: linear-gradient(135deg, #4C1D95 0%, #6D28D9 100%);
-    box-shadow: 0 20px 40px rgba(76, 29, 149, 0.3);
+.dark-mode {
+    --apple-background: #000000;
+    --apple-text: #f5f5f7;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #2997ff;
+    --apple-border: #424245;
+    --apple-card: #1d1d1f;
+    --apple-shadow: rgba(0, 0, 0, 0.3);
+    --apple-new-tag: #2997ff;
+    --apple-finished-tag: #86868b;
 }
 
-.media-header::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.1);
-    z-index: 0;
+body {
+    background-color: var(--apple-background);
+    color: var(--apple-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.media-header h1 {
-    font-weight: 800;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+.books-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.media-header p {
-    font-size: 1.2rem;
-    opacity: 0.9;
-}
-
-.media-section {
-    margin-bottom: 3rem;
-}
-
-.section-title {
-    position: relative;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
+.books-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    font-size: 1.8rem;
-    font-weight: 700;
+    padding: 16px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--apple-border);
 }
 
-.section-title::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 80px;
-    height: 3px;
-    background: var(--primary);
-    border-radius: 3px;
+.books-title {
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--apple-text);
 }
 
-.dark-mode .section-title::after {
-    background: var(--primary-light);
+.books-actions {
+    display: flex;
+    gap: 20px;
 }
 
-.section-title .section-icon {
-    margin-right: 0.75rem;
-    font-size: 1.5rem;
-    color: var(--primary);
+.books-action-btn {
+    background: none;
+    border: none;
+    color: var(--apple-highlight);
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
 }
 
-.dark-mode .section-title .section-icon {
-    color: var(--primary-light);
-}
-
-.media-grid {
+.books-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1.8rem;
+    gap: 30px;
+    margin-bottom: 40px;
 }
 
-.media-card {
-    position: relative;
-    transition: all 0.3s ease;
+.book-item {
     display: flex;
     flex-direction: column;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.media-card:hover {
-    transform: translateY(-8px) scale(1.02);
+.book-item:hover {
+    transform: translateY(-5px);
 }
 
-.media-img {
-    height: 260px;
-    border-radius: 16px;
+.book-cover {
+    aspect-ratio: 2/3;
+    border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-    background-color: #F3F4F6;
+    box-shadow: 0 4px 12px var(--apple-shadow);
+    margin-bottom: 10px;
     position: relative;
 }
 
-.dark-mode .media-img {
-    background-color: #2D3748;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-}
-
-.media-img img {
+.book-cover img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    display: block;
 }
 
-.media-card:hover .media-img {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+.book-tag {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
 }
 
-.media-card:hover .media-img img {
-    transform: scale(1.08);
+.book-tag.new {
+    background-color: var(--apple-new-tag);
 }
 
-.media-content {
-    padding: 1.2rem 0.5rem;
-    flex-grow: 1;
+.book-tag.finished {
+    background-color: var(--apple-finished-tag);
+}
+
+.book-info {
     display: flex;
     flex-direction: column;
-    text-align: center;
+    padding: 0 5px;
 }
 
-.media-title {
-    font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 0.4rem;
-    color: var(--dark);
+.book-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--apple-text);
+    margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.dark-mode .media-title {
-    color: var(--light);
-}
-
-.media-author {
-    font-size: 0.9rem;
-    color: var(--gray);
-    margin-bottom: 0.5rem;
+.book-author {
+    font-size: 13px;
+    color: var(--apple-secondary-text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.dark-mode .media-author {
-    color: #9CA3AF;
+.book-progress {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--apple-secondary-text);
 }
 
-.media-year {
-    font-size: 0.85rem;
-    color: var(--gray);
-    margin-bottom: 0.8rem;
-}
-
-.dark-mode .media-year {
-    color: #9CA3AF;
-}
-
-.media-card .btn {
-    margin-top: auto;
-    border-radius: 50px;
-    padding: 0.5rem 0;
+.section-title {
+    font-size: 22px;
     font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+    margin: 30px 0 20px;
+    letter-spacing: -0.02em;
+    color: var(--apple-text);
 }
 
-.media-card .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3);
+.book-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
-.category-tabs {
+.book-item:hover .book-actions {
+    opacity: 1;
+}
+
+.book-action-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    font-size: 14px;
+}
+
+.dark-mode .book-action-btn {
+    background-color: rgba(50, 50, 50, 0.8);
+    color: #f5f5f7;
+}
+
+/* Media Detail Modal */
+.media-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.media-modal-dialog {
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: var(--apple-card);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px var(--apple-shadow);
+    overflow: hidden;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.media-modal.show {
+    display: block;
+}
+
+.media-modal.show .media-modal-dialog {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.media-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--apple-border);
+}
+
+.media-modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: var(--apple-text);
+}
+
+.media-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: var(--apple-secondary-text);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.media-modal-close:hover {
+    color: var(--apple-text);
+    background-color: rgba(142, 142, 147, 0.1);
+}
+
+.media-modal-body {
+    padding: 20px;
+}
+
+.media-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+@media (min-width: 768px) {
+    .media-modal-content {
+        flex-direction: row;
+    }
+}
+
+.media-modal-cover {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .media-modal-cover {
+        margin: 0;
+    }
+}
+
+.media-modal-cover img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px var(--apple-shadow);
+}
+
+.media-modal-info {
+    flex-grow: 1;
+}
+
+.media-modal-meta {
+    margin-bottom: 20px;
+    color: var(--apple-secondary-text);
+    font-size: 15px;
+}
+
+.media-modal-meta span {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.media-modal-meta i {
+    margin-right: 6px;
+}
+
+.media-modal-description {
+    margin-bottom: 20px;
+    line-height: 1.6;
+    color: var(--apple-text);
+    font-size: 15px;
+}
+
+.media-modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.media-modal-actions .btn {
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.media-modal-actions .btn-primary {
+    background-color: var(--apple-highlight);
+    border: none;
+}
+
+.media-modal-actions .btn-outline-primary {
+    border-color: var(--apple-highlight);
+    color: var(--apple-highlight);
+}
+
+.media-modal-loading {
     display: flex;
     justify-content: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    align-items: center;
+    min-height: 300px;
 }
 
-.category-tab {
-    padding: 0.6rem 1.5rem;
-    border-radius: 50px;
-    background-color: #F9FAFB;
-    color: var(--dark);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+.media-modal-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--apple-highlight);
+    animation: spin 1s linear infinite;
 }
 
-.dark-mode .category-tab {
-    background-color: #1E293B;
-    color: var(--light);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.dark-mode .media-modal-spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-top-color: var(--apple-highlight);
 }
 
-.category-tab:hover {
-    background-color: #F3F4F6;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.dark-mode .category-tab:hover {
-    background-color: #2D3748;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.category-tab.active {
-    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
-    color: white;
-    box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
-}
-
-.dark-mode .category-tab.active {
-    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
-    box-shadow: 0 4px 10px rgba(124, 58, 237, 0.5);
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-    .media-grid {
+    .books-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 20px;
     }
     
-    .media-img {
-        height: 220px;
+    .books-title {
+        font-size: 28px;
+    }
+    
+    .section-title {
+        font-size: 20px;
     }
 }
 
 @media (max-width: 576px) {
-    .media-grid {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
     }
     
-    .media-img {
-        height: 180px;
+    .books-title {
+        font-size: 24px;
     }
+    
+    .section-title {
+        font-size: 18px;
+    }
+}
+
+/* Search and filter bar */
+.books-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--apple-border);
+}
+
+.books-search {
+    position: relative;
+    width: 300px;
+}
+
+.books-search input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border-radius: 8px;
+    border: 1px solid var(--apple-border);
+    background-color: var(--apple-card);
+    color: var(--apple-text);
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.books-search i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--apple-secondary-text);
+}
+
+.books-search input:focus {
+    outline: none;
+    border-color: var(--apple-highlight);
+    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+}
+
+.books-view-options {
+    display: flex;
+    gap: 15px;
+}
+
+.view-option {
+    background: none;
+    border: none;
+    color: var(--apple-secondary-text);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+
+.view-option.active, .view-option:hover {
+    color: var(--apple-highlight);
 }
 </style>
 
-<!-- Header Section -->
-<section class="media-header text-center">
-  <div class="container">
-      <h1 class="display-4 fw-bold mb-4" data-aos="fade-up">Explore Books</h1>
-      <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
-          Discover new stories, expand your knowledge, and escape into different worlds.
-      </p>
-      
-      <div class="d-flex justify-content-center flex-wrap gap-3" data-aos="fade-up" data-aos-delay="200">
-          <a href="{% url 'media_search' %}?media_type=book" class="btn btn-light btn-lg">
-              <i class="fas fa-search me-2"></i>Search Books
-          </a>
-          {% if user.is_authenticated %}
-          <a href="{% url 'user_library:index' %}" class="btn btn-outline-light btn-lg">
-              <i class="fas fa-book me-2"></i>My Book Collection
-          </a>
-          {% endif %}
-      </div>
-  </div>
-</section>
+<div class="books-container">
+    <!-- Header Section -->
+    <div class="books-header">
+        <h1 class="books-title">All</h1>
+        <div class="books-actions">
+            <button class="books-action-btn">Edit</button>
+        </div>
+    </div>
+    
+    <!-- Filter Bar -->
+    <div class="books-filter-bar">
+        <div class="books-search">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search books...">
+        </div>
+        <div class="books-view-options">
+            <button class="view-option active" title="Grid View">
+                <i class="fas fa-th-large"></i>
+            </button>
+            <button class="view-option" title="List View">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Featured Books Section -->
+    <div class="books-grid">
+        {% for book in books %}
+        <div class="book-item" data-media-type="{{ book.media_type }}" data-media-id="{{ book.external_id }}">
+            <div class="book-cover">
+                <img src="{{ book.cover_image }}" alt="{{ book.title }}">
+                <div class="book-tag new">New</div>
+                <div class="book-actions">
+                    <button class="book-action-btn add-to-library" data-media-type="{{ book.media_type }}" data-external-id="{{ book.external_id }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="book-action-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <div class="book-author">{% if book.author %}{{ book.author }}{% endif %}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Fiction Books Section -->
+    <h2 class="section-title">Fiction</h2>
+    <div class="books-grid">
+        {% for book in fiction_books %}
+        <div class="book-item" data-media-type="{{ book.media_type }}" data-media-id="{{ book.external_id }}">
+            <div class="book-cover">
+                <img src="{{ book.cover_image }}" alt="{{ book.title }}">
+                {% if forloop.counter|divisibleby:3 %}
+                <div class="book-tag finished">Finished</div>
+                {% else %}
+                <div class="book-tag new">New</div>
+                {% endif %}
+                <div class="book-actions">
+                    <button class="book-action-btn add-to-library" data-media-type="{{ book.media_type }}" data-external-id="{{ book.external_id }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="book-action-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <div class="book-author">{% if book.author %}{{ book.author }}{% endif %}</div>
+                {% if forloop.counter|divisibleby:3 %}
+                <div class="book-progress">100%</div>
+                {% elif forloop.counter|divisibleby:5 %}
+                <div class="book-progress">{{ forloop.counter }}%</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Non-Fiction Books Section -->
+    <h2 class="section-title">Non-Fiction</h2>
+    <div class="books-grid">
+        {% for book in nonfiction_books %}
+        <div class="book-item" data-media-type="{{ book.media_type }}" data-media-id="{{ book.external_id }}">
+            <div class="book-cover">
+                <img src="{{ book.cover_image }}" alt="{{ book.title }}">
+                {% if forloop.counter|divisibleby:4 %}
+                <div class="book-tag finished">Finished</div>
+                {% endif %}
+                <div class="book-actions">
+                    <button class="book-action-btn add-to-library" data-media-type="{{ book.media_type }}" data-external-id="{{ book.external_id }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="book-action-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <div class="book-author">{% if book.author %}{{ book.author }}{% endif %}</div>
+                {% if forloop.counter|divisibleby:4 %}
+                <div class="book-progress">100%</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Classic Books Section -->
+    <h2 class="section-title">Classic Literature</h2>
+    <div class="books-grid">
+        {% for book in classic_books %}
+        <div class="book-item" data-media-type="{{ book.media_type }}" data-media-id="{{ book.external_id }}">
+            <div class="book-cover">
+                <img src="{{ book.cover_image }}" alt="{{ book.title }}">
+                {% if forloop.counter|divisibleby:2 %}
+                <div class="book-tag new">New</div>
+                {% endif %}
+                <div class="book-actions">
+                    <button class="book-action-btn add-to-library" data-media-type="{{ book.media_type }}" data-external-id="{{ book.external_id }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="book-action-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <div class="book-author">{% if book.author %}{{ book.author }}{% endif %}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
-<!-- Featured Books Section -->
-<section class="container media-section">
-  <h2 class="section-title" data-aos="fade-up">
-      <i class="fas fa-star section-icon"></i>
-      Featured Books
-  </h2>
-  
-  <div class="media-grid">
-      {% for book in books %}
-      <div class="media-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
-          <a href="{% url 'media_detail' media_type=book.media_type external_id=book.external_id %}" class="text-decoration-none">
-              <div class="media-img">
-                  <img src="{{ book.cover_image }}" alt="{{ book.title }}">
-              </div>
-          </a>
-          <div class="media-content">
-              <h3 class="media-title">{{ book.title }}</h3>
-              <div class="media-author">
-                  {% if book.author %}by {{ book.author }}{% endif %}
-              </div>
-              <div class="media-year">
-                  {% if book.release_year %}{{ book.release_year }}{% endif %}
-              </div>
-              
-              <form method="POST" action="{% url 'user_library:add' %}" class="mt-2">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ book.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ book.external_id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add to Library</button>
-              </form>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-</section>
+<!-- Media Detail Modal -->
+<div class="media-modal" id="mediaDetailModal">
+    <div class="media-modal-dialog">
+        <div class="media-modal-header">
+            <h5 class="media-modal-title" id="mediaModalTitle">Book Details</h5>
+            <button type="button" class="media-modal-close" id="closeMediaModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="media-modal-body">
+            <div class="media-modal-loading" id="mediaModalLoading">
+                <div class="media-modal-spinner"></div>
+            </div>
+            <div class="media-modal-content" id="mediaModalContent" style="display: none;">
+                <div class="media-modal-cover">
+                    <img id="mediaModalImage" src="/placeholder.svg" alt="Book Cover">
+                </div>
+                <div class="media-modal-info">
+                    <div class="media-modal-meta" id="mediaModalMeta"></div>
+                    <div class="media-modal-description" id="mediaModalDescription"></div>
+                    <div class="media-modal-actions">
+                        <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="media_type" id="modalMediaType" value="book">
+                            <input type="hidden" name="external_id" id="modalExternalId" value="">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add to Library
+                            </button>
+                        </form>
+                        <a href="#" id="mediaModalViewDetails" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt me-2"></i>View Full Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- Fiction Books Section -->
-<section class="container media-section">
-  <h2 class="section-title" data-aos="fade-up">
-      <i class="fas fa-book section-icon"></i>
-      Fiction Books
-  </h2>
-  
-  <div class="media-grid">
-      {% for book in fiction_books %}
-      <div class="media-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
-          <a href="{% url 'media_detail' media_type=book.media_type external_id=book.external_id %}" class="text-decoration-none">
-              <div class="media-img">
-                  <img src="{{ book.cover_image }}" alt="{{ book.title }}">
-              </div>
-          </a>
-          <div class="media-content">
-              <h3 class="media-title">{{ book.title }}</h3>
-              <div class="media-author">
-                  {% if book.author %}by {{ book.author }}{% endif %}
-              </div>
-              <div class="media-year">
-                  {% if book.release_year %}{{ book.release_year }}{% endif %}
-              </div>
-              
-              <form method="POST" action="{% url 'user_library:add' %}" class="mt-2">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ book.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ book.external_id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add to Library</button>
-              </form>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-</section>
-
-<!-- Non-Fiction Books Section -->
-<section class="container media-section">
-  <h2 class="section-title" data-aos="fade-up">
-      <i class="fas fa-graduation-cap section-icon"></i>
-      Non-Fiction Books
-  </h2>
-  
-  <div class="media-grid">
-      {% for book in nonfiction_books %}
-      <div class="media-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
-          <a href="{% url 'media_detail' media_type=book.media_type external_id=book.external_id %}" class="text-decoration-none">
-              <div class="media-img">
-                  <img src="{{ book.cover_image }}" alt="{{ book.title }}">
-              </div>
-          </a>
-          <div class="media-content">
-              <h3 class="media-title">{{ book.title }}</h3>
-              <div class="media-author">
-                  {% if book.author %}by {{ book.author }}{% endif %}
-              </div>
-              <div class="media-year">
-                  {% if book.release_year %}{{ book.release_year }}{% endif %}
-              </div>
-              
-              <form method="POST" action="{% url 'user_library:add' %}" class="mt-2">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ book.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ book.external_id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add to Library</button>
-              </form>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-</section>
-
-<!-- Classic Books Section -->
-<section class="container media-section">
-  <h2 class="section-title" data-aos="fade-up">
-      <i class="fas fa-bookmark section-icon"></i>
-      Classic Literature
-  </h2>
-  
-  <div class="media-grid">
-      {% for book in classic_books %}
-      <div class="media-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
-          <a href="{% url 'media_detail' media_type=book.media_type external_id=book.external_id %}" class="text-decoration-none">
-              <div class="media-img">
-                  <img src="{{ book.cover_image }}" alt="{{ book.title }}">
-              </div>
-          </a>
-          <div class="media-content">
-              <h3 class="media-title">{{ book.title }}</h3>
-              <div class="media-author">
-                  {% if book.author %}by {{ book.author }}{% endif %}
-              </div>
-              <div class="media-year">
-                  {% if book.release_year %}{{ book.release_year }}{% endif %}
-              </div>
-              
-              <form method="POST" action="{% url 'user_library:add' %}" class="mt-2">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ book.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ book.external_id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add to Library</button>
-              </form>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-</section>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Media card click to show modal
+    const bookItems = document.querySelectorAll('.book-item');
+    const mediaModal = document.getElementById('mediaDetailModal');
+    const closeMediaModal = document.getElementById('closeMediaModal');
+    const mediaModalLoading = document.getElementById('mediaModalLoading');
+    const mediaModalContent = document.getElementById('mediaModalContent');
+    
+    bookItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't trigger modal if clicking on the action buttons
+            if (e.target.closest('.book-actions')) {
+                return;
+            }
+            
+            const mediaType = this.getAttribute('data-media-type');
+            const mediaId = this.getAttribute('data-media-id');
+            
+            // Show modal
+            mediaModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // Show loading, hide content
+            mediaModalLoading.style.display = 'flex';
+            mediaModalContent.style.display = 'none';
+            
+            // Fetch media details
+            fetch(`/api/media/${mediaType}/${mediaId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update modal content
+                    document.getElementById('mediaModalTitle').textContent = data.title;
+                    document.getElementById('mediaModalImage').src = data.cover_image;
+                    document.getElementById('mediaModalImage').alt = data.title;
+                    
+                    // Set form values
+                    document.getElementById('modalMediaType').value = mediaType;
+                    document.getElementById('modalExternalId').value = mediaId;
+                    
+                    // Set view details link
+                    document.getElementById('mediaModalViewDetails').href = `/media/${mediaType}/${mediaId}/`;
+                    
+                    // Build meta information
+                    let metaHTML = '';
+                    
+                    if (data.author) metaHTML += `<span><i class="fas fa-user me-2"></i>${data.author}</span>`;
+                    if (data.release_year) metaHTML += `<span><i class="fas fa-calendar-alt me-2"></i>${data.release_year}</span>`;
+                    if (data.genre) metaHTML += `<span><i class="fas fa-tag me-2"></i>${data.genre}</span>`;
+                    
+                    document.getElementById('mediaModalMeta').innerHTML = metaHTML;
+                    
+                    // Set description
+                    document.getElementById('mediaModalDescription').innerHTML = data.description || 'No description available.';
+                    
+                    // Hide loading, show content
+                    mediaModalLoading.style.display = 'none';
+                    mediaModalContent.style.display = 'flex';
+                })
+                .catch(error => {
+                    console.error('Error fetching media details:', error);
+                    document.getElementById('mediaModalTitle').textContent = 'Error';
+                    document.getElementById('mediaModalContent').innerHTML = '<p>There was an error loading the book details. Please try again.</p>';
+                    
+                    mediaModalLoading.style.display = 'none';
+                    mediaModalContent.style.display = 'block';
+                });
+        });
+    });
+    
+    // Add to library buttons
+    document.querySelectorAll('.add-to-library').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent modal from opening
+            
+            const mediaType = this.getAttribute('data-media-type');
+            const externalId = this.getAttribute('data-external-id');
+            
+            const formData = new FormData();
+            formData.append('media_type', mediaType);
+            formData.append('external_id', externalId);
+            
+            // Get CSRF token from cookies
+            const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken=')).split('=')[1];
+            
+            fetch('{% url "user_library:add" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show success message
+                alert(data.message || 'Added to library successfully!');
+            })
+            .catch(error => {
+                console.error('Error adding to library:', error);
+                alert('There was an error adding this to your library. Please try again.');
+            });
+        });
+    });
+    
+    // Close modal
+    closeMediaModal.addEventListener('click', function() {
+        mediaModal.classList.remove('show');
+        document.body.style.overflow = '';
+    });
+    
+    // Close modal when clicking outside
+    mediaModal.addEventListener('click', function(e) {
+        if (e.target === mediaModal) {
+            mediaModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    });
+    
+    // Close modal with escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mediaModal.classList.contains('show')) {
+            mediaModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    });
+    
+    // Handle add to library form submissions
+    document.querySelectorAll('.add-to-library-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show success message
+                alert(data.message || 'Added to library successfully!');
+            })
+            .catch(error => {
+                console.error('Error adding to library:', error);
+                alert('There was an error adding this to your library. Please try again.');
+            });
+        });
+    });
+    
+    // View options
+    document.querySelectorAll('.view-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.view-option').forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Toggle between grid and list view
+            const booksGrid = document.querySelectorAll('.books-grid');
+            if (this.title === 'List View') {
+                booksGrid.forEach(grid => grid.style.gridTemplateColumns = '1fr');
+                document.querySelectorAll('.book-item').forEach(item => {
+                    item.style.flexDirection = 'row';
+                    item.style.gap = '20px';
+                    item.querySelector('.book-cover').style.width = '80px';
+                    item.querySelector('.book-cover').style.height = '120px';
+                    item.querySelector('.book-cover').style.flexShrink = '0';
+                });
+            } else {
+                booksGrid.forEach(grid => grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(180px, 1fr))');
+                document.querySelectorAll('.book-item').forEach(item => {
+                    item.style.flexDirection = 'column';
+                    item.style.gap = '0';
+                    item.querySelector('.book-cover').style.width = '100%';
+                    item.querySelector('.book-cover').style.height = 'auto';
+                });
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

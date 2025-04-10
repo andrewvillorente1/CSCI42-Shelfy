@@ -4,313 +4,395 @@
 
 {% block content %}
 <style>
-  /* Hero section */
-  .hero-section {
-    padding: 5rem 0;
-    border-radius: var(--radius-xl);
-    margin-bottom: 4rem;
+:root {
+    --apple-background: #f5f5f7;
+    --apple-text: #1d1d1f;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #0071e3;
+    --apple-border: #d2d2d7;
+    --apple-card: #ffffff;
+    --apple-shadow: rgba(0, 0, 0, 0.1);
+    --apple-new-tag: #0071e3;
+    --apple-finished-tag: #86868b;
+}
+
+.dark-mode {
+    --apple-background: #000000;
+    --apple-text: #f5f5f7;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #2997ff;
+    --apple-border: #424245;
+    --apple-card: #1d1d1f;
+    --apple-shadow: rgba(0, 0, 0, 0.3);
+    --apple-new-tag: #2997ff;
+    --apple-finished-tag: #86868b;
+}
+
+body {
+    background-color: var(--apple-background);
+    color: var(--apple-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
+    padding: 4rem 0;
+    border-radius: 16px;
+    margin-bottom: 3rem;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     color: white;
-    box-shadow: var(--shadow-lg);
-  }
+    box-shadow: 0 10px 25px rgba(0, 113, 227, 0.2);
+}
 
-  .dark-mode .hero-section {
-    box-shadow: var(--shadow-xl);
-  }
+.dark-mode .hero-section {
+    box-shadow: 0 20px 40px rgba(0, 113, 227, 0.3);
+}
 
-  .hero-content {
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    z-index: 0;
+}
+
+.hero-content {
     position: relative;
-    z-index: 2;
-  }
+    z-index: 1;
+}
 
-  .hero-title {
+.hero-title {
     font-size: 3rem;
-    font-weight: 800;
+    font-weight: 700;
     margin-bottom: 1.5rem;
     line-height: 1.2;
-  }
+    letter-spacing: -0.02em;
+}
 
-  .hero-text {
+.hero-text {
     font-size: 1.25rem;
     margin-bottom: 2rem;
     opacity: 0.9;
     max-width: 600px;
-  }
+}
 
-  .hero-buttons {
+.hero-buttons {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
-  }
+}
 
-  .hero-shape {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    z-index: 1;
-  }
+.hero-buttons .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  .hero-shape-1 {
-    width: 300px;
-    height: 300px;
-    top: -100px;
-    right: -100px;
-  }
+.hero-buttons .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
 
-  .hero-shape-2 {
-    width: 200px;
-    height: 200px;
-    bottom: -50px;
-    left: -50px;
-  }
+/* Section Styling */
+.section {
+    margin-bottom: 4rem;
+}
 
-  /* Section styling */
-  .section {
-    margin-bottom: 5rem;
-  }
-
-  .section-header {
-    margin-bottom: 2rem;
+.section-header {
+    margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--apple-border);
+}
 
-  .section-title {
+.section-title {
     font-size: 1.75rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: 0.75rem;
     margin: 0;
-  }
+    letter-spacing: -0.02em;
+    color: var(--apple-text);
+}
 
-  .section-icon {
-    color: var(--primary);
+.section-icon {
+    color: #0071e3;
     font-size: 1.5rem;
-  }
+}
 
-  .dark-mode .section-icon {
-    color: var(--primary-light);
-  }
+.dark-mode .section-icon {
+    color: #2997ff;
+}
 
-  .section-link {
+.section-link {
     font-weight: 500;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
+    color: #0071e3;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+}
 
-  /* Stats cards */
-  .stats-grid {
+.section-link:hover {
+    transform: translateX(3px);
+    color: #47a9ff;
+}
+
+/* Stats Cards */
+.stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
     margin-bottom: 3rem;
-  }
+}
 
-  .stat-card {
-    background-color: var(--white);
-    border-radius: var(--radius-lg);
+.stat-card {
+    background-color: white;
+    border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: var(--shadow-md);
-    transition: all var(--transition-normal);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
-  }
+}
 
-  .dark-mode .stat-card {
-    background-color: var(--light-gray);
-    box-shadow: var(--shadow-lg);
-  }
+.dark-mode .stat-card {
+    background-color: var(--apple-card);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
 
-  .stat-card:hover {
+.stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-  }
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
 
-  .dark-mode .stat-card:hover {
-    box-shadow: var(--shadow-xl);
-  }
+.dark-mode .stat-card:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
 
-  .stat-icon {
+.stat-icon {
     width: 60px;
     height: 60px;
-    border-radius: var(--radius-lg);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 1rem;
     font-size: 1.5rem;
     color: white;
-  }
+}
 
-  .stat-icon.users {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-  }
+.stat-icon.users {
+    background: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
+}
 
-  .stat-icon.media {
-    background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
-  }
+.stat-icon.media {
+    background: linear-gradient(135deg, #ff2d55 0%, #ff6482 100%);
+}
 
-  .stat-icon.entries {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  }
+.stat-icon.entries {
+    background: linear-gradient(135deg, #34c759 0%, #5dde7d 100%);
+}
 
-  .stat-value {
+.stat-value {
     font-size: 2.5rem;
-    font-weight: 800;
+    font-weight: 700;
     margin-bottom: 0.5rem;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(90deg, #0071e3 0%, #47a9ff 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-  }
+    letter-spacing: -0.02em;
+}
 
-  .dark-mode .stat-value {
-    background: linear-gradient(90deg, var(--primary-light) 0%, var(--accent-light) 100%);
+.dark-mode .stat-value {
+    background: linear-gradient(90deg, #47a9ff 0%, #7ac0ff 100%);
     -webkit-background-clip: text;
     background-clip: text;
-  }
+}
 
-  .stat-label {
-    color: var(--gray);
+.stat-label {
+    color: var(--apple-secondary-text);
     font-size: 1rem;
     font-weight: 500;
-  }
+}
 
-  .stat-meta {
+.stat-meta {
     margin-top: 0.5rem;
     font-size: 0.85rem;
-    color: var(--gray);
-  }
+    color: var(--apple-secondary-text);
+}
 
-  /* Media grid */
-  .media-grid {
+/* Category Tabs */
+.category-tabs {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.category-tab {
+    padding: 0.6rem 1.5rem;
+    border-radius: 12px;
+    background-color: white;
+    color: var(--apple-text);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .category-tab {
+    background-color: var(--apple-card);
+    color: var(--apple-text);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.category-tab:hover {
+    background-color: #f8f8f8;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark-mode .category-tab:hover {
+    background-color: #2D3748;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.category-tab.active {
+    background-color: #0071e3;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
+}
+
+/* Media Grid */
+.media-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1.5rem;
-  }
+    gap: 30px;
+}
 
-  .media-card {
+.media-card {
     position: relative;
-    transition: all var(--transition-normal);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
-    height: 100%;
     cursor: pointer;
-  }
-
-  .media-card:hover {
-    transform: translateY(-5px);
-  }
-
-  .media-cover {
-    position: relative;
-    aspect-ratio: 2/3;
-    border-radius: var(--radius-lg);
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: var(--shadow-md);
-    transition: all var(--transition-normal);
-  }
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    height: 100%;
+}
 
-  .dark-mode .media-cover {
-    box-shadow: var(--shadow-lg);
-  }
+.dark-mode .media-card {
+    background-color: var(--apple-card);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
 
-  .media-card:hover .media-cover {
-    box-shadow: var(--shadow-lg);
-  }
+.media-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
 
-  .dark-mode .media-card:hover .media-cover {
-    box-shadow: var(--shadow-xl);
-  }
+.media-cover {
+    aspect-ratio: 2/3;
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    position: relative;
+    background-color: #F3F4F6;
+}
 
-  .media-cover img {
+.dark-mode .media-cover {
+    background-color: #2D3748;
+}
+
+.media-cover img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform var(--transition-normal);
-  }
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  .media-card:hover .media-cover img {
-    transform: scale(1.05);
-  }
+.media-card:hover .media-cover img {
+    transform: scale(1.08);
+}
 
-  .media-type-badge {
+.media-type-badge {
     position: absolute;
-    top: 0.75rem;
-    left: 0.75rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-full);
-    font-size: 0.7rem;
+    top: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
     font-weight: 600;
-    z-index: 2;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-
-  .media-type-book {
-    background-color: rgba(80, 70, 229, 0.85);
+    text-transform: uppercase;
     color: white;
-  }
+}
 
-  .media-type-movie {
-    background-color: rgba(244, 63, 94, 0.85);
-    color: white;
-  }
+.media-type-book {
+    background-color: rgba(88, 86, 214, 0.85);
+}
 
-  .media-type-game {
-    background-color: rgba(6, 182, 212, 0.85);
-    color: white;
-  }
+.media-type-movie {
+    background-color: rgba(255, 45, 85, 0.85);
+}
 
-  .media-info {
-    padding: 1rem 0.5rem;
+.media-type-game {
+    background-color: rgba(52, 199, 89, 0.85);
+}
+
+.media-info {
+    padding: 15px;
     text-align: center;
+    background-color: white;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-  }
+}
 
-  .media-title {
+.dark-mode .media-info {
+    background-color: var(--apple-card);
+}
+
+.media-title {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.1rem;
     margin-bottom: 0.25rem;
-    color: var(--dark);
+    color: var(--apple-text);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-  }
+    letter-spacing: -0.015em;
+}
 
-  .dark-mode .media-title {
-    color: var(--dark);
-  }
-
-  .media-author {
+.media-author {
     font-size: 0.85rem;
-    color: var(--gray);
+    color: var(--apple-secondary-text);
     margin-bottom: 0.5rem;
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
-  }
+}
 
-  .media-friend {
-    font-size: 0.85rem;
-    color: var(--primary);
-    margin-bottom: 0.5rem;
-  }
-
-  .dark-mode .media-friend {
-    color: var(--primary-light);
-  }
-
-  .media-actions {
+.media-actions {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -318,114 +400,63 @@
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
     padding: 3rem 0.5rem 0.75rem;
     opacity: 0;
-    transition: opacity var(--transition-normal);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    transition: opacity 0.3s ease;
+    border-radius: 0 0 12px 12px;
     display: flex;
     justify-content: center;
-  }
+}
 
-  .media-card:hover .media-actions {
+.media-card:hover .media-actions {
     opacity: 1;
-  }
+}
 
-  .media-btn {
+.media-btn {
     background-color: rgba(255, 255, 255, 0.95);
-    color: var(--dark);
+    color: var(--apple-text);
     border: none;
-    border-radius: var(--radius-full);
+    border-radius: 20px;
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition-fast);
-    box-shadow: var(--shadow-md);
-  }
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-  .media-btn:hover {
+.media-btn:hover {
     background-color: white;
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-  }
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
 
-  /* Category tabs */
-  .category-tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .category-tab {
-    padding: 0.5rem 1.25rem;
-    border-radius: var(--radius-full);
-    background-color: var(--light-gray);
-    color: var(--dark-gray);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    border: none;
-  }
-
-  .dark-mode .category-tab {
-    background-color: var(--light);
-    color: var(--gray);
-  }
-
-  .category-tab:hover {
-    background-color: rgba(80, 70, 229, 0.1);
-    color: var(--primary);
-    transform: translateY(-2px);
-  }
-
-  .dark-mode .category-tab:hover {
-    background-color: rgba(110, 103, 247, 0.15);
-    color: var(--primary-light);
-  }
-
-  .category-tab.active {
-    background-color: var(--primary);
-    color: white;
-    box-shadow: var(--shadow-md);
-  }
-
-  .dark-mode .category-tab.active {
-    background-color: var(--primary);
-    box-shadow: var(--shadow-lg);
-  }
-
-  /* Feature cards */
-  .features-grid {
+/* Features Section */
+.features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
     margin-bottom: 3rem;
-  }
+}
 
-  .feature-card {
-    background-color: var(--white);
-    border-radius: var(--radius-lg);
+.feature-card {
+    background-color: white;
+    border-radius: 16px;
     padding: 2rem;
     text-align: center;
-    box-shadow: var(--shadow-md);
-    transition: all var(--transition-normal);
-  }
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  .dark-mode .feature-card {
-    background-color: var(--light-gray);
-    box-shadow: var(--shadow-lg);
-  }
+.dark-mode .feature-card {
+    background-color: var(--apple-card);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
 
-  .feature-card:hover {
+.feature-card:hover {
     transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-  }
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
 
-  .dark-mode .feature-card:hover {
-    box-shadow: var(--shadow-xl);
-  }
-
-  .feature-icon {
+.feature-icon {
     width: 80px;
     height: 80px;
     border-radius: 50%;
@@ -435,91 +466,100 @@
     margin: 0 auto 1.5rem;
     font-size: 2rem;
     color: white;
-  }
+}
 
-  .feature-icon.books {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-  }
+.feature-icon.books {
+    background: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
+}
 
-  .feature-icon.games {
-    background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
-  }
+.feature-icon.games {
+    background: linear-gradient(135deg, #ff2d55 0%, #ff6482 100%);
+}
 
-  .feature-icon.movies {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  }
+.feature-icon.movies {
+    background: linear-gradient(135deg, #34c759 0%, #5dde7d 100%);
+}
 
-  .feature-title {
+.feature-title {
     font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: var(--dark);
-  }
+    color: var(--apple-text);
+}
 
-  .dark-mode .feature-title {
-    color: var(--dark);
-  }
-
-  .feature-text {
-    color: var(--gray);
+.feature-text {
+    color: var(--apple-secondary-text);
     font-size: 1rem;
     line-height: 1.6;
-  }
+}
 
-  /* CTA Section */
-  .cta-section {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    padding: 4rem 0;
-    border-radius: var(--radius-xl);
-    margin: 3rem 0;
+/* CTA Section */
+.cta-section {
+    background: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
+    padding: 3rem 0;
+    border-radius: 16px;
+    margin: 2rem 0;
     color: white;
     position: relative;
     overflow: hidden;
-    box-shadow: var(--shadow-lg);
-  }
+    box-shadow: 0 10px 25px rgba(0, 113, 227, 0.2);
+}
 
-  .dark-mode .cta-section {
-    box-shadow: var(--shadow-xl);
-  }
+.dark-mode .cta-section {
+    box-shadow: 0 20px 40px rgba(0, 113, 227, 0.3);
+}
 
-  .cta-section::before {
+.cta-section::before {
     content: '';
     position: absolute;
-    top: -100px;
-    right: -100px;
-    width: 300px;
-    height: 300px;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.1);
     z-index: 0;
-  }
+}
 
-  .cta-content {
+.cta-content {
     position: relative;
-    z-index: 2;
-  }
+    z-index: 1;
+}
 
-  .cta-title {
-    font-weight: 800;
+.cta-title {
+    font-weight: 700;
     font-size: 2.5rem;
     margin-bottom: 1rem;
-  }
+    letter-spacing: -0.02em;
+}
 
-  .cta-text {
+.cta-text {
     font-size: 1.25rem;
     margin-bottom: 2rem;
     opacity: 0.9;
     max-width: 600px;
-  }
+}
 
-  .cta-buttons {
+.cta-buttons {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
-  }
+}
 
-  /* Media Detail Modal */
-  .media-modal {
+.cta-buttons .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cta-buttons .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Media Detail Modal */
+.media-modal {
     display: none;
     position: fixed;
     top: 0;
@@ -529,748 +569,756 @@
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1050;
     overflow-y: auto;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    padding: 2rem 1rem;
-  }
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
 
-  .media-modal-dialog {
+.media-modal-dialog {
     max-width: 800px;
     margin: 2rem auto;
-    background-color: var(--white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xl);
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     transform: translateY(20px);
     opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  .dark-mode .media-modal-dialog {
-    background-color: var(--light-gray);
-  }
+.dark-mode .media-modal-dialog {
+    background-color: var(--apple-card);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
 
-  .media-modal.show {
+.media-modal.show {
     display: block;
-  }
+}
 
-  .media-modal.show .media-modal-dialog {
+.media-modal.show .media-modal-dialog {
     transform: translateY(0);
     opacity: 1;
-  }
+}
 
-  .media-modal-header {
+.media-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--light-gray);
-  }
+    padding: 20px;
+    border-bottom: 1px solid var(--apple-border);
+}
 
-  .dark-mode .media-modal-header {
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .media-modal-title {
-    font-size: 1.5rem;
-    font-weight: 700;
+.media-modal-title {
+    font-size: 20px;
+    font-weight: 600;
     margin: 0;
-  }
+    letter-spacing: -0.02em;
+    color: var(--apple-text);
+}
 
-  .media-modal-close {
+.media-modal-close {
     background: transparent;
     border: none;
-    font-size: 1.5rem;
-    color: var(--gray);
+    font-size: 24px;
+    color: var(--apple-secondary-text);
     cursor: pointer;
-    transition: color var(--transition-fast);
-  }
+    transition: color 0.2s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
 
-  .media-modal-close:hover {
-    color: var(--dark);
-  }
+.media-modal-close:hover {
+    color: var(--apple-text);
+    background-color: rgba(142, 142, 147, 0.1);
+}
 
-  .dark-mode .media-modal-close:hover {
-    color: var(--light);
-  }
+.media-modal-body {
+    padding: 20px;
+}
 
-  .media-modal-body {
-    padding: 1.5rem;
-  }
-
-  .media-modal-content {
+.media-modal-content {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-  }
+    gap: 30px;
+}
 
-  @media (min-width: 768px) {
+@media (min-width: 768px) {
     .media-modal-content {
-      flex-direction: row;
+        flex-direction: row;
     }
-  }
+}
 
-  .media-modal-cover {
+.media-modal-cover {
     flex-shrink: 0;
     width: 100%;
     max-width: 200px;
     margin: 0 auto;
-  }
+}
 
-  @media (min-width: 768px) {
+@media (min-width: 768px) {
     .media-modal-cover {
-      margin: 0;
+        margin: 0;
     }
-  }
+}
 
-  .media-modal-cover img {
+.media-modal-cover img {
     width: 100%;
     height: auto;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-  }
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
 
-  .media-modal-info {
+.media-modal-info {
     flex-grow: 1;
-  }
+}
 
-  .media-modal-meta {
-    margin-bottom: 1.5rem;
-    color: var(--gray);
-    font-size: 0.9rem;
-  }
+.media-modal-meta {
+    margin-bottom: 20px;
+    color: var(--apple-secondary-text);
+    font-size: 15px;
+}
 
-  .media-modal-meta span {
+.media-modal-meta span {
     display: inline-block;
-    margin-right: 1rem;
-  }
+    margin-right: 15px;
+}
 
-  .media-modal-meta i {
-    margin-right: 0.5rem;
-  }
+.media-modal-meta i {
+    margin-right: 6px;
+}
 
-  .media-modal-description {
-    margin-bottom: 1.5rem;
+.media-modal-description {
+    margin-bottom: 20px;
     line-height: 1.6;
-  }
+    color: var(--apple-text);
+    font-size: 15px;
+}
 
-  .media-modal-actions {
+.media-modal-actions {
     display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
-  }
+    gap: 15px;
+    margin-top: 20px;
+}
 
-  .media-modal-footer {
-    padding: 1.5rem;
-    border-top: 1px solid var(--light-gray);
-    display: flex;
-    justify-content: flex-end;
-  }
+.media-modal-actions .btn {
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  .dark-mode .media-modal-footer {
-    border-top-color: rgba(255, 255, 255, 0.1);
-  }
+.media-modal-actions .btn-primary {
+    background-color: #0071e3;
+    border: none;
+}
 
-  .media-modal-loading {
+.media-modal-actions .btn-outline-primary {
+    border-color: #0071e3;
+    color: #0071e3;
+}
+
+.media-modal-loading {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 200px;
-  }
+    min-height: 300px;
+}
 
-  .media-modal-spinner {
+.media-modal-spinner {
     width: 40px;
     height: 40px;
     border: 4px solid rgba(0, 0, 0, 0.1);
     border-radius: 50%;
-    border-top-color: var(--primary);
+    border-top-color: #0071e3;
     animation: spin 1s linear infinite;
-  }
+}
 
-  .dark-mode .media-modal-spinner {
+.dark-mode .media-modal-spinner {
     border-color: rgba(255, 255, 255, 0.1);
-    border-top-color: var(--primary-light);
-  }
+    border-top-color: #2997ff;
+}
 
-  @keyframes spin {
+@keyframes spin {
     to { transform: rotate(360deg); }
-  }
+}
 
-  /* Responsive adjustments */
-  @media (max-width: 992px) {
+/* Responsive Adjustments */
+@media (max-width: 992px) {
     .hero-title {
-      font-size: 2.5rem;
+        font-size: 2.5rem;
     }
     
     .cta-title {
-      font-size: 2rem;
+        font-size: 2rem;
     }
     
     .media-grid {
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     }
-  }
+}
 
-  @media (max-width: 768px) {
+@media (max-width: 768px) {
     .hero-section {
-      padding: 3rem 0;
+        padding: 3rem 0;
     }
     
     .hero-title {
-      font-size: 2rem;
+        font-size: 2rem;
     }
     
     .hero-text, .cta-text {
-      font-size: 1.1rem;
+        font-size: 1.1rem;
     }
     
     .section-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
     }
     
     .media-grid {
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     }
     
     .features-grid {
-      grid-template-columns: 1fr;
+        grid-template-columns: 1fr;
     }
-  }
+}
 
-  @media (max-width: 576px) {
+@media (max-width: 576px) {
     .hero-title {
-      font-size: 1.75rem;
+        font-size: 1.75rem;
     }
     
     .hero-buttons, .cta-buttons {
-      flex-direction: column;
-      width: 100%;
+        flex-direction: column;
+        width: 100%;
     }
     
     .media-grid {
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
-  }
+}
 </style>
 
 <!-- Hero Section -->
 <section class="hero-section">
-  <div class="container">
-    <div class="hero-content">
-      <h1 class="hero-title">Track Your Media Collection in One Place</h1>
-      <p class="hero-text">SHELFY helps you organize and discover books, games, and movies with a beautiful, minimalist interface.</p>
-      
-      <div class="hero-buttons">
-        {% if user.is_authenticated %}
-          <a href="{% url 'user_management:dashboard' %}" class="btn btn-light">
-            <i class="fas fa-columns me-2"></i>Go to Dashboard
-          </a>
-          <a href="{% url 'user_library:index' %}" class="btn btn-outline-light">
-            <i class="fas fa-book me-2"></i>My Library
-          </a>
-        {% else %}
-          <a href="{% url 'login' %}" class="btn btn-light">
-            <i class="fas fa-sign-in-alt me-2"></i>Log In
-          </a>
-          <a href="{% url 'user_management:register' %}" class="btn btn-outline-light">
-            <i class="fas fa-user-plus me-2"></i>Sign Up
-          </a>
-        {% endif %}
-      </div>
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Track Your Media Collection in One Place</h1>
+            <p class="hero-text">SHELFY helps you organize and discover books, games, and movies with a beautiful, minimalist interface.</p>
+            
+            <div class="hero-buttons">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'user_management:dashboard' %}" class="btn btn-light">
+                        <i class="fas fa-columns me-2"></i>Go to Dashboard
+                    </a>
+                    <a href="{% url 'user_library:index' %}" class="btn btn-outline-light">
+                        <i class="fas fa-book me-2"></i>My Library
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-light">
+                        <i class="fas fa-sign-in-alt me-2"></i>Log In
+                    </a>
+                    <a href="{% url 'user_management:register' %}" class="btn btn-outline-light">
+                        <i class="fas fa-user-plus me-2"></i>Sign Up
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="hero-shape hero-shape-1"></div>
-  <div class="hero-shape hero-shape-2"></div>
 </section>
 
 <!-- Stats Section -->
 <section class="section">
-  <div class="container">
-    <div class="section-header">
-      <h2 class="section-title">
-        <i class="fas fa-chart-pie section-icon"></i>
-        Community Stats
-      </h2>
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-chart-pie section-icon"></i>
+                Community Stats
+            </h2>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon users">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value">{{ total_users|default:"0" }}</div>
+                <div class="stat-label">Community Members</div>
+                {% if newest_user %}
+                <div class="stat-meta">Newest member: {{ newest_user }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon media">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="stat-value">{{ total_media|default:"0" }}</div>
+                <div class="stat-label">Items Cataloged</div>
+                {% if media_counts %}
+                <div class="stat-meta">
+                    {{ media_counts.book|default:"0" }} Books / 
+                    {{ media_counts.game|default:"0" }} Games / 
+                    {{ media_counts.movie|default:"0" }} Movies
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon entries">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="stat-value">{{ total_library_entries|default:"0" }}</div>
+                <div class="stat-label">Library Entries</div>
+                {% if status_counts %}
+                <div class="stat-meta">
+                    {{ status_counts.completed|default:"0" }} Completed / 
+                    {{ status_counts.in_progress|default:"0" }} In Progress
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-    
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon users">
-          <i class="fas fa-users"></i>
-        </div>
-        <div class="stat-value">{{ total_users|default:"0" }}</div>
-        <div class="stat-label">Community Members</div>
-        {% if newest_user %}
-        <div class="stat-meta">Newest member: {{ newest_user }}</div>
-        {% endif %}
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon media">
-          <i class="fas fa-book-open"></i>
-        </div>
-        <div class="stat-value">{{ total_media|default:"0" }}</div>
-        <div class="stat-label">Items Cataloged</div>
-        {% if media_counts %}
-        <div class="stat-meta">
-          {{ media_counts.book|default:"0" }} Books / 
-          {{ media_counts.game|default:"0" }} Games / 
-          {{ media_counts.movie|default:"0" }} Movies
-        </div>
-        {% endif %}
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon entries">
-          <i class="fas fa-layer-group"></i>
-        </div>
-        <div class="stat-value">{{ total_library_entries|default:"0" }}</div>
-        <div class="stat-label">Library Entries</div>
-        {% if status_counts %}
-        <div class="stat-meta">
-          {{ status_counts.completed|default:"0" }} Completed / 
-          {{ status_counts.in_progress|default:"0" }} In Progress
-        </div>
-        {% endif %}
-      </div>
-    </div>
-  </div>
 </section>
 
 <!-- Trending Section -->
 <section class="section">
-  <div class="container">
-    <div class="section-header">
-      <h2 class="section-title">
-        <i class="fas fa-fire section-icon"></i>
-        Trending Now
-      </h2>
-      <a href="{% url 'media_search' %}?q=" class="section-link">
-        View all <i class="fas fa-arrow-right"></i>
-      </a>
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-fire section-icon"></i>
+                Trending Now
+            </h2>
+            <a href="{% url 'media_search' %}?q=" class="section-link">
+                View all <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="category-tabs">
+            <button class="category-tab active" data-target="trending-all">All</button>
+            <button class="category-tab" data-target="trending-books">Books</button>
+            <button class="category-tab" data-target="trending-movies">Movies</button>
+            <button class="category-tab" data-target="trending-games">Games</button>
+        </div>
+        
+        <div class="tab-content">
+            <div class="tab-pane active" id="trending-all">
+                <div class="media-grid">
+                    {% for media in trending_books|slice:":2" %}
+                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+                        <div class="media-cover">
+                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+                            <div class="media-type-badge media-type-book">Book</div>
+                            <div class="media-actions">
+                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
+                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
+                                    <button type="submit" class="media-btn">Add to Library</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="media-info">
+                            <h3 class="media-title">{{ media.title }}</h3>
+                            {% if media.author %}
+                            <div class="media-author">By {{ media.author }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% for media in trending_movies|slice:":2" %}
+                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+                        <div class="media-cover">
+                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+                            <div class="media-type-badge media-type-movie">Movie</div>
+                            <div class="media-actions">
+                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
+                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
+                                    <button type="submit" class="media-btn">Add to Library</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="media-info">
+                            <h3 class="media-title">{{ media.title }}</h3>
+                            {% if media.release_year %}
+                            <div class="media-author">{{ media.release_year }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% for media in trending_games|slice:":2" %}
+                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+                        <div class="media-cover">
+                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+                            <div class="media-type-badge media-type-game">Game</div>
+                            <div class="media-actions">
+                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
+                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
+                                    <button type="submit" class="media-btn">Add to Library</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="media-info">
+                            <h3 class="media-title">{{ media.title }}</h3>
+                            {% if media.release_year %}
+                            <div class="media-author">{{ media.release_year }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="tab-pane" id="trending-books" style="display: none;">
+                <div class="media-grid">
+                    {% for media in trending_books %}
+                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+                        <div class="media-cover">
+                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+                            <div class="media-type-badge media-type-book">Book</div>
+                            <div class="media-actions">
+                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
+                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
+                                    <button type="submit" class="media-btn">Add to Library</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="media-info">
+                            <h3 class="media-title">{{ media.title }}</h3>
+                            {% if media.author %}
+                            <div class="media-author">By {{ media.author }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="tab-pane" id="trending-movies" style="display: none;">
+                <div class="media-grid">
+                    {% for media in trending_movies %}
+                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+                        <div class="media-cover">
+                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+                            <div class="media-type-badge media-type-movie">Movie</div>
+                            <div class="media-actions">
+                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
+                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
+                                    <button type="submit" class="media-btn">Add to Library</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="media-info">
+                            <h3 class="media-title">{{ media.title }}</h3>
+                            {% if media.release_year %}
+                            <div class="media-author">{{ media.release_year }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="tab-pane" id="trending-games" style="display: none;">
+                <div class="media-grid">
+                    {% for media in trending_games %}
+                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+                        <div class="media-cover">
+                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+                            <div class="media-type-badge media-type-game">Game</div>
+                            <div class="media-actions">
+                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
+                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
+                                    <button type="submit" class="media-btn">Add to Library</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="media-info">
+                            <h3 class="media-title">{{ media.title }}</h3>
+                            {% if media.release_year %}
+                            <div class="media-author">{{ media.release_year }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div class="category-tabs">
-      <button class="category-tab active" data-target="trending-all">All</button>
-      <button class="category-tab" data-target="trending-books">Books</button>
-      <button class="category-tab" data-target="trending-movies">Movies</button>
-      <button class="category-tab" data-target="trending-games">Games</button>
-    </div>
-    
-    <div class="tab-content">
-      <div class="tab-pane active" id="trending-all">
-        <div class="media-grid">
-          {% for media in trending_books|slice:":2" %}
-          <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-            <div class="media-cover">
-              <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-              <div class="media-type-badge media-type-book">Book</div>
-              <div class="media-actions">
-                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                  <button type="submit" class="media-btn">Add to Library</button>
-                </form>
-              </div>
-            </div>
-            <div class="media-info">
-              <h3 class="media-title">{{ media.title }}</h3>
-              {% if media.author %}
-              <div class="media-author">By {{ media.author }}</div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-          
-          {% for media in trending_movies|slice:":2" %}
-          <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-            <div class="media-cover">
-              <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-              <div class="media-type-badge media-type-movie">Movie</div>
-              <div class="media-actions">
-                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                  <button type="submit" class="media-btn">Add to Library</button>
-                </form>
-              </div>
-            </div>
-            <div class="media-info">
-              <h3 class="media-title">{{ media.title }}</h3>
-              {% if media.release_year %}
-              <div class="media-author">{{ media.release_year }}</div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-          
-          {% for media in trending_games|slice:":2" %}
-          <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-            <div class="media-cover">
-              <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-              <div class="media-type-badge media-type-game">Game</div>
-              <div class="media-actions">
-                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                  <button type="submit" class="media-btn">Add to Library</button>
-                </form>
-              </div>
-            </div>
-            <div class="media-info">
-              <h3 class="media-title">{{ media.title }}</h3>
-              {% if media.release_year %}
-              <div class="media-author">{{ media.release_year }}</div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-      
-      <div class="tab-pane" id="trending-books" style="display: none;">
-        <div class="media-grid">
-          {% for media in trending_books %}
-          <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-            <div class="media-cover">
-              <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-              <div class="media-type-badge media-type-book">Book</div>
-              <div class="media-actions">
-                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                  <button type="submit" class="media-btn">Add to Library</button>
-                </form>
-              </div>
-            </div>
-            <div class="media-info">
-              <h3 class="media-title">{{ media.title }}</h3>
-              {% if media.author %}
-              <div class="media-author">By {{ media.author }}</div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-      
-      <div class="tab-pane" id="trending-movies" style="display: none;">
-        <div class="media-grid">
-          {% for media in trending_movies %}
-          <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-            <div class="media-cover">
-              <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-              <div class="media-type-badge media-type-movie">Movie</div>
-              <div class="media-actions">
-                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                  <button type="submit" class="media-btn">Add to Library</button>
-                </form>
-              </div>
-            </div>
-            <div class="media-info">
-              <h3 class="media-title">{{ media.title }}</h3>
-              {% if media.release_year %}
-              <div class="media-author">{{ media.release_year }}</div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-      
-      <div class="tab-pane" id="trending-games" style="display: none;">
-        <div class="media-grid">
-          {% for media in trending_games %}
-          <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-            <div class="media-cover">
-              <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-              <div class="media-type-badge media-type-game">Game</div>
-              <div class="media-actions">
-                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                  <button type="submit" class="media-btn">Add to Library</button>
-                </form>
-              </div>
-            </div>
-            <div class="media-info">
-              <h3 class="media-title">{{ media.title }}</h3>
-              {% if media.release_year %}
-              <div class="media-author">{{ media.release_year }}</div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
 </section>
 
 <!-- Features Section -->
 <section class="section">
-  <div class="container">
-    <div class="section-header">
-      <h2 class="section-title">
-        <i class="fas fa-star section-icon"></i>
-        Features
-      </h2>
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-star section-icon"></i>
+                Features
+            </h2>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon books">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 class="feature-title">Track Books</h3>
+                <p class="feature-text">Keep track of books you've read, want to read, and are currently reading. Rate and review your favorites.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon games">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h3 class="feature-title">Manage Games</h3>
+                <p class="feature-text">Organize your game collection and track your progress through your backlog. Never lose track of what you're playing.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon movies">
+                    <i class="fas fa-film"></i>
+                </div>
+                <h3 class="feature-title">Catalog Movies</h3>
+                <p class="feature-text">Build your movie watchlist and rate films you've already watched. Keep track of your favorite directors and genres.</p>
+            </div>
+        </div>
     </div>
-    
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon books">
-          <i class="fas fa-book"></i>
-        </div>
-        <h3 class="feature-title">Track Books</h3>
-        <p class="feature-text">Keep track of books you've read, want to read, and are currently reading. Rate and review your favorites.</p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon games">
-          <i class="fas fa-gamepad"></i>
-        </div>
-        <h3 class="feature-title">Manage Games</h3>
-        <p class="feature-text">Organize your game collection and track your progress through your backlog. Never lose track of what you're playing.</p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon movies">
-          <i class="fas fa-film"></i>
-        </div>
-        <h3 class="feature-title">Catalog Movies</h3>
-        <p class="feature-text">Build your movie watchlist and rate films you've already watched. Keep track of your favorite directors and genres.</p>
-      </div>
-    </div>
-  </div>
 </section>
 
 <!-- CTA Section -->
 <section class="cta-section">
-  <div class="container">
-    <div class="cta-content text-center">
-      <h2 class="cta-title">Ready to organize your collection?</h2>
-      <p class="cta-text mx-auto">Join SHELFY today and start tracking your books, games, and movies in one place.</p>
-      
-      <div class="cta-buttons justify-content-center">
-        {% if user.is_authenticated %}
-          <a href="{% url 'media_search' %}?q=" class="btn btn-light">
-            <i class="fas fa-search me-2"></i>Search Media
-          </a>
-          <a href="{% url 'user_library:index' %}" class="btn btn-outline-light">
-            <i class="fas fa-book me-2"></i>View My Library
-          </a>
-        {% else %}
-          <a href="{% url 'user_management:register' %}" class="btn btn-light">
-            <i class="fas fa-user-plus me-2"></i>Sign Up Now
-          </a>
-          <a href="{% url 'login' %}" class="btn btn-outline-light">
-            <i class="fas fa-sign-in-alt me-2"></i>Log In
-          </a>
-        {% endif %}
-      </div>
+    <div class="container">
+        <div class="cta-content text-center">
+            <h2 class="cta-title">Ready to organize your collection?</h2>
+            <p class="cta-text mx-auto">Join SHELFY today and start tracking your books, games, and movies in one place.</p>
+            
+            <div class="cta-buttons justify-content-center">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'media_search' %}?q=" class="btn btn-light">
+                        <i class="fas fa-search me-2"></i>Search Media
+                    </a>
+                    <a href="{% url 'user_library:index' %}" class="btn btn-outline-light">
+                        <i class="fas fa-book me-2"></i>View My Library
+                    </a>
+                {% else %}
+                    <a href="{% url 'user_management:register' %}" class="btn btn-light">
+                        <i class="fas fa-user-plus me-2"></i>Sign Up Now
+                    </a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-light">
+                        <i class="fas fa-sign-in-alt me-2"></i>Log In
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
 <!-- Media Detail Modal -->
 <div class="media-modal" id="mediaDetailModal">
-  <div class="media-modal-dialog">
-    <div class="media-modal-header">
-      <h5 class="media-modal-title" id="mediaModalTitle">Media Details</h5>
-      <button type="button" class="media-modal-close" id="closeMediaModal">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="media-modal-body">
-      <div class="media-modal-loading" id="mediaModalLoading">
-        <div class="media-modal-spinner"></div>
-      </div>
-      <div class="media-modal-content" id="mediaModalContent" style="display: none;">
-        <div class="media-modal-cover">
-          <img id="mediaModalImage" src="/placeholder.svg" alt="Media Cover">
+    <div class="media-modal-dialog">
+        <div class="media-modal-header">
+            <h5 class="media-modal-title" id="mediaModalTitle">Media Details</h5>
+            <button type="button" class="media-modal-close" id="closeMediaModal">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <div class="media-modal-info">
-          <div class="media-modal-meta" id="mediaModalMeta"></div>
-          <div class="media-modal-description" id="mediaModalDescription"></div>
-          <div class="media-modal-actions">
-            <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-              {% csrf_token %}
-              <input type="hidden" name="media_type" id="modalMediaType" value="">
-              <input type="hidden" name="external_id" id="modalExternalId" value="">
-              <button type="submit" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Add to Library
-              </button>
-            </form>
-            <a href="#" id="mediaModalViewDetails" class="btn btn-outline-primary">
-              <i class="fas fa-external-link-alt me-2"></i>View Full Details
-            </a>
-          </div>
+        <div class="media-modal-body">
+            <div class="media-modal-loading" id="mediaModalLoading">
+                <div class="media-modal-spinner"></div>
+            </div>
+            <div class="media-modal-content" id="mediaModalContent" style="display: none;">
+                <div class="media-modal-cover">
+                    <img id="mediaModalImage" src="/placeholder.svg" alt="Media Cover">
+                </div>
+                <div class="media-modal-info">
+                    <div class="media-modal-meta" id="mediaModalMeta"></div>
+                    <div class="media-modal-description" id="mediaModalDescription"></div>
+                    <div class="media-modal-actions">
+                        <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="media_type" id="modalMediaType" value="">
+                            <input type="hidden" name="external_id" id="modalExternalId" value="">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add to Library
+                            </button>
+                        </form>
+                        <a href="#" id="mediaModalViewDetails" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt me-2"></i>View Full Details
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
 <script>
-  // Category tabs functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    const tabs = document.querySelectorAll('.category-tab');
-    
-    tabs.forEach(tab => {
-      tab.addEventListener('click', function() {
-        // Remove active class from all tabs
-        tabs.forEach(t => t.classList.remove('active'));
+    // Category tabs functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.category-tab');
         
-        // Add active class to clicked tab
-        this.classList.add('active');
-        
-        // Hide all tab panes
-        document.querySelectorAll('.tab-pane').forEach(pane => {
-          pane.style.display = 'none';
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Hide all tab panes
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.style.display = 'none';
+                });
+                
+                // Show the selected tab pane
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).style.display = 'block';
+            });
         });
-        
-        // Show the selected tab pane
-        const target = this.getAttribute('data-target');
-        document.getElementById(target).style.display = 'block';
-      });
-    });
 
-    // Media card click to show modal
-    const mediaCards = document.querySelectorAll('.media-card');
-    const mediaModal = document.getElementById('mediaDetailModal');
-    const closeMediaModal = document.getElementById('closeMediaModal');
-    const mediaModalLoading = document.getElementById('mediaModalLoading');
-    const mediaModalContent = document.getElementById('mediaModalContent');
-    
-    mediaCards.forEach(card => {
-      card.addEventListener('click', function(e) {
-        // Don't trigger modal if clicking on the add to library button
-        if (e.target.closest('.add-to-library-form')) {
-          return;
-        }
+        // Media card click to show modal
+        const mediaCards = document.querySelectorAll('.media-card');
+        const mediaModal = document.getElementById('mediaDetailModal');
+        const closeMediaModal = document.getElementById('closeMediaModal');
+        const mediaModalLoading = document.getElementById('mediaModalLoading');
+        const mediaModalContent = document.getElementById('mediaModalContent');
         
-        const mediaType = this.getAttribute('data-media-type');
-        const mediaId = this.getAttribute('data-media-id');
-        
-        // Show modal
-        mediaModal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        
-        // Show loading, hide content
-        mediaModalLoading.style.display = 'flex';
-        mediaModalContent.style.display = 'none';
-        
-        // Fetch media details
-        fetch(`/api/media/${mediaType}/${mediaId}/`)
-          .then(response => response.json())
-          .then(data => {
-            // Update modal content
-            document.getElementById('mediaModalTitle').textContent = data.title;
-            document.getElementById('mediaModalImage').src = data.cover_image;
-            document.getElementById('mediaModalImage').alt = data.title;
-            
-            // Set form values
-            document.getElementById('modalMediaType').value = mediaType;
-            document.getElementById('modalExternalId').value = mediaId;
-            
-            // Set view details link
-            document.getElementById('mediaModalViewDetails').href = `/media/${mediaType}/${mediaId}/`;
-            
-            // Build meta information
-            let metaHTML = '';
-            
-            if (mediaType === 'book') {
-              if (data.author) metaHTML += `<span><i class="fas fa-user"></i>${data.author}</span>`;
-              if (data.release_year) metaHTML += `<span><i class="fas fa-calendar-alt"></i>${data.release_year}</span>`;
-              if (data.genre) metaHTML += `<span><i class="fas fa-tag"></i>${data.genre}</span>`;
-            } else if (mediaType === 'movie') {
-              if (data.director) metaHTML += `<span><i class="fas fa-video"></i>${data.director}</span>`;
-              if (data.release_year) metaHTML += `<span><i class="fas fa-calendar-alt"></i>${data.release_year}</span>`;
-              if (data.genre) metaHTML += `<span><i class="fas fa-tag"></i>${data.genre}</span>`;
-            } else if (mediaType === 'game') {
-              if (data.studio) metaHTML += `<span><i class="fas fa-building"></i>${data.studio}</span>`;
-              if (data.release_year) metaHTML += `<span><i class="fas fa-calendar-alt"></i>${data.release_year}</span>`;
-              if (data.genre) metaHTML += `<span><i class="fas fa-tag"></i>${data.genre}</span>`;
-            }
-            
-            document.getElementById('mediaModalMeta').innerHTML = metaHTML;
-            
-            // Set description
-            document.getElementById('mediaModalDescription').innerHTML = data.description || 'No description available.';
-            
-            // Hide loading, show content
-            mediaModalLoading.style.display = 'none';
-            mediaModalContent.style.display = 'flex';
-          })
-          .catch(error => {
-            console.error('Error fetching media details:', error);
-            document.getElementById('mediaModalTitle').textContent = 'Error';
-            document.getElementById('mediaModalContent').innerHTML = '<p>There was an error loading the media details. Please try again.</p>';
-            
-            mediaModalLoading.style.display = 'none';
-            mediaModalContent.style.display = 'block';
-          });
-      });
-    });
-    
-    // Close modal
-    closeMediaModal.addEventListener('click', function() {
-      mediaModal.classList.remove('show');
-      document.body.style.overflow = '';
-    });
-    
-    // Close modal when clicking outside
-    mediaModal.addEventListener('click', function(e) {
-      if (e.target === mediaModal) {
-        mediaModal.classList.remove('show');
-        document.body.style.overflow = '';
-      }
-    });
-    
-    // Close modal with escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && mediaModal.classList.contains('show')) {
-        mediaModal.classList.remove('show');
-        document.body.style.overflow = '';
-      }
-    });
-    
-    // Handle add to library form submissions
-    document.querySelectorAll('.add-to-library-form').forEach(form => {
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        
-        fetch(this.action, {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          // Show success message
-          alert(data.message || 'Added to library successfully!');
-        })
-        .catch(error => {
-          console.error('Error adding to library:', error);
-          alert('There was an error adding this to your library. Please try again.');
+        mediaCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Don't trigger modal if clicking on the add to library button
+                if (e.target.closest('.add-to-library-form')) {
+                    return;
+                }
+                
+                const mediaType = this.getAttribute('data-media-type');
+                const mediaId = this.getAttribute('data-media-id');
+                
+                // Show modal
+                mediaModal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                
+                // Show loading, hide content
+                mediaModalLoading.style.display = 'flex';
+                mediaModalContent.style.display = 'none';
+                
+                // Fetch media details
+                fetch(`/api/media/${mediaType}/${mediaId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update modal content
+                        document.getElementById('mediaModalTitle').textContent = data.title;
+                        document.getElementById('mediaModalImage').src = data.cover_image;
+                        document.getElementById('mediaModalImage').alt = data.title;
+                        
+                        // Set form values
+                        document.getElementById('modalMediaType').value = mediaType;
+                        document.getElementById('modalExternalId').value = mediaId;
+                        
+                        // Set view details link
+                        document.getElementById('mediaModalViewDetails').href = `/media/${mediaType}/${mediaId}/`;
+                        
+                        // Build meta information
+                        let metaHTML = '';
+                        
+                        if (mediaType === 'book') {
+                            if (data.author) metaHTML += `<span><i class="fas fa-user me-2"></i>${data.author}</span>`;
+                            if (data.release_year) metaHTML += `<span><i class="fas fa-calendar-alt me-2"></i>${data.release_year}</span>`;
+                            if (data.genre) metaHTML += `<span><i class="fas fa-tag me-2"></i>${data.genre}</span>`;
+                        } else if (mediaType === 'movie') {
+                            if (data.director) metaHTML += `<span><i class="fas fa-video me-2"></i>${data.director}</span>`;
+                            if (data.release_year) metaHTML += `<span><i class="fas fa-calendar-alt me-2"></i>${data.release_year}</span>`;
+                            if (data.genre) metaHTML += `<span><i class="fas fa-tag me-2"></i>${data.genre}</span>`;
+                        } else if (mediaType === 'game') {
+                            if (data.studio) metaHTML += `<span><i class="fas fa-building me-2"></i>${data.studio}</span>`;
+                            if (data.release_year) metaHTML += `<span><i class="fas fa-calendar-alt me-2"></i>${data.release_year}</span>`;
+                            if (data.genre) metaHTML += `<span><i class="fas fa-tag me-2"></i>${data.genre}</span>`;
+                        }
+                        
+                        document.getElementById('mediaModalMeta').innerHTML = metaHTML;
+                        
+                        // Set description
+                        document.getElementById('mediaModalDescription').innerHTML = data.description || 'No description available.';
+                        
+                        // Hide loading, show content
+                        mediaModalLoading.style.display = 'none';
+                        mediaModalContent.style.display = 'flex';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching media details:', error);
+                        document.getElementById('mediaModalTitle').textContent = 'Error';
+                        document.getElementById('mediaModalContent').innerHTML = '<p>There was an error loading the media details. Please try again.</p>';
+                        
+                        mediaModalLoading.style.display = 'none';
+                        mediaModalContent.style.display = 'block';
+                    });
+            });
         });
-      });
+        
+        // Close modal
+        closeMediaModal.addEventListener('click', function() {
+            mediaModal.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+        
+        // Close modal when clicking outside
+        mediaModal.addEventListener('click', function(e) {
+            if (e.target === mediaModal) {
+                mediaModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Close modal with escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && mediaModal.classList.contains('show')) {
+                mediaModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Handle add to library form submissions
+        document.querySelectorAll('.add-to-library-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Show success message
+                    alert(data.message || 'Added to library successfully!');
+                })
+                .catch(error => {
+                    console.error('Error adding to library:', error);
+                    alert('There was an error adding this to your library. Please try again.');
+                });
+            });
+        });
     });
-  });
 </script>
 {% endblock %}

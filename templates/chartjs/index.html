@@ -1,201 +1,649 @@
 {% extends 'base.html' %}
-  
-<head> 
-  <meta charset="utf-8"> 
-  <title>chartsjs</title> 
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> 
-  
-  <!-- jQuery library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
-  
-  <!-- Latest compiled JavaScript -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> 
-</head> 
+
+{% block title %}Your Statistics - SHELFY{% endblock %}
 
 {% block content %}
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
+    --secondary-gradient: linear-gradient(135deg, #ff2d55 0%, #ff6482 100%);
+    --tertiary-gradient: linear-gradient(135deg, #34c759 0%, #5dde7d 100%);
+    --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    --card-radius: 16px;
+    --card-bg: #ffffff;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --border-light: rgba(0, 0, 0, 0.1);
+  }
+
+  .dark-mode {
+    --card-bg: #1d1d1f;
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --border-light: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .stats-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .stats-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+
+  .stats-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .stats-nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stats-nav-item {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+  }
+
+  .stats-nav-item:hover, .stats-nav-item.active {
+    background: var(--primary-gradient);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+  }
+
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stats-card {
+    background-color: var(--card-bg);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .stats-card.col-span-3 {
+    grid-column: span 3;
+  }
+
+  .stats-card.col-span-4 {
+    grid-column: span 4;
+  }
+
+  .stats-card.col-span-6 {
+    grid-column: span 6;
+  }
+
+  .stats-card.col-span-12 {
+    grid-column: span 12;
+  }
+
+  .stats-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .stats-card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stats-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+  }
+
+  .stats-card-icon.primary {
+    background: var(--primary-gradient);
+  }
+
+  .stats-card-icon.secondary {
+    background: var(--secondary-gradient);
+  }
+
+  .stats-card-icon.tertiary {
+    background: var(--tertiary-gradient);
+  }
+
+  .stats-card-body {
+    position: relative;
+    min-height: 100px;
+  }
+
+  .stats-rating {
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+
+  .stats-rating-value {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+
+  .stats-rating-label {
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  .stats-rating-stars {
+    font-size: 1.5rem;
+    color: #ff9f0a;
+    margin-top: 0.5rem;
+  }
+
+  .stats-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+
+  .stats-empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .stats-empty-text {
+    font-size: 1rem;
+    max-width: 250px;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+  }
+
+  @media (max-width: 992px) {
+    .stats-container {
+      grid-template-columns: repeat(6, 1fr);
+    }
+    
+    .stats-card.col-span-3,
+    .stats-card.col-span-4 {
+      grid-column: span 3;
+    }
+    
+    .stats-card.col-span-6,
+    .stats-card.col-span-12 {
+      grid-column: span 6;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stats-card.col-span-3,
+    .stats-card.col-span-4,
+    .stats-card.col-span-6 {
+      grid-column: span 2;
+    }
+    
+    .stats-card.col-span-12 {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .stats-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-card.col-span-3,
+    .stats-card.col-span-4,
+    .stats-card.col-span-6,
+    .stats-card.col-span-12 {
+      grid-column: span 1;
+    }
+  }
+</style>
+
+<div class="stats-header">
+  <h1>Your Media Statistics</h1>
+  <p>Track your reading, watching, and gaming habits with detailed analytics</p>
+</div>
+
+
+
 {% if rating %}
-    <div class="container">
-    <div class="row">
-      <div class="col-sm">
-        <p class="text-center">Average Star Rating</p>
-        <p class="text-center">{{ rating }} ★</p>
+<div class="stats-container">
+  <!-- Overall Rating Card -->
+  <div class="stats-card col-span-3">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon primary">
+          <i class="fas fa-star"></i>
+        </div>
+        Overall Rating
       </div>
+    </div>
+    <div class="stats-card-body">
+      <div class="stats-rating">
+        <div class="stats-rating-value">{{ rating }}</div>
+        <div class="stats-rating-stars">
+          {% for i in "12345"|make_list %}
+            {% if forloop.counter <= rating|floatformat:"0" %}
+              <i class="fas fa-star"></i>
+            {% elif forloop.counter <= rating|add:"0.5"|floatformat:"0" %}
+              <i class="fas fa-star-half-alt"></i>
+            {% else %}
+              <i class="far fa-star"></i>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="stats-rating-label">Average Star Rating</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movie Rating Card -->
+  <div class="stats-card col-span-3">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon secondary">
+          <i class="fas fa-film"></i>
+        </div>
+        Movie Rating
+      </div>
+    </div>
+    <div class="stats-card-body">
       {% if movie_rating %}
-        <div class="col-sm">
-          <p class="text-center">Average Movie Star Rating</p>
-          <p class="text-center">{{ movie_rating }} ★</p>
+      <div class="stats-rating">
+        <div class="stats-rating-value">{{ movie_rating }}</div>
+        <div class="stats-rating-stars">
+          {% for i in "12345"|make_list %}
+            {% if forloop.counter <= movie_rating|floatformat:"0" %}
+              <i class="fas fa-star"></i>
+            {% elif forloop.counter <= movie_rating|add:"0.5"|floatformat:"0" %}
+              <i class="fas fa-star-half-alt"></i>
+            {% else %}
+              <i class="far fa-star"></i>
+            {% endif %}
+          {% endfor %}
         </div>
+        <div class="stats-rating-label">Average Movie Rating</div>
+      </div>
       {% else %}
-        <div class="col-sm">
-          <p class="text-center">Please rate at least one movie before seeing your statistics.</p>
+      <div class="stats-empty">
+        <div class="stats-empty-icon">
+          <i class="fas fa-film"></i>
         </div>
+        <div class="stats-empty-text">
+          Rate at least one movie to see your statistics
+        </div>
+      </div>
       {% endif %}
+    </div>
+  </div>
+
+  <!-- Book Rating Card -->
+  <div class="stats-card col-span-3">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon primary">
+          <i class="fas fa-book"></i>
+        </div>
+        Book Rating
+      </div>
+    </div>
+    <div class="stats-card-body">
       {% if book_rating %}
-        <div class="col-sm">
-          <p class="text-center">Average Book Star Rating</p>
-          <p class="text-center">{{ book_rating }} ★</p>
+      <div class="stats-rating">
+        <div class="stats-rating-value">{{ book_rating }}</div>
+        <div class="stats-rating-stars">
+          {% for i in "12345"|make_list %}
+            {% if forloop.counter <= book_rating|floatformat:"0" %}
+              <i class="fas fa-star"></i>
+            {% elif forloop.counter <= book_rating|add:"0.5"|floatformat:"0" %}
+              <i class="fas fa-star-half-alt"></i>
+            {% else %}
+              <i class="far fa-star"></i>
+            {% endif %}
+          {% endfor %}
         </div>
+        <div class="stats-rating-label">Average Book Rating</div>
+      </div>
       {% else %}
-        <div class="col-sm">
-          <p class="text-center">Please rate at least one book before seeing your statistics.</p>
+      <div class="stats-empty">
+        <div class="stats-empty-icon">
+          <i class="fas fa-book"></i>
         </div>
+        <div class="stats-empty-text">
+          Rate at least one book to see your statistics
+        </div>
+      </div>
       {% endif %}
+    </div>
+  </div>
+
+  <!-- Game Rating Card -->
+  <div class="stats-card col-span-3">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon tertiary">
+          <i class="fas fa-gamepad"></i>
+        </div>
+        Game Rating
+      </div>
+    </div>
+    <div class="stats-card-body">
       {% if game_rating %}
-        <div class="col-sm">
-          <p class="text-center">Average Game Star Rating</p>
-          <p class="text-center">{{ game_rating }} ★</p>
+      <div class="stats-rating">
+        <div class="stats-rating-value">{{ game_rating }}</div>
+        <div class="stats-rating-stars">
+          {% for i in "12345"|make_list %}
+            {% if forloop.counter <= game_rating|floatformat:"0" %}
+              <i class="fas fa-star"></i>
+            {% elif forloop.counter <= game_rating|add:"0.5"|floatformat:"0" %}
+              <i class="fas fa-star-half-alt"></i>
+            {% else %}
+              <i class="far fa-star"></i>
+            {% endif %}
+          {% endfor %}
         </div>
+        <div class="stats-rating-label">Average Game Rating</div>
+      </div>
       {% else %}
-      <div class="col-sm">
-        <p class="text-center">Please rate at least one game before seeing your statistics.</p>
+      <div class="stats-empty">
+        <div class="stats-empty-icon">
+          <i class="fas fa-gamepad"></i>
+        </div>
+        <div class="stats-empty-text">
+          Rate at least one game to see your statistics
+        </div>
       </div>
       {% endif %}
     </div>
-    <div class="row">
-      <div class="col-sm">
-        <div id="container" style="width: 100%;">
-          <canvas id="all_count" data-url="{% url 'charts:all_count' %}"></canvas>
+  </div>
+
+  <!-- Media Count Chart -->
+  <div class="stats-card col-span-6">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon primary">
+          <i class="fas fa-chart-pie"></i>
         </div>
-      </div>
-      <div class="col-sm">
-        <div id="container" style="width: 100%;">
-          <canvas id="all_ratings" data-url="{% url 'charts:all_ratings' %}"></canvas>
-        </div>
+        Media Distribution
       </div>
     </div>
+    <div class="stats-card-body">
+      <div class="chart-container">
+        <canvas id="all_count" data-url="{% url 'charts:all_count' %}"></canvas>
+      </div>
     </div>
+  </div>
+
+  <!-- Ratings Distribution Chart -->
+  <div class="stats-card col-span-6">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon secondary">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        Ratings Distribution
+      </div>
+    </div>
+    <div class="stats-card-body">
+      <div class="chart-container">
+        <canvas id="all_ratings" data-url="{% url 'charts:all_ratings' %}"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
 {% else %}
-<p class="text-center">Please rate at least one movie/book/game before seeing your statistics.</p>
+<div class="stats-card col-span-12">
+  <div class="stats-empty" style="padding: 4rem 2rem;">
+    <div class="stats-empty-icon">
+      <i class="fas fa-chart-line"></i>
+    </div>
+    <div class="stats-empty-text" style="max-width: 400px; font-size: 1.1rem;">
+      Please rate at least one movie, book, or game before seeing your statistics.
+    </div>
+    <a href="{% url 'media_search' %}?q=" class="btn btn-primary mt-4">
+      <i class="fas fa-search me-2"></i>Discover Media
+    </a>
+  </div>
+</div>
 {% endif %}
-
-
 {% endblock content %}
 
-  
 {% block scripts %}
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script>
-
-const ctx = document.getElementById('all_count');
-$(function () {
-  var $all_count = $("#all_count");
-
-  console.log("Canvas found:", $all_count[0]);
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if dark mode is enabled
+  const isDarkMode = document.body.classList.contains('dark-mode');
   
-  $.ajax({
-      url: $all_count.data("url"),
-      success: function (data) {
-        console.log('AJAX data:', data);  // Debug: Check if data is correct
-
-        // Check if data exists and is in the expected format
-        var ctx = $all_count[0].getContext("2d");
-
-        // Log to ensure that the context is set up correctly
-        console.log('Canvas context:', ctx);
-        console.log('Canvas element:', $all_count[0]);
-
-        // Initialize the chart
-        var allCountChart = new Chart(ctx, {
-          type: 'pie',
+  // Set chart text color based on theme
+  const textColor = isDarkMode ? '#f5f5f7' : '#1d1d1f';
+  const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  
+  // Chart.js global defaults
+  Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = textColor;
+  
+  // Media Count Chart
+  const countCanvas = document.getElementById('all_count');
+  if (countCanvas) {
+    $.ajax({
+      url: countCanvas.dataset.url,
+      success: function(data) {
+        new Chart(countCanvas, {
+          type: 'doughnut',
           data: {
             labels: ["Movies", "Books", "Games"],
             datasets: [{
+              data: [data.movie_count, data.book_count, data.game_count],
               backgroundColor: [
-                'rgb(255, 99, 132)',
-                'rgb(54, 162, 235)',
-                'rgb(255, 205, 86)'
+                'rgb(255, 45, 85)',
+                'rgb(0, 113, 227)',
+                'rgb(52, 199, 89)'
               ],
-              data: [data.movie_count, data.book_count, data.game_count]
+              borderColor: isDarkMode ? '#1d1d1f' : '#ffffff',
+              borderWidth: 2,
+              hoverOffset: 10
             }]
           },
           options: {
             responsive: true,
-            legend: {
-              position: 'top',
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 20,
+                  usePointStyle: true,
+                  pointStyle: 'circle'
+                }
+              },
+              tooltip: {
+                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6,
+                usePointStyle: true,
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ${value} (${percentage}%)`;
+                  }
+                }
+              }
             },
-            title: {
-              display: true,
-              text: 'Count of All Media'
-            },
+            animation: {
+              animateScale: true,
+              animateRotate: true
+            }
           }
         });
       },
-      error: function (err) {
-        console.error("Error fetching data", err);
+      error: function(err) {
+        console.error("Error fetching media count data:", err);
       }
     });
-  });
+  }
 
-
-  const ratings = document.getElementById('all_ratings');
-    $(function () {
-    var $all_ratings = $("#all_ratings");
-
-    console.log("Canvas found:", $all_ratings[0]);
-    
+  // Ratings Distribution Chart
+  const ratingsCanvas = document.getElementById('all_ratings');
+  if (ratingsCanvas) {
     $.ajax({
-        url: $all_ratings.data("url"),
-        success: function (data) {
-          console.log('AJAX data:', data);  // Debug: Check if data is correct
-
-          var rating = $all_ratings[0].getContext("2d");
-
-          // Log to ensure that the context is set up correctly
-          console.log('Canvas context:', rating);
-          console.log('Canvas element:', $all_ratings[0]);
-
-          // Initialize the chart
-          new Chart(rating, {
-            type: 'bar',
-            data: {
-              labels: data.rating,
-              datasets: [{
+      url: ratingsCanvas.dataset.url,
+      success: function(data) {
+        new Chart(ratingsCanvas, {
+          type: 'bar',
+          data: {
+            labels: data.rating,
+            datasets: [
+              {
                 label: 'Movies',
-                backgroundColor: 'blue',
+                backgroundColor: 'rgb(255, 45, 85)',
                 data: data.movie,
+                borderRadius: 4
               },
               {
                 label: 'Books',
-                backgroundColor: 'red',
+                backgroundColor: 'rgb(0, 113, 227)',
                 data: data.book,
+                borderRadius: 4
               },
               {
                 label: 'Games',
-                backgroundColor: 'green',
+                backgroundColor: 'rgb(52, 199, 89)',
                 data: data.game,
+                borderRadius: 4
               }
             ]
-            },
-            options: {
-              responsive: true,
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
               legend: {
-                position: 'top',
+                position: 'bottom',
+                labels: {
+                  padding: 20,
+                  usePointStyle: true,
+                  pointStyle: 'circle'
+                }
               },
-              title: {
-                display: true,
-                text: 'All Ratings'
+              tooltip: {
+                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6
+              }
+            },
+            scales: {
+              x: {
+                stacked: true,
+                grid: {
+                  display: false
+                },
+                title: {
+                  display: true,
+                  text: 'Rating',
+                  color: textColor
+                }
               },
-              scales: {
-                xAxes: [{
-                  stacked: true
-                }],
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                        precision: 0
-                    },
-                    stacked: true
-                }]
+              y: {
+                stacked: true,
+                beginAtZero: true,
+                precision: 0,
+                grid: {
+                  color: gridColor
+                },
+                title: {
+                  display: true,
+                  text: 'Number of Items',
+                  color: textColor
+                },
+                ticks: {
+                  precision: 0
+                }
               }
             }
-          });
-        },
-        error: function (err) {
-          console.error("Error fetching data", err);
-        }
-      });
+          }
+        });
+      },
+      error: function(err) {
+        console.error("Error fetching ratings data:", err);
+      }
     });
+  }
+});
 </script>
 {% endblock scripts %}

@@ -1,100 +1,445 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="text-light">Search Results for "{{ query }}"</h2>
+<style>
+  /* Apple-inspired design */
+  body {
+    background: linear-gradient(180deg, #c4d3ff 0%, #d8e1ff 100%);
+    color: var(--apple-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 40px;
+  }
+
+  .search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0 20px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .search-title {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #000;
+  }
+
+  .search-bar {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 30px;
+  }
+
+  .search-bar input {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border-radius: 12px;
+    border: none;
+    background-color: white;
+    color: #000;
+    font-size: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .search-bar i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8E8E93;
+  }
+
+  .search-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 10px 20px;
+    border-radius: 12px;
+    background-color: white;
+    color: #000;
+    border: none;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .filter-btn.active {
+    background-color: #0066CC;
+    color: white;
+  }
+
+  .search-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  .media-card {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .media-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .media-img {
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .media-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .media-card:hover .media-img img {
+    transform: scale(1.08);
+  }
+
+  .media-type-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+  }
+
+  .media-type-book {
+    background-color: #5856D6;
+  }
+
+  .media-type-movie {
+    background-color: #FF2D55;
+  }
+
+  .media-type-game {
+    background-color: #34C759;
+  }
+
+  .media-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .media-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .media-meta {
+    font-size: 14px;
+    color: #8E8E93;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .add-btn {
+    margin-top: 10px;
+    padding: 8px 0;
+    border-radius: 20px;
+    background-color: #0066CC;
+    color: white;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .add-btn:hover {
+    background-color: #0055B0;
+    transform: translateY(-2px);
+  }
+
+  .empty-results {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin: 40px 0;
+  }
+
+  .empty-icon {
+    font-size: 60px;
+    color: #8E8E93;
+    margin-bottom: 20px;
+  }
+
+  .empty-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #000;
+    letter-spacing: -0.02em;
+  }
+
+  .empty-text {
+    font-size: 17px;
+    color: #8E8E93;
+    margin-bottom: 30px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .suggestion-list {
+    text-align: left;
+    max-width: 400px;
+    margin: 0 auto 30px;
+  }
+
+  .suggestion-item {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: #000;
+  }
+
+  .suggestion-item:last-child {
+    border-bottom: none;
+  }
+
+  .action-btn {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 20px;
+    background-color: #0066CC;
+    color: white;
+    border: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .action-btn:hover {
+    background-color: #0055B0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+  }
+
+  .action-btn.outline {
+    background-color: transparent;
+    border: 1px solid #0066CC;
+    color: #0066CC;
+  }
+
+  .action-btn.outline:hover {
+    background-color: rgba(0, 102, 204, 0.1);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .search-title {
+      font-size: 32px;
+    }
+    
+    .search-results-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .search-title {
+      font-size: 28px;
+    }
+    
+    .search-results-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 15px;
+    }
+    
+    .media-title {
+      font-size: 14px;
+    }
+    
+    .media-meta {
+      font-size: 12px;
+    }
+  }
+</style>
+
+<div class="search-container">
+  <div class="search-header">
+    <h1 class="search-title">Search Results for "{{ query }}"</h1>
+  </div>
+
+  <div class="search-bar">
+    <i class="fas fa-search"></i>
+    <form action="{% url 'media_search' %}" method="get">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search books, movies, games...">
+    </form>
+  </div>
+
+  <div class="search-filters">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">Books</button>
+    <button class="filter-btn">Movies</button>
+    <button class="filter-btn">Games</button>
+  </div>
 
   {% if search_results %}
-  <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3 mt-3">
-      {% for media in search_results %}
-      <div class="col">
-          <div class="card bg-dark text-light shadow-sm h-100">
-              <a href="{% url 'media_detail' media_type=media.media_type external_id=media.external_id %}" class="text-decoration-none">
-                  <img src="{{ media.cover_image }}" class="card-img-top" alt="{{ media.title }}" style="height: 250px; object-fit: cover;">
-              </a>
-              <div class="card-body text-center">
-                  <h6 class="card-title">{{ media.title }}</h6>
-                  <p class="card-text"><small>{{ media.release_year }}</small></p>
-                  
-                  <!-- add to library form -->
-                  <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                      {% csrf_token %}
-                      <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                      <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                      <button type="submit" class="btn btn-sm btn-primary">Add to Library</button>
-                  </form>
-              </div>
-          </div>
+  <div class="search-results-grid">
+    {% for media in search_results %}
+    <div class="media-card">
+      <div class="media-img">
+        <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+        <div class="media-type-badge media-type-{{ media.media_type }}">
+          {% if media.media_type == "book" %}BOOK{% elif media.media_type == "movie" %}MOVIE{% elif media.media_type == "game" %}GAME{% endif %}
+        </div>
       </div>
-      {% endfor %}
+      <div class="media-content">
+        <h3 class="media-title">{{ media.title }}</h3>
+        <div class="media-meta">
+          {% if media.author %}{{ media.author }}{% endif %}
+          {% if media.director %}{{ media.director }}{% endif %}
+          {% if media.studio %}{{ media.studio }}{% endif %}
+          {% if media.release_year %} • {{ media.release_year }}{% endif %}
+        </div>
+        
+        <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+          {% csrf_token %}
+          <input type="hidden" name="media_type" value="{{ media.media_type }}">
+          <input type="hidden" name="external_id" value="{{ media.external_id }}">
+          <button type="submit" class="add-btn">Add to Library</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
   </div>
   {% else %}
-  <div class="container py-5 text-center">
-      <div class="row justify-content-center">
-          <div class="col-md-8">
-              <div class="error-container" data-aos="fade-up">
-                  <i class="fas fa-search fa-5x text-secondary opacity-50 mb-4"></i>
-                  <h2 class="mb-3 text-light">No Results Found</h2>
-                  <p class="lead mb-5 text-light">We couldn't find any matches for "{{ query }}"</p>
-                  
-                  <div class="suggestions mb-5">
-                      <h4 class="mb-3 text-light">Suggestions:</h4>
-                      <ul class="list-unstyled text-light">
-                          <li>Check your spelling</li>
-                          <li>Try using more general keywords</li>
-                          <li>Try searching for a similar title</li>
-                          <li>Browse our categories instead</li>
-                      </ul>
-                  </div>
-                  
-                  <div class="d-flex justify-content-center flex-wrap gap-3">
-                      <a href="{% url 'home' %}" class="btn btn-primary">
-                          <i class="fas fa-home me-2"></i>Go to Homepage
-                      </a>
-                      <a href="{% url 'media_search' %}?q=" class="btn btn-outline-light">
-                          <i class="fas fa-search me-2"></i>New Search
-                      </a>
-                  </div>
-              </div>
-          </div>
+  <div class="empty-results">
+    <div class="empty-icon">
+      <i class="fas fa-search"></i>
+    </div>
+    <h2 class="empty-title">No Results Found</h2>
+    <p class="empty-text">We couldn't find any matches for "{{ query }}"</p>
+    
+    <div class="suggestion-list">
+      <div class="suggestion-item">
+        <i class="fas fa-check-circle me-2"></i> Check your spelling
       </div>
+      <div class="suggestion-item">
+        <i class="fas fa-search-plus me-2"></i> Try using more general keywords
+      </div>
+      <div class="suggestion-item">
+        <i class="fas fa-book me-2"></i> Try searching for a similar title
+      </div>
+      <div class="suggestion-item">
+        <i class="fas fa-th-large me-2"></i> Browse our categories instead
+      </div>
+    </div>
+    
+    <div class="d-flex justify-content-center gap-3">
+      <a href="{% url 'home' %}" class="action-btn">
+        <i class="fas fa-home"></i> Go to Homepage
+      </a>
+      <a href="{% url 'media_search' %}?q=" class="action-btn outline">
+        <i class="fas fa-search"></i> New Search
+      </a>
+    </div>
   </div>
   {% endif %}
 </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-      document.querySelectorAll(".add-to-library-form").forEach(form => {
-          form.addEventListener("submit", function(event) {
-              event.preventDefault();
-
-              let formData = new FormData(form);
-              let feedbackDiv = form.querySelector(".feedback-message");
-
-              fetch(form.action, {
-                  method: "POST",
-                  body: formData,
-                  headers: { "X-CSRFToken": formData.get("csrfmiddlewaretoken") }
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (!feedbackDiv) {
-                      feedbackDiv = document.createElement("div");
-                      feedbackDiv.classList.add("feedback-message", "mt-2", "text-center");
-                      form.appendChild(feedbackDiv);  "mt-2", "text-center");
-                      form.appendChild(feedbackDiv);
-                  }
-
-                  feedbackDiv.textContent = data.message;
-
-                  setTimeout(() => {
-                      feedbackDiv.style.display = "none";
-                  }, 3000);
-              })
-              .catch(error => console.error("Error:", error));
-          });
+    // Filter buttons functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const mediaCards = document.querySelectorAll('.media-card');
+    
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        const filter = this.textContent.toLowerCase();
+        
+        // Filter media cards
+        mediaCards.forEach(card => {
+          const mediaType = card.querySelector('.media-type-badge').textContent.toLowerCase();
+          
+          if (filter === 'all' || mediaType.includes(filter)) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
       });
+    });
+    
+    // Add to library form submission
+    document.querySelectorAll(".add-to-library-form").forEach(form => {
+      form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        let formData = new FormData(form);
+        
+        fetch(form.action, {
+          method: "POST",
+          body: formData,
+          headers: { "X-CSRFToken": formData.get("csrfmiddlewaretoken") }
+        })
+        .then(response => response.json())
+        .then(data => {
+          const button = form.querySelector('button');
+          button.textContent = data.message || "Added!";
+          button.disabled = true;
+          
+          setTimeout(() => {
+            button.textContent = "Add to Library";
+            button.disabled = false;
+          }, 2000);
+        })
+        .catch(error => console.error("Error:", error));
+      });
+    });
   });
 </script>
 {% endblock %}
-

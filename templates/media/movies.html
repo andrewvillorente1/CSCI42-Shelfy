@@ -4,421 +4,838 @@
 
 {% block content %}
 <style>
-.media-header {
-    background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%);
-    padding: 4rem 0;
-    border-radius: 24px;
-    margin-bottom: 3rem;
-    position: relative;
-    overflow: hidden;
-    color: white;
-    box-shadow: 0 20px 40px rgba(236, 72, 153, 0.2);
+:root {
+    --apple-background: #f5f5f7;
+    --apple-text: #1d1d1f;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #0071e3;
+    --apple-border: #d2d2d7;
+    --apple-card: #ffffff;
+    --apple-shadow: rgba(0, 0, 0, 0.1);
+    --apple-new-tag: #0071e3;
+    --apple-finished-tag: #86868b;
 }
 
-.dark-mode .media-header {
-    background: linear-gradient(135deg, #BE185D 0%, #DB2777 100%);
-    box-shadow: 0 20px 40px rgba(190, 24, 93, 0.3);
+.dark-mode {
+    --apple-background: #000000;
+    --apple-text: #f5f5f7;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #2997ff;
+    --apple-border: #424245;
+    --apple-card: #1d1d1f;
+    --apple-shadow: rgba(0, 0, 0, 0.3);
+    --apple-new-tag: #2997ff;
+    --apple-finished-tag: #86868b;
 }
 
-.media-header::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.1);
-    z-index: 0;
+body {
+    background-color: var(--apple-background);
+    color: var(--apple-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.media-header h1 {
-    font-weight: 800;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+.movies-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.media-header p {
-    font-size: 1.2rem;
-    opacity: 0.9;
-}
-
-.media-section {
-    margin-bottom: 3rem;
-}
-
-.section-title {
-    position: relative;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
+.movies-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    font-size: 1.8rem;
-    font-weight: 700;
+    padding: 16px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--apple-border);
 }
 
-.section-title::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 80px;
-    height: 3px;
-    background: var(--secondary);
-    border-radius: 3px;
+.movies-title {
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--apple-text);
 }
 
-.dark-mode .section-title::after {
-    background: var(--secondary-light);
+.movies-actions {
+    display: flex;
+    gap: 20px;
 }
 
-.section-title .section-icon {
-    margin-right: 0.75rem;
-    font-size: 1.5rem;
-    color: var(--secondary);
+.movies-action-btn {
+    background: none;
+    border: none;
+    color: var(--apple-highlight);
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
 }
 
-.dark-mode .section-title .section-icon {
-    color: var(--secondary-light);
-}
-
-.media-grid {
+.movies-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1.8rem;
+    gap: 30px;
+    margin-bottom: 40px;
 }
 
-.media-card {
-    position: relative;
-    transition: all 0.3s ease;
+.movie-item {
     display: flex;
     flex-direction: column;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.media-card:hover {
-    transform: translateY(-8px) scale(1.02);
+.movie-item:hover {
+    transform: translateY(-5px);
 }
 
-.media-img {
-    height: 260px;
-    border-radius: 16px;
+.movie-cover {
+    aspect-ratio: 2/3;
+    border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-    background-color: #F3F4F6;
+    box-shadow: 0 4px 12px var(--apple-shadow);
+    margin-bottom: 10px;
     position: relative;
 }
 
-.dark-mode .media-img {
-    background-color: #2D3748;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-}
-
-.media-img img {
+.movie-cover img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    display: block;
 }
 
-.media-card:hover .media-img {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+.movie-tag {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
 }
 
-.media-card:hover .media-img img {
-    transform: scale(1.08);
+.movie-tag.new {
+    background-color: var(--apple-new-tag);
 }
 
-.media-content {
-    padding: 1.2rem 0.5rem;
-    flex-grow: 1;
+.movie-tag.finished {
+    background-color: var(--apple-finished-tag);
+}
+
+.movie-info {
     display: flex;
     flex-direction: column;
-    text-align: center;
+    padding: 0 5px;
 }
 
-.media-title {
-    font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 0.4rem;
-    color: var(--dark);
+.movie-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--apple-text);
+    margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.dark-mode .media-title {
-    color: var(--light);
-}
-
-.media-director {
-    font-size: 0.9rem;
-    color: var(--gray);
-    margin-bottom: 0.5rem;
+.movie-director {
+    font-size: 13px;
+    color: var(--apple-secondary-text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.dark-mode .media-director {
-    color: #9CA3AF;
+.movie-progress {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--apple-secondary-text);
 }
 
-.media-year {
-    font-size: 0.85rem;
-    color: var(--gray);
-    margin-bottom: 0.8rem;
-}
-
-.dark-mode .media-year {
-    color: #9CA3AF;
-}
-
-.media-card .btn {
-    margin-top: auto;
-    border-radius: 50px;
-    padding: 0.5rem 0;
+.section-title {
+    font-size: 22px;
     font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+    margin: 30px 0 20px;
+    letter-spacing: -0.02em;
+    color: var(--apple-text);
 }
 
-.media-card .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
+.movie-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
-.category-tabs {
+.movie-item:hover .movie-actions {
+    opacity: 1;
+}
+
+.movie-action-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    font-size: 14px;
+}
+
+.dark-mode .movie-action-btn {
+    background-color: rgba(50, 50, 50, 0.8);
+    color: #f5f5f7;
+}
+
+/* Media Detail Modal */
+.media-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.media-modal-dialog {
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: var(--apple-card);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px var(--apple-shadow);
+    overflow: hidden;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.media-modal.show {
+    display: block;
+}
+
+.media-modal.show .media-modal-dialog {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.media-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--apple-border);
+}
+
+.media-modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: var(--apple-text);
+}
+
+.media-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: var(--apple-secondary-text);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.media-modal-close:hover {
+    color: var(--apple-text);
+    background-color: rgba(142, 142, 147, 0.1);
+}
+
+.media-modal-body {
+    padding: 20px;
+}
+
+.media-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+@media (min-width: 768px) {
+    .media-modal-content {
+        flex-direction: row;
+    }
+}
+
+.media-modal-cover {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .media-modal-cover {
+        margin: 0;
+    }
+}
+
+.media-modal-cover img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px var(--apple-shadow);
+}
+
+.media-modal-info {
+    flex-grow: 1;
+}
+
+.media-modal-meta {
+    margin-bottom: 20px;
+    color: var(--apple-secondary-text);
+    font-size: 15px;
+}
+
+.media-modal-meta span {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.media-modal-meta i {
+    margin-right: 6px;
+}
+
+.media-modal-description {
+    margin-bottom: 20px;
+    line-height: 1.6;
+    color: var(--apple-text);
+    font-size: 15px;
+}
+
+.media-modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.media-modal-actions .btn {
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.media-modal-actions .btn-primary {
+    background-color: var(--apple-highlight);
+    border: none;
+}
+
+.media-modal-actions .btn-outline-primary {
+    border-color: var(--apple-highlight);
+    color: var(--apple-highlight);
+}
+
+.media-modal-loading {
     display: flex;
     justify-content: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    align-items: center;
+    min-height: 300px;
 }
 
-.category-tab {
-    padding: 0.6rem 1.5rem;
-    border-radius: 50px;
-    background-color: #F9FAFB;
-    color: var(--dark);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+.media-modal-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--apple-highlight);
+    animation: spin 1s linear infinite;
 }
 
-.dark-mode .category-tab {
-    background-color: #1E293B;
-    color: var(--light);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.dark-mode .media-modal-spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-top-color: var(--apple-highlight);
 }
 
-.category-tab:hover {
-    background-color: #F3F4F6;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.dark-mode .category-tab:hover {
-    background-color: #2D3748;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.category-tab.active {
-    background: linear-gradient(90deg, var(--secondary) 0%, var(--secondary-light) 100%);
-    color: white;
-    box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3);
-}
-
-.dark-mode .category-tab.active {
-    background: linear-gradient(90deg, var(--secondary) 0%, var(--secondary-light) 100%);
-    box-shadow: 0 4px 10px rgba(236, 72, 153, 0.5);
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-    .media-grid {
+    .movies-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 20px;
     }
     
-    .media-img {
-        height: 220px;
+    .movies-title {
+        font-size: 28px;
+    }
+    
+    .section-title {
+        font-size: 20px;
     }
 }
 
 @media (max-width: 576px) {
-    .media-grid {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
     }
     
-    .media-img {
-        height: 180px;
+    .movies-title {
+        font-size: 24px;
     }
+    
+    .section-title {
+        font-size: 18px;
+    }
+}
+
+/* Search and filter bar */
+.movies-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--apple-border);
+}
+
+.movies-search {
+    position: relative;
+    width: 300px;
+}
+
+.movies-search input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border-radius: 8px;
+    border: 1px solid var(--apple-border);
+    background-color: var(--apple-card);
+    color: var(--apple-text);
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.movies-search i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--apple-secondary-text);
+}
+
+.movies-search input:focus {
+    outline: none;
+    border-color: var(--apple-highlight);
+    box-shadow: 0 0 0 2px rgba(255, 45, 85, 0.2);
+}
+
+.movies-view-options {
+    display: flex;
+    gap: 15px;
+}
+
+.view-option {
+    background: none;
+    border: none;
+    color: var(--apple-secondary-text);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+
+.view-option.active, .view-option:hover {
+    color: var(--apple-highlight);
 }
 </style>
 
-<!-- Header Section -->
-<section class="media-header text-center">
-  <div class="container">
-      <h1 class="display-4 fw-bold mb-4" data-aos="fade-up">Explore Movies</h1>
-      <p class="lead mb-5" data-aos="fade-up" data-aos-delay="100">
-          Discover cinematic masterpieces, blockbusters, and hidden gems from around the world.
-      </p>
-      
-      <div class="d-flex justify-content-center flex-wrap gap-3" data-aos="fade-up" data-aos-delay="200">
-          <a href="{% url 'media_search' %}?media_type=movie" class="btn btn-light btn-lg">
-              <i class="fas fa-search me-2"></i>Search Movies
-          </a>
-          {% if user.is_authenticated %}
-          <a href="{% url 'user_library:index' %}" class="btn btn-outline-light btn-lg">
-              <i class="fas fa-film me-2"></i>My Movie Collection
-          </a>
-          {% endif %}
-      </div>
-  </div>
-</section>
+<div class="movies-container">
+    <!-- Header Section -->
+    <div class="movies-header">
+        <h1 class="movies-title">All</h1>
+        <div class="movies-actions">
+            <button class="movies-action-btn">Edit</button>
+        </div>
+    </div>
+    
+    <!-- Filter Bar -->
+    <div class="movies-filter-bar">
+        <div class="movies-search">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search movies...">
+        </div>
+        <div class="movies-view-options">
+            <button class="view-option active" title="Grid View">
+                <i class="fas fa-th-large"></i>
+            </button>
+            <button class="view-option" title="List View">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Featured Movies Section -->
+    <div class="movies-grid">
+        {% for movie in movies %}
+        <div class="movie-item" data-media-type="{{ movie.media_type }}" data-media-id="{{ movie.external_id }}">
+            <div class="movie-cover">
+                <img src="{{ movie.cover_image }}" alt="{{ movie.title }}">
+                <div class="movie-tag new">New</div>
+                <div class="movie-actions">
+                    <button class="movie-action-btn add-to-library" data-media-type="{{ movie.media_type }}" data-external-id="{{ movie.external_id }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="movie-action-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <div class="movie-director">{% if movie.director %}{{ movie.director }}{% endif %}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Action Movies Section -->
+    <h2 class="section-title">Action Movies</h2>
+    <div class="movies-grid">
+        {% for movie in action_movies %}
+        <div class="movie-item" data-media-type="{{ movie.media_type }}" data-media-id="{{ movie.external_id }}">
+            <div class="movie-cover">
+                <img src="{{ movie.cover_image }}" alt="{{ movie.title }}">
+                {% if forloop.counter|divisibleby:3 %}
+                <div class="movie-tag finished">Finished</div>
+                {% else %}
+                <div class="movie-tag new">New</div>
+                {% endif %}
+                <div class="movie-actions">
+                    <button class="movie-action-btn add-to-library" data-media-type="{{ movie.media_type }}" data-external-id="{{ movie.external_id }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="movie-action-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <div class="movie-director">{% if movie.director %}{{ movie.director }}{% endif %}</div>
+                {% if forloop.counter|divisibleby:3 %}
+                <div class="movie-progress">100%</div>
+                {% elif forloop.counter|divisibleby:5 %}
+                <div class="movie-progress">{{ forloop.counter }}%</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Comedy Movies Section -->
+    <h2 class="section-title">Comedy Movies</h2>
+    <div class="movies-grid">
+        {% for movie in comedy_movies %}
+        <div class="movie-item" data-media-type="{{ movie.media_type }}" data-media-id="{{ movie.external_id }}">
+            <div class="movie-cover">
+                <img src="{{ movie.cover_image }}" alt="{{ movie.title }}">
+                {% if forloop.counter|divisibleby:4 %}
+                <div class="movie-tag finished">Finished</div>
+                {% endif %}
+                <div class="movie-actions">
+                    <button class="movie-action-btn add-to-library" data-media-type="{{ movie.media_type }}" data-external-id="{{ movie.external_id }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="movie-action-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <div class="movie-director">{% if movie.director %}{{ movie.director }}{% endif %}</div>
+                {% if forloop.counter|divisibleby:4 %}
+                <div class="movie-progress">100%</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Sci-Fi Movies Section -->
+    <h2 class="section-title">Sci-Fi Movies</h2>
+    <div class="movies-grid">
+        {% for movie in scifi_movies %}
+        <div class="movie-item" data-media-type="{{ movie.media_type }}" data-media-id="{{ movie.external_id }}">
+            <div class="movie-cover">
+                <img src="{{ movie.cover_image }}" alt="{{ movie.title }}">
+                {% if forloop.counter|divisibleby:2 %}
+                <div class="movie-tag new">New</div>
+                {% endif %}
+                <div class="movie-actions">
+                    <button class="movie-action-btn add-to-library" data-media-type="{{ movie.media_type }}" data-external-id="{{ movie.external_id }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="movie-action-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <div class="movie-director">{% if movie.director %}{{ movie.director }}{% endif %}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
-<!-- Featured Movies Section -->
-<section class="container media-section">
-  <h2 class="section-title" data-aos="fade-up">
-      <i class="fas fa-star section-icon"></i>
-      Featured Movies
-  </h2>
-  
-  <div class="media-grid">
-      {% for movie in movies %}
-      <div class="media-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
-          <a href="{% url 'media_detail' media_type=movie.media_type external_id=movie.external_id %}" class="text-decoration-none">
-              <div class="media-img">
-                  <img src="{{ movie.cover_image }}" alt="{{ movie.title }}">
-              </div>
-          </a>
-          <div class="media-content">
-              <h3 class="media-title">{{ movie.title }}</h3>
-              <div class="media-director">
-                  {% if movie.director %}Dir. {{ movie.director }}{% endif %}
-              </div>
-              <div class="media-year">
-                  {% if movie.release_year %}{{ movie.release_year }}{% endif %}
-              </div>
-              
-              <form method="POST" action="{% url 'user_library:add' %}" class="mt-2">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ movie.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ movie.external_id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add to Library</button>
-              </form>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-</section>
+<!-- Media Detail Modal -->
+<div class="media-modal" id="mediaDetailModal">
+    <div class="media-modal-dialog">
+        <div class="media-modal-header">
+            <h5 class="media-modal-title" id="mediaModalTitle">Movie Details</h5>
+            <button type="button" class="media-modal-close" id="closeMediaModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="media-modal-body">
+            <div class="media-modal-loading" id="mediaModalLoading">
+                <div class="media-modal-spinner"></div>
+            </div>
+            <div class="media-modal-content" id="mediaModalContent" style="display: none;">
+                <div class="media-modal-cover">
+                    <img id="mediaModalImage" src="/placeholder.svg" alt="Movie Cover">
+                </div>
+                <div class="media-modal-info">
+                    <div class="media-modal-meta" id="mediaModalMeta"></div>
+                    <div class="media-modal-description" id="mediaModalDescription"></div>
+                    <div class="media-modal-actions">
+                        <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="media_type" id="modalMediaType" value="movie">
+                            <input type="hidden" name="external_id" id="modalExternalId" value="">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add to Library
+                            </button>
+                        </form>
+                        <a href="#" id="mediaModalViewDetails" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt me-2"></i>View Full Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- Action Movies Section -->
-<section class="container media-section">
-  <h2 class="section-title" data-aos="fade-up">
-      <i class="fas fa-fire section-icon"></i>
-      Action Movies
-  </h2>
-  
-  <div class="media-grid">
-      {% for movie in action_movies %}
-      <div class="media-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
-          <a href="{% url 'media_detail' media_type=movie.media_type external_id=movie.external_id %}" class="text-decoration-none">
-              <div class="media-img">
-                  <img src="{{ movie.cover_image }}" alt="{{ movie.title }}">
-              </div>
-          </a>
-          <div class="media-content">
-              <h3 class="media-title">{{ movie.title }}</h3>
-              <div class="media-director">
-                  {% if movie.director %}Dir. {{ movie.director }}{% endif %}
-              </div>
-              <div class="media-year">
-                  {% if movie.release_year %}{{ movie.release_year }}{% endif %}
-              </div>
-              
-              <form method="POST" action="{% url 'user_library:add' %}" class="mt-2">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ movie.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ movie.external_id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add to Library</button>
-              </form>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-</section>
-
-<!-- Comedy Movies Section -->
-<section class="container media-section">
-  <h2 class="section-title" data-aos="fade-up">
-      <i class="fas fa-laugh section-icon"></i>
-      Comedy Movies
-  </h2>
-  
-  <div class="media-grid">
-      {% for movie in comedy_movies %}
-      <div class="media-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
-          <a href="{% url 'media_detail' media_type=movie.media_type external_id=movie.external_id %}" class="text-decoration-none">
-              <div class="media-img">
-                  <img src="{{ movie.cover_image }}" alt="{{ movie.title }}">
-              </div>
-          </a>
-          <div class="media-content">
-              <h3 class="media-title">{{ movie.title }}</h3>
-              <div class="media-director">
-                  {% if movie.director %}Dir. {{ movie.director }}{% endif %}
-              </div>
-              <div class="media-year">
-                  {% if movie.release_year %}{{ movie.release_year }}{% endif %}
-              </div>
-              
-              <form method="POST" action="{% url 'user_library:add' %}" class="mt-2">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ movie.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ movie.external_id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add to Library</button>
-              </form>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-</section>
-
-<!-- Sci-Fi Movies Section -->
-<section class="container media-section">
-  <h2 class="section-title" data-aos="fade-up">
-      <i class="fas fa-rocket section-icon"></i>
-      Sci-Fi Movies
-  </h2>
-  
-  <div class="media-grid">
-      {% for movie in scifi_movies %}
-      <div class="media-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
-          <a href="{% url 'media_detail' media_type=movie.media_type external_id=movie.external_id %}" class="text-decoration-none">
-              <div class="media-img">
-                  <img src="{{ movie.cover_image }}" alt="{{ movie.title }}">
-              </div>
-          </a>
-          <div class="media-content">
-              <h3 class="media-title">{{ movie.title }}</h3>
-              <div class="media-director">
-                  {% if movie.director %}Dir. {{ movie.director }}{% endif %}
-              </div>
-              <div class="media-year">
-                  {% if movie.release_year %}{{ movie.release_year }}{% endif %}
-              </div>
-              
-              <form method="POST" action="{% url 'user_library:add' %}" class="mt-2">
-                  {% csrf_token %}
-                  <input type="hidden" name="media_type" value="{{ movie.media_type }}">
-                  <input type="hidden" name="external_id" value="{{ movie.external_id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add to Library</button>
-              </form>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-</section>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Media card click to show modal
+    const movieItems = document.querySelectorAll('.movie-item');
+    const mediaModal = document.getElementById('mediaDetailModal');
+    const closeMediaModal = document.getElementById('closeMediaModal');
+    const mediaModalLoading = document.getElementById('mediaModalLoading');
+    const mediaModalContent = document.getElementById('mediaModalContent');
+    
+    movieItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't trigger modal if clicking on the action buttons
+            if (e.target.closest('.movie-actions')) {
+                return;
+            }
+            
+            const mediaType = this.getAttribute('data-media-type');
+            const mediaId = this.getAttribute('data-media-id');
+            
+            // Show modal
+            mediaModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // Show loading, hide content
+            mediaModalLoading.style.display = 'flex';
+            mediaModalContent.style.display = 'none';
+            
+            // Fetch media details
+            fetch(`/api/media/${mediaType}/${mediaId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update modal content
+                    document.getElementById('mediaModalTitle').textContent = data.title;
+                    document.getElementById('mediaModalImage').src = data.cover_image;
+                    document.getElementById('mediaModalImage').alt = data.title;
+                    
+                    // Set form values
+                    document.getElementById('modalMediaType').value = mediaType;
+                    document.getElementById('modalExternalId').value = mediaId;
+                    
+                    // Set view details link
+                    document.getElementById('mediaModalViewDetails').href = `/media/${mediaType}/${mediaId}/`;
+                    
+                    // Build meta information
+                    let metaHTML = '';
+                    
+                    if (data.director) metaHTML += `<span><i class="fas fa-video me-2"></i>${data.director}</span>`;
+                    if (data.release_year) metaHTML += `<span><i class="fas fa-calendar-alt me-2"></i>${data.release_year}</span>`;
+                    if (data.genre) metaHTML += `<span><i class="fas fa-tag me-2"></i>${data.genre}</span>`;
+                    
+                    document.getElementById('mediaModalMeta').innerHTML = metaHTML;
+                    
+                    // Set description
+                    document.getElementById('mediaModalDescription').innerHTML = data.description || 'No description available.';
+                    
+                    // Hide loading, show content
+                    mediaModalLoading.style.display = 'none';
+                    mediaModalContent.style.display = 'flex';
+                })
+                .catch(error => {
+                    console.error('Error fetching media details:', error);
+                    document.getElementById('mediaModalTitle').textContent = 'Error';
+                    document.getElementById('mediaModalContent').innerHTML = '<p>There was an error loading the movie details. Please try again.</p>';
+                    
+                    mediaModalLoading.style.display = 'none';
+                    mediaModalContent.style.display = 'block';
+                });
+        });
+    });
+    
+    // Add to library buttons
+    document.querySelectorAll('.add-to-library').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent modal from opening
+            
+            const mediaType = this.getAttribute('data-media-type');
+            const externalId = this.getAttribute('data-external-id');
+            
+            const formData = new FormData();
+            formData.append('media_type', mediaType);
+            formData.append('external_id', externalId);
+            
+            // Get CSRF token from cookies
+            const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken=')).split('=')[1];
+            
+            fetch('{% url "user_library:add" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show success message
+                alert(data.message || 'Added to library successfully!');
+            })
+            .catch(error => {
+                console.error('Error adding to library:', error);
+                alert('There was an error adding this to your library. Please try again.');
+            });
+        });
+    });
+    
+    // Close modal
+    closeMediaModal.addEventListener('click', function() {
+        mediaModal.classList.remove('show');
+        document.body.style.overflow = '';
+    });
+    
+    // Close modal when clicking outside
+    mediaModal.addEventListener('click', function(e) {
+        if (e.target === mediaModal) {
+            mediaModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    });
+    
+    // Close modal with escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mediaModal.classList.contains('show')) {
+            mediaModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    });
+    
+    // Handle add to library form submissions
+    document.querySelectorAll('.add-to-library-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show success message
+                alert(data.message || 'Added to library successfully!');
+            })
+            .catch(error => {
+                console.error('Error adding to library:', error);
+                alert('There was an error adding this to your library. Please try again.');
+            });
+        });
+    });
+    
+    // View options
+    document.querySelectorAll('.view-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.view-option').forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Toggle between grid and list view
+            const moviesGrid = document.querySelectorAll('.movies-grid');
+            if (this.title === 'List View') {
+                moviesGrid.forEach(grid => grid.style.gridTemplateColumns = '1fr');
+                document.querySelectorAll('.movie-item').forEach(item => {
+                    item.style.flexDirection = 'row';
+                    item.style.gap = '20px';
+                    item.querySelector('.movie-cover').style.width = '80px';
+                    item.querySelector('.movie-cover').style.height = '120px';
+                    item.querySelector('.movie-cover').style.flexShrink = '0';
+                });
+            } else {
+                moviesGrid.forEach(grid => grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(180px, 1fr))');
+                document.querySelectorAll('.movie-item').forEach(item => {
+                    item.style.flexDirection = 'column';
+                    item.style.gap = '0';
+                    item.querySelector('.movie-cover').style.width = '100%';
+                    item.querySelector('.movie-cover').style.height = 'auto';
+                });
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -61,7 +61,7 @@
         {% endif %}
 
         {% for comment in comments %}
-        {% if comment.media.external_id == external_id %}
+        {% if comment.media.external_id == media.external_id %}
         <div class="card mb-3 mx-auto" style="width: 90%; max-width: 40rem; background-color: #ffffff;">
             <div class="card-header bg-white text-muted">
                 {{ comment.updated_on }} · by {{ comment.comment_author.display_name }}

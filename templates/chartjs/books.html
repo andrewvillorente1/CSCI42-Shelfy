@@ -266,10 +266,10 @@
 </div>
 
 <div class="stats-nav">
-  <a href="{% url 'charts:index' %}" class="stats-nav-item">Overview</a>
-  <a href="{% url 'charts:books' %}" class="stats-nav-item active">Books</a>
-  <a href="{% url 'charts:movies' %}" class="stats-nav-item">Movies</a>
-  <a href="{% url 'charts:games' %}" class="stats-nav-item">Games</a>
+  <a href="/statistics/all-statistics" class="stats-nav-item active">Overview</a>
+  <a href="/statistics/books" class="stats-nav-item">Books</a>
+  <a href="/statistics/movies" class="stats-nav-item">Movies</a>
+  <a href="/statistics/games" class="stats-nav-item">Games</a>
 </div>
 
 {% if book_count %}

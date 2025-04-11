@@ -423,7 +423,6 @@ body {
                 </div>
             </div>
             {% endif %}
-
             <form method="post" class="needs-validation" novalidate>
                 {% csrf_token %}
                 
@@ -585,7 +584,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             })
         }
+
+        labels.forEach(label => {
+            label.addEventListener("mouseover", function () {
+                let hoverValue = this.htmlFor.replace("star", "");
+                updateStarColors(hoverValue);
+            });
+        });
+
+        document.querySelector(".star-rating").addEventListener("mouseleave", function () {
+            let checkedStar = document.querySelector(".star-rating input:checked");
+            let savedValue = checkedStar ? checkedStar.value : 0;
+            updateStarColors(savedValue);
+        });
+
+        stars.forEach(star => {
+            star.addEventListener("change", function () {
+                updateStarColors(this.value);
+            });
+        });
     });
-});
 </script>
 {% endblock %}
+

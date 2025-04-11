@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.db import connection
 import random
 import json
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Media
 
@@ -79,7 +78,7 @@ class MediaDetailView(View):
 
         if not details:
             return JsonResponse({"error": "Media not found"}, status=404)
-
+        
         media, created = Media.objects.get_or_create(
             external_id=external_id,
             media_type=media_type,
@@ -92,21 +91,21 @@ class MediaDetailView(View):
                 "author": details.get("author", ""),
             }
         )
-
+        
         comments = Comment.objects.all()
-
+    
         return render(request, "media/media_detail.html", {
             "media": media,
             "comments": comments,
         })
-
-    def post(self, request, media_type, external_id):
+    
+    def post(self, request, media_type, external_id): 
         details = MediaAPIClient.get_media_details(media_type, external_id)
 
         if not details:
             return JsonResponse({"error": "Media not found"}, status=404)
-
-        media, created = Media.objects.get_or_create(
+        
+        media, created = Media.objects.get_or_create( #https://docs.djangoproject.com/en/5.1/ref/models/querysets/#get-or-create
             external_id=external_id,
             defaults={
                 "title": details["title"],
@@ -120,13 +119,14 @@ class MediaDetailView(View):
         )
         form = CommentForms(request.POST)
         if form.is_valid():
-            comment = form.save(commit=False)
+            comment = form.save(commit=False) #https://stackoverflow.com/questions/12848605/django-modelform-what-is-savecommit-false-used-for --> GETS YOU A MODEL OBJECT
             comment.media = media
             comment.comment_author = self.request.user.profile
             comment.save()
-            return redirect('media_detail', media_type=media_type, external_id=comment.media.external_id)
+            return redirect('media_detail', media_type = media_type, external_id=comment.media.external_id)
         else:
             return render(request, "media/media_detail.html", {"media": media, "form": form, "media_type": media_type, "external_id": external_id})
+
 
 
 def home_view(request):
@@ -383,4 +383,5 @@ def media_detail_api(request, media_type, external_id):
         'media_type': media.media_type,
         'external_id': media.external_id,
     })
+
 

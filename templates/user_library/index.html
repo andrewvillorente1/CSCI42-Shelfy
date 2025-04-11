@@ -403,6 +403,7 @@
     </div>
     
     {% if library %}
+
     <div class="books-grid" id="libraryGrid">
         {% for entry in library %}
         <div class="book-card" data-media-type="{{ entry.media.media_type }}" data-status="{{ entry.status }}">
@@ -410,7 +411,6 @@
                 <a href="{% url 'media_detail' media_type=entry.media.media_type external_id=entry.media.external_id %}">
                     <img src="{{ entry.media.cover_image }}" alt="{{ entry.media.title }}">
                 </a>
-                
                 <div class="media-type-badge media-type-{{ entry.media.media_type }}">
                     {% if entry.media.media_type == "book" %}Book{% elif entry.media.media_type == "movie" %}Movie{% elif entry.media.media_type == "game" %}Game{% endif %}
                 </div>
@@ -489,7 +489,7 @@
                 Once you delete this, there's no going back. You sure you wanna do this?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
             </div>
         </div>

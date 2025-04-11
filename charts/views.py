@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic.list import ListView
+
 # from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 # from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -10,6 +11,7 @@ from django.views.generic.list import ListView
 from user_library.models import UserLibraryItem
 from django.http import JsonResponse
 from collections import defaultdict
+
 
 '''
 Helper functions set-up
@@ -127,6 +129,7 @@ def all_count(request):
         'game_count': game_count
     }) 
 
+
 ''' Functions for Ratings '''
 # Count of all ratings across all media types
 def all_ratings(request):
@@ -214,12 +217,14 @@ def games_ratings(request):
 
 ''' Functions for genres '''
 # count of movie genres
+
 def movies_chart(request):
     # Storing genre and corresponding number of movies with that genre
     genre_count = defaultdict(int)
     
     # Query all movies
     movie_genre = UserLibraryItem.objects.filter(user=request.user, media__media_type__iexact="movie")
+
     
     # Count the number of movies in each genre
     for entry in movie_genre:
@@ -230,6 +235,8 @@ def movies_chart(request):
         for genre in genres:
             genre_count[genre.strip()] += 1  # Cleans whitespace between genres
     
+
+
     # Prepare the genre and movie count lists
     genres = list(genre_count.keys())
     movie_counts = list(genre_count.values())
@@ -239,15 +246,18 @@ def movies_chart(request):
     
     # Sort the list by movie counts in descending order
     genre_movie_data.sort(key=lambda x: x[1], reverse=True)
+
     top_10_genres_movies = genre_movie_data
 
     # Unzip the sorted data into separate lists again
     sorted_genres, sorted_movie_counts = zip(*top_10_genres_movies)
 
+
     return JsonResponse(data={
         'genre': list(sorted_genres),
         'movie': list(sorted_movie_counts),
     })
+
 
 def books_chart(request):
     genre_count = defaultdict(int)

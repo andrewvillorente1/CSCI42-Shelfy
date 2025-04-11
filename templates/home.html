@@ -283,109 +283,83 @@ body {
 /* Media Grid */
 .media-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+    margin-bottom: 2rem;
 }
 
+/* New Media Card Style */
 .media-card {
     position: relative;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
-    cursor: pointer;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
-    background-color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background-color: transparent;
+    box-shadow: none;
+    transition: transform 0.3s ease;
     height: 100%;
-}
-
-.dark-mode .media-card {
-    background-color: var(--apple-card);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .media-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: none;
+}
+
+.media-card::after {
+    display: none;
 }
 
 .media-cover {
     aspect-ratio: 2/3;
-    border-radius: 12px 12px 0 0;
     overflow: hidden;
     position: relative;
-    background-color: #F3F4F6;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .dark-mode .media-cover {
-    background-color: #2D3748;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .media-cover img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s ease;
 }
 
 .media-card:hover .media-cover img {
-    transform: scale(1.08);
+    transform: scale(1.03);
 }
 
 .media-type-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: white;
-}
-
-.media-type-book {
-    background-color: rgba(88, 86, 214, 0.85);
-}
-
-.media-type-movie {
-    background-color: rgba(255, 45, 85, 0.85);
-}
-
-.media-type-game {
-    background-color: rgba(52, 199, 89, 0.85);
+    display: none;
 }
 
 .media-info {
-    padding: 15px;
-    text-align: center;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
-.dark-mode .media-info {
-    background-color: var(--apple-card);
+    padding: 12px 0;
+    background-color: transparent;
+    text-align: left;
 }
 
 .media-title {
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-bottom: 0.25rem;
     color: var(--apple-text);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    letter-spacing: -0.015em;
+    line-height: 1.3;
+    height: auto;
 }
 
 .media-author {
     font-size: 0.85rem;
     color: var(--apple-secondary-text);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
@@ -393,40 +367,53 @@ body {
 }
 
 .media-actions {
+    display: none;
+}
+
+.media-rating {
+    display: none;
+}
+
+.recommendation-reason {
+    display: none;
+}
+
+/* New badge styling */
+.media-new-badge {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-    padding: 3rem 0.5rem 0.75rem;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    border-radius: 0 0 12px 12px;
-    display: flex;
-    justify-content: center;
-}
-
-.media-card:hover .media-actions {
-    opacity: 1;
-}
-
-.media-btn {
-    background-color: rgba(255, 255, 255, 0.95);
-    color: var(--apple-text);
-    border: none;
-    border-radius: 20px;
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    top: 10px;
+    left: 10px;
+    background-color: #0071e3;
+    color: white;
+    font-size: 0.7rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 3px 8px;
+    border-radius: 4px;
+    z-index: 2;
+    text-transform: uppercase;
 }
 
-.media-btn:hover {
-    background-color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+.dark-mode .media-new-badge {
+    background-color: #2997ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
 }
 
 /* Features Section */
@@ -757,7 +744,7 @@ body {
     }
     
     .media-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
     }
 }
 
@@ -781,7 +768,7 @@ body {
     }
     
     .media-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
     
     .features-grid {
@@ -800,8 +787,72 @@ body {
     }
     
     .media-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     }
+}
+
+    /* Section card icon */
+    .section-card-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        font-size: 1rem;
+        color: white;
+    }
+    
+    .section-card-icon.primary {
+        background: linear-gradient(135deg, #0071e3 0%, #47a9ff 100%);
+    }
+
+    .recommendation-reason {
+        display: none;
+    }
+    
+    .recommendation-reason i {
+        color: #ff9f0a;
+    }
+    
+    .dark-mode .recommendation-reason i {
+        color: #ffbd45;
+    }
+
+/* Add this CSS to the <style> section to adjust the media grid for the side-by-side layout */
+.row .media-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 1200px) {
+    .row .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    .row .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .row .col-md-6 {
+        margin-bottom: 3rem;
+    }
+}
+
+/* Make the category tabs more compact in the side-by-side layout */
+.row .category-tabs {
+    gap: 0.5rem;
+}
+
+.row .category-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
 }
 </style>
 
@@ -888,6 +939,7 @@ body {
 </section>
 
 <!-- Trending Section -->
+<!-- Trending Now Section -->
 <section class="section">
     <div class="container">
         <div class="section-header">
@@ -908,157 +960,229 @@ body {
         </div>
         
         <div class="tab-content">
-            <div class="tab-pane active" id="trending-all">
-                <div class="media-grid">
-                    {% for media in trending_books|slice:":2" %}
-                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-                        <div class="media-cover">
-                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-                            <div class="media-type-badge media-type-book">Book</div>
-                            <div class="media-actions">
-                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                                    <button type="submit" class="media-btn">Add to Library</button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="media-info">
-                            <h3 class="media-title">{{ media.title }}</h3>
-                            {% if media.author %}
-                            <div class="media-author">By {{ media.author }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                    
-                    {% for media in trending_movies|slice:":2" %}
-                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-                        <div class="media-cover">
-                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-                            <div class="media-type-badge media-type-movie">Movie</div>
-                            <div class="media-actions">
-                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                                    <button type="submit" class="media-btn">Add to Library</button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="media-info">
-                            <h3 class="media-title">{{ media.title }}</h3>
-                            {% if media.release_year %}
-                            <div class="media-author">{{ media.release_year }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                    
-                    {% for media in trending_games|slice:":2" %}
-                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-                        <div class="media-cover">
-                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-                            <div class="media-type-badge media-type-game">Game</div>
-                            <div class="media-actions">
-                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                                    <button type="submit" class="media-btn">Add to Library</button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="media-info">
-                            <h3 class="media-title">{{ media.title }}</h3>
-                            {% if media.release_year %}
-                            <div class="media-author">{{ media.release_year }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
+            <!-- Replace the existing media cards in the trending-all section with this improved version -->
+<div class="tab-pane active" id="trending-all">
+   <div class="media-grid">
+       {% for media in trending_books|slice:":2" %}
+       <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+           <div class="media-cover">
+               <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+               <div class="media-new-badge">NEW</div>
+           </div>
+           <div class="media-info">
+               <h3 class="media-title">{{ media.title }}</h3>
+               <div class="media-author">{% if media.author %}{{ media.author }}{% endif %}</div>
+           </div>
+       </div>
+       {% endfor %}
+       
+       {% for media in trending_movies|slice:":2" %}
+       <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+           <div class="media-cover">
+               <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+               {% if forloop.first %}<div class="media-new-badge">NEW</div>{% endif %}
+           </div>
+           <div class="media-info">
+               <h3 class="media-title">{{ media.title }}</h3>
+               <div class="media-author">{% if media.director %}{{ media.director }}{% elif media.release_year %}{{ media.release_year }}{% endif %}</div>
+           </div>
+       </div>
+       {% endfor %}
+       
+       {% for media in trending_games|slice:":2" %}
+       <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+           <div class="media-cover">
+               <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+               {% if forloop.last %}<div class="media-new-badge">NEW</div>{% endif %}
+           </div>
+           <div class="media-info">
+               <h3 class="media-title">{{ media.title }}</h3>
+               <div class="media-author">{% if media.studio %}{{ media.studio }}{% elif media.release_year %}{{ media.release_year }}{% endif %}</div>
+           </div>
+       </div>
+       {% endfor %}
+   </div>
+</div>
             
             <div class="tab-pane" id="trending-books" style="display: none;">
+    <div class="media-grid">
+        {% for media in trending_books %}
+        <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+            <div class="media-cover">
+                <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+                {% if forloop.counter|divisibleby:2 %}<div class="media-new-badge">NEW</div>{% endif %}
+            </div>
+            <div class="media-info">
+                <h3 class="media-title">{{ media.title }}</h3>
+                <div class="media-author">{% if media.author %}{{ media.author }}{% endif %}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Update the trending-movies tab pane -->
+<div class="tab-pane" id="trending-movies" style="display: none;">
+    <div class="media-grid">
+        {% for media in trending_movies %}
+        <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+            <div class="media-cover">
+                <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+                {% if forloop.counter|divisibleby:3 %}<div class="media-new-badge">NEW</div>{% endif %}
+            </div>
+            <div class="media-info">
+                <h3 class="media-title">{{ media.title }}</h3>
+                <div class="media-author">{% if media.director %}{{ media.director }}{% elif media.release_year %}{{ media.release_year }}{% endif %}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Update the trending-games tab pane -->
+<div class="tab-pane" id="trending-games" style="display: none;">
+    <div class="media-grid">
+        {% for media in trending_games %}
+        <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+            <div class="media-cover">
+                <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+                {% if forloop.counter|divisibleby:4 %}<div class="media-new-badge">NEW</div>{% endif %}
+            </div>
+            <div class="media-info">
+                <h3 class="media-title">{{ media.title }}</h3>
+                <div class="media-author">{% if media.studio %}{{ media.studio }}{% elif media.release_year %}{{ media.release_year }}{% endif %}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+        </div>
+    </div>
+</section>
+
+<!-- Media Recommendations Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">
+                <div class="section-card-icon primary">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                Media Recommendations
+            </h2>
+            <a href="{% url 'media_search' %}?q=" class="section-link">
+                View all <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="category-tabs">
+            <button class="category-tab active" data-target="recommendations-all">All</button>
+            <button class="category-tab" data-target="recommendations-books">Books</button>
+            <button class="category-tab" data-target="recommendations-movies">Movies</button>
+            <button class="category-tab" data-target="recommendations-games">Games</button>
+        </div>
+        
+        <div class="tab-content">
+            <!-- Replace the existing media cards in the recommendations-all section with this improved version -->
+<div class="tab-pane active" id="recommendations-all">
+   <div class="media-grid">
+       <!-- Book recommendation -->
+       <div class="media-card" data-media-type="book" data-media-id="book456">
+           <div class="media-cover">
+               <img src="/placeholder.svg?height=300&width=200" alt="The Three-Body Problem">
+               <div class="media-new-badge">NEW</div>
+           </div>
+           <div class="media-info">
+               <h3 class="media-title">The Three-Body Problem</h3>
+               <div class="media-author">Liu Cixin</div>
+           </div>
+       </div>
+       
+       <!-- Movie recommendation -->
+       <div class="media-card" data-media-type="movie" data-media-id="movie789">
+           <div class="media-cover">
+               <img src="/placeholder.svg?height=300&width=200" alt="Arrival">
+           </div>
+           <div class="media-info">
+               <h3 class="media-title">Arrival</h3>
+               <div class="media-author">Denis Villeneuve</div>
+           </div>
+       </div>
+       
+       <!-- Game recommendation -->
+       <div class="media-card" data-media-type="game" data-media-id="game123">
+           <div class="media-cover">
+               <img src="/placeholder.svg?height=300&width=200" alt="Hades">
+               <div class="media-new-badge">NEW</div>
+           </div>
+           <div class="media-info">
+               <h3 class="media-title">Hades</h3>
+               <div class="media-author">Supergiant Games</div>
+           </div>
+       </div>
+       
+       <!-- Book recommendation -->
+       <div class="media-card" data-media-type="book" data-media-id="book789">
+           <div class="media-cover">
+               <img src="/placeholder.svg?height=300&width=200" alt="Circe">
+               <div class="media-new-badge">NEW</div>
+           </div>
+           <div class="media-info">
+               <h3 class="media-title">Circe</h3>
+               <div class="media-author">Madeline Miller</div>
+           </div>
+       </div>
+   </div>
+</div>
+            
+            <div class="tab-pane" id="recommendations-books" style="display: none;">
+    <div class="media-grid">
+        <!-- Book recommendation -->
+        <div class="media-card" data-media-type="book" data-media-id="book456">
+            <div class="media-cover">
+                <img src="/placeholder.svg?height=300&width=200" alt="The Three-Body Problem">
+                <div class="media-new-badge">NEW</div>
+            </div>
+            <div class="media-info">
+                <h3 class="media-title">The Three-Body Problem</h3>
+                <div class="media-author">Liu Cixin</div>
+            </div>
+        </div>
+        
+        <!-- Book recommendation -->
+        <div class="media-card" data-media-type="book" data-media-id="book789">
+            <div class="media-cover">
+                <img src="/placeholder.svg?height=300&width=200" alt="Circe">
+                <div class="media-new-badge">NEW</div>
+            </div>
+            <div class="media-info">
+                <h3 class="media-title">Circe</h3>
+                <div class="media-author">Madeline Miller</div>
+            </div>
+        </div>
+        
+        <!-- Book recommendation -->
+        <div class="media-card" data-media-type="book" data-media-id="book101">
+            <div class="media-cover">
+                <img src="/placeholder.svg?height=300&width=200" alt="Mexican Gothic">
+            </div>
+            <div class="media-info">
+                <h3 class="media-title">Mexican Gothic</h3>
+                <div class="media-author">Silvia Moreno-Garcia</div>
+            </div>
+        </div>
+    </div>
+</div>
+            
+            <div class="tab-pane" id="recommendations-movies" style="display: none;">
                 <div class="media-grid">
-                    {% for media in trending_books %}
-                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-                        <div class="media-cover">
-                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-                            <div class="media-type-badge media-type-book">Book</div>
-                            <div class="media-actions">
-                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                                    <button type="submit" class="media-btn">Add to Library</button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="media-info">
-                            <h3 class="media-title">{{ media.title }}</h3>
-                            {% if media.author %}
-                            <div class="media-author">By {{ media.author }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
+                    <!-- Movie recommendations content -->
                 </div>
             </div>
             
-            <div class="tab-pane" id="trending-movies" style="display: none;">
+            <div class="tab-pane" id="recommendations-games" style="display: none;">
                 <div class="media-grid">
-                    {% for media in trending_movies %}
-                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-                        <div class="media-cover">
-                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-                            <div class="media-type-badge media-type-movie">Movie</div>
-                            <div class="media-actions">
-                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                                    <button type="submit" class="media-btn">Add to Library</button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="media-info">
-                            <h3 class="media-title">{{ media.title }}</h3>
-                            {% if media.release_year %}
-                            <div class="media-author">{{ media.release_year }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <div class="tab-pane" id="trending-games" style="display: none;">
-                <div class="media-grid">
-                    {% for media in trending_games %}
-                    <div class="media-card" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-                        <div class="media-cover">
-                            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-                            <div class="media-type-badge media-type-game">Game</div>
-                            <div class="media-actions">
-                                <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
-                                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
-                                    <button type="submit" class="media-btn">Add to Library</button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="media-info">
-                            <h3 class="media-title">{{ media.title }}</h3>
-                            {% if media.release_year %}
-                            <div class="media-author">{{ media.release_year }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
+                    <!-- Game recommendations content -->
                 </div>
             </div>
         </div>
@@ -1173,26 +1297,49 @@ body {
 <script>
     // Category tabs functionality
     document.addEventListener('DOMContentLoaded', function() {
-        const tabs = document.querySelectorAll('.category-tab');
-        
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Remove active class from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
-                
-                // Add active class to clicked tab
-                this.classList.add('active');
-                
-                // Hide all tab panes
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.style.display = 'none';
-                });
-                
-                // Show the selected tab pane
-                const target = this.getAttribute('data-target');
-                document.getElementById(target).style.display = 'block';
+    // Handle tab functionality for trending section
+    const trendingTabs = document.querySelectorAll('.category-tab[data-target^="trending-"]');
+    
+    trendingTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from trending tabs only
+            trendingTabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all trending tab panes
+            document.querySelectorAll('.tab-pane[id^="trending-"]').forEach(pane => {
+                pane.style.display = 'none';
             });
+            
+            // Show the selected tab pane
+            const target = this.getAttribute('data-target');
+            document.getElementById(target).style.display = 'block';
         });
+    });
+    
+    // Handle tab functionality for recommendations section
+    const recommendationTabs = document.querySelectorAll('.category-tab[data-target^="recommendations-"]');
+    
+    recommendationTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from recommendation tabs only
+            recommendationTabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all recommendation tab panes
+            document.querySelectorAll('.tab-pane[id^="recommendations-"]').forEach(pane => {
+                pane.style.display = 'none';
+            });
+            
+            // Show the selected tab pane
+            const target = this.getAttribute('data-target');
+            document.getElementById(target).style.display = 'block';
+        });
+    });
 
         // Media card click to show modal
         const mediaCards = document.querySelectorAll('.media-card');
@@ -1317,6 +1464,31 @@ body {
                     console.error('Error adding to library:', error);
                     alert('There was an error adding this to your library. Please try again.');
                 });
+            });
+        });
+
+        // Media recommendations tabs functionality
+        const recommendationsTabs = document.querySelectorAll('.category-tab[data-target^="recommendations-"]');
+        
+        recommendationsTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Find all tabs in this section
+                const tabsInSection = document.querySelectorAll('.category-tab[data-target^="recommendations-"]');
+                
+                // Remove active class from all tabs in this section
+                tabsInSection.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Hide all tab panes in this section
+                document.querySelectorAll('.tab-pane[id^="recommendations-"]').forEach(pane => {
+                    pane.style.display = 'none';
+                });
+                
+                // Show the selected tab pane
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).style.display = 'block';
             });
         });
     });

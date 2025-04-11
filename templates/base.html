@@ -236,8 +236,8 @@ a:hover {
 /* Search */
 .search-container {
     position: relative;
-    width: 100%;
-    max-width: 300px;
+    width: 150%;
+    max-width: 400px;
 }
 
 
@@ -250,6 +250,10 @@ a:hover {
     border: 1px solid var(--light-gray);
     background-color: var(--white);
     transition: all var(--transition-fast);
+}
+
+.search-input::placeholder {
+    font-size: 11px;
 }
 
 .dark-mode .search-input {
@@ -1045,7 +1049,7 @@ footer {
           <!-- Search Form -->
         <div class="search-container">
           <form class="d-flex" action="{% url 'media_search' %}" method="get">
-            <input class="form-control search-input" type="search" name="q" id="searchInput" placeholder="Search books, movies, games..." aria-label="Search">
+            <input class="form-control search-input" type="search" name="q" id="searchInput" placeholder="Search books, movies, games" aria-label="Search">
             <button class="search-btn" type="submit">
               <i class="fas fa-search"></i>
             </button>

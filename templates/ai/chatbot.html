@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{# {% load markdownify %} #}
-
+{% load markdownify %}
 {% block content %}
 
 <style>
@@ -221,7 +220,6 @@
 
 <div class="chat-container">
     <div id="chat-history">
-        {# Template rendering remains the same conceptually #}
         {% for chat in chats %}
             <div class="chat-bubble user-message">
                 <strong class="prefix">You:</strong>
@@ -230,7 +228,7 @@
             <div class="chat-bubble gemini-message">
                  <strong class="prefix">ShelfyAI:</strong>
                  <div class="message-content">
-                    {{ chat.response|safe }} {# OR {{ chat.response|markdownify|safe }} #}
+                    <strong>AI:</strong> {{ chat.response|markdownify }}
                  </div>
             </div>
         {% endfor %}
@@ -242,6 +240,7 @@
         <button type="submit">Send</button>
     </form>
 </div>
+
 
 {% endblock content %}
 

@@ -7,6 +7,7 @@ from user_management.models import Profile
 from .models import Chat
 
 from google import genai
+import markdown 
 
 client = genai.Client(api_key="AIzaSyDKXxTejWpywjw6OTB7YAhb7QXAjGSP2wg")
 
@@ -23,23 +24,23 @@ def chatbot(request):
     if request.method == 'POST':
         message = request.POST.get('message')
 
-        # Get display name from profile, fallback to username
         try:
             profile = request.user.profile
             display_name = profile.display_name or request.user.username
         except Profile.DoesNotExist:
             display_name = request.user.username
 
-        # Ask Gemini
-        response = ask_gemini(message, display_name=display_name)
+        raw_response = ask_gemini(message, display_name=display_name)
 
-        # Save to database
+        html_response = markdown.markdown(raw_response)
+
         Chat.objects.create(
             user=request.user,
             message=message,
-            response=response,
+            response=raw_response,
             created_at=timezone.now()
         )
-        return JsonResponse({'message': message, 'response': response})
+
+        return JsonResponse({'message': message, 'response': html_response})
 
     return render(request, 'ai/chatbot.html', {'chats': chats})

@@ -54,6 +54,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'chartjs',
     'rest_framework',
     'django.contrib.admin',
@@ -62,11 +63,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user_library',
     'shelfy',
     'user_management',
-    'charts',
-    'ai'
+    'user_library',
+    'socials',
+    'ai',
+    'statistics'
 ]
 
 MIDDLEWARE = [
@@ -98,6 +100,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'shelfy.wsgi.application'
+ASGI_APPLICATION = 'shelfy.asgi.application'
 
 
 # Database

@@ -1,913 +1,1305 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SHELFY{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SHELFY{% endblock %}</title>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <style>
+/* Update the root variables for Apple-inspired design */
+:root {
+    /* Primary color palette - Apple-inspired */
+    --primary: #0071e3;
+    --primary-light: #47a9ff;
+    --primary-dark: #0058b0;
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    /* Secondary color palette */
+    --secondary: #f56565;
+    --secondary-light: #fc8181;
+    --secondary-dark: #e53e3e;
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    /* Accent colors */
+    --accent: #06b6d4;
+    --accent-light: #22d3ee;
+    --accent-dark: #0891b2;
     
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    /* Neutral colors - Apple-inspired */
+    --white: #ffffff;
+    --light: #f5f5f7;
+    --light-gray: #e8e8ed;
+    --gray: #86868b;
+    --dark-gray: #424245;
+    --dark: #1d1d1f;
+    
+    /* Feedback colors */
+    --success: #34c759;
+    --warning: #ff9f0a;
+    --danger: #ff3b30;
+    
+    /* Spacing variables */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    
+    /* Border radius - Apple-inspired */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1.25rem;
+    --radius-xl: 1.5rem;
+    --radius-2xl: 2rem;
+    --radius-full: 9999px;
+    
+    /* Shadows - Apple-inspired */
+    --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.16);
+    
+    /* Typography - Apple-inspired */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-normal: 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-slow: 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
 
-    <style>
-        :root {
-            --primary: #2D336B;
-            --primary-light: #3a4180;
-            --primary-dark: #1e2248;
-            --secondary: #FF6B6B;
-            --secondary-light: #ff8a8a;
-            --accent: #4ECDC4;
-            --light: #F7F9FC;
-            --dark: #292F36;
-            --gray: #6c757d;
-            --success: #42ba96;
-            --warning: #ffc107;
-            --danger: #df4759;
-            --white: #ffffff;
-        }
-        
-        /* Global Styles */
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--light);
-            color: var(--dark);
-            transition: all 0.3s ease;
-            overflow-x: hidden;
-        }
-        
-        .dark-mode {
-            --light: #111827;
-            --dark: #f3f4f6;
-            --gray: #9ca3af;
-            background-color: var(--light);
-            color: var(--dark);
-        }
-        
-        /* Navbar Customization */
-        .navbar-custom {
-            background-color: var(--white);
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            padding: 0.8rem 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .dark-mode .navbar-custom {
-            background-color: #1e293b;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
-        }
+/* Global Styles */
+body {
+    font-family: var(--font-sans);
+    background-color: var(--light);
+    color: var(--dark);
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+    overflow-x: hidden;
+    line-height: 1.5;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
-        .navbar-custom .navbar-brand {
-            color: var(--primary) !important;
-            font-weight: 800;
-            font-size: 1.8rem;
-            letter-spacing: -0.5px;
-            transition: all 0.3s ease;
-        }
-        
-        .dark-mode .navbar-custom .navbar-brand {
-            color: #818cf8 !important;
-            text-shadow: 0 0 10px rgba(129, 140, 248, 0.3);
-        }
-        
-        .navbar-custom .navbar-brand:hover {
-            transform: scale(1.05);
-            color: var(--secondary) !important;
-        }
-        
-        .dark-mode .navbar-custom .navbar-brand:hover {
-            color: #93c5fd !important;
-        }
+.dark-mode {
+    --light: #000000;
+    --light-gray: #1c1c1e;
+    --dark: #f5f5f7;
+    --dark-gray: #d1d1d6;
+    background-color: var(--light);
+    color: var(--dark);
+}
 
-        .navbar-custom .nav-link {
-            color: var(--dark) !important;
-            font-weight: 600;
-            font-size: 1rem;
-            padding: 0.5rem 1rem;
-            margin: 0 0.2rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .dark-mode .navbar-custom .nav-link {
-            color: #e5e7eb !important;
-        }
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    letter-spacing: -0.015em;
+}
 
-        .navbar-custom .nav-link:hover {
-            color: var(--primary) !important;
-            background-color: rgba(45, 51, 107, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .dark-mode .navbar-custom .nav-link:hover {
-            color: #818cf8 !important;
-            background-color: rgba(129, 140, 248, 0.1);
-        }
-        
-        .navbar-custom .nav-link.active {
-            color: var(--primary) !important;
-            background-color: rgba(45, 51, 107, 0.1);
-        }
-        
-        .dark-mode .navbar-custom .nav-link.active {
-            color: #818cf8 !important;
-            background-color: rgba(129, 140, 248, 0.15);
-        }
+h1 {
+    font-size: 2.5rem;
+    letter-spacing: -0.025em;
+}
 
-        /* Button Styling */
-        .btn {
-            border-radius: 8px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            z-index: -1;
-        }
-        
-        .btn:hover::before {
-            width: 100%;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
-        }
-        
-        .btn:active {
-            transform: translateY(-1px);
-        }
+h2 {
+    font-size: 2rem;
+    letter-spacing: -0.025em;
+}
 
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        }
-        
-        .dark-mode .btn-primary {
-            background-color: #4f46e5;
-            border-color: #4f46e5;
-            box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-light);
-            border-color: var(--primary-light);
-        }
-        
-        .dark-mode .btn-primary:hover {
-            background-color: #6366f1;
-            border-color: #6366f1;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
-        }
-        
-        .btn-secondary {
-            background-color: var(--secondary);
-            border-color: var(--secondary);
-        }
-        
-        .dark-mode .btn-secondary {
-            background-color: #ec4899;
-            border-color: #ec4899;
-            box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
-        }
-        
-        .btn-secondary:hover {
-            background-color: var(--secondary-light);
-            border-color: var(--secondary-light);
-        }
-        
-        .dark-mode .btn-secondary:hover {
-            background-color: #f472b6;
-            border-color: #f472b6;
-            box-shadow: 0 0 20px rgba(244, 114, 182, 0.4);
-        }
-        
-        .btn-info {
-            background-color: var(--accent);
-            border-color: var(--accent);
-        }
-        
-        .dark-mode .btn-info {
-            background-color: #06b6d4;
-            border-color: #06b6d4;
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
-        }
-        
-        .btn-info:hover {
-            background-color: #0ea5e9;
-            border-color: #0ea5e9;
-        }
-        
-        .dark-mode .btn-info:hover {
-            background-color: #22d3ee;
-            border-color: #22d3ee;
-            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
-        }
-        
-        .btn-outline-primary {
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-        
-        .dark-mode .btn-outline-primary {
-            color: #818cf8;
-            border-color: #4f46e5;
-        }
-        
-        .btn-outline-primary:hover {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .dark-mode .btn-outline-primary:hover {
-            background-color: #4f46e5;
-            border-color: #4f46e5;
-            color: white;
-            box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
-        }
-        
-        /* Card Styling */
-        .card {
-            border-radius: 16px;
-            border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        }
-        
-        .dark-mode .card {
-            background-color: #1e293b;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .dark-mode .card:hover {
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 15px rgba(79, 70, 229, 0.2);
-        }
+h3 {
+    font-size: 1.5rem;
+    letter-spacing: -0.025em;
+}
 
-        /* Library Card Styling */
-        .library-card {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border-radius: 10px;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            background-color: var(--white);
-            width: 100%;
-            max-width: 180px;
-            height: 100%
-        }
+p {
+    margin-bottom: 1.5rem;
+}
 
-        .dark-mode .library-card {
-            background-color: #1e293b;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
 
-        .library-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-        }
+a:hover {
+    color: var(--primary-light);
+}
 
-        .dark-mode .library-card:hover {
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-        }
+.dark-mode a {
+    color: var(--primary-light);
+}
 
-        .library-card .cover-container {
-            width: 100%;
-            height: 220px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--gray);
-            overflow: hidden;
-        }
+.dark-mode a:hover {
+    color: var(--accent-light);
+}
 
-        .dark-mode .library-card .cover-container {
-            background-color: #374151;
-        }
+/* Layout */
+.container {
+    max-width: 1200px;
+    padding: 0 var(--space-lg);
+}
 
-        .library-card .cover-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+.main-container {
+    min-height: calc(100vh - 76px);
+    padding: var(--space-2xl) 0;
+}
 
-        .library-card .card-body {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 0.75rem;
-            text-align: center;
-        }
+/* Navbar */
+.navbar-custom {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-md) 0;
+    transition: all var(--transition-normal);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
 
-        .library-card .media-title {
-            font-size: clamp(0.75rem, 1.5vw, 1rem);
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.2rem;
-            line-height: 1.2;
-            max-height: 2.4rem;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
+.dark-mode .navbar-custom {
+    background-color: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+}
 
-        .dark-mode .library-card .media-title {
-            color: #e5e7eb;
-        }
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary) !important;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+}
 
-        .library-card .media-type {
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: var(--gray);
-            margin-bottom: 0.5rem;
-        }
+.navbar-brand:hover {
+    transform: translateY(-1px);
+    color: var(--primary-light) !important;
+}
 
-        .dark-mode .library-card .media-type {
-            color: #9ca3af;
-        }
+.dark-mode .navbar-brand {
+    color: var(--primary-light) !important;
+}
 
-        .library-card .status-form {
-            width: 100%;
-            margin-bottom: 0.5rem;
-        }
+.dark-mode .navbar-brand:hover {
+    color: var(--accent-light) !important;
+}
 
-        .library-card .status-dropdown {
-            width: 100%;
-            padding: 5px 8px;
-            font-size: 0.75rem;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            background-color: #f8f9fa;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-        }
+.navbar-brand i {
+    font-size: 1.25rem;
+}
 
-        .dark-mode .library-card .status-dropdown {
-            background-color: #374151;
-            border-color: #4b5563;
-            color: #e5e7eb;
-        }
+.nav-link {
+    font-weight: 500;
+    color: var(--dark-gray) !important;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    position: relative;
+}
 
-        .library-card .status-dropdown:hover {
-            background-color: #e2e6ea;
-        }
+.nav-link:hover {
+    color: var(--primary) !important;
+    background-color: rgba(0, 113, 227, 0.05);
+}
 
-        .dark-mode .library-card .status-dropdown:hover {
-            background-color: #4b5563;
-        }
+.nav-link.active {
+    color: var(--primary) !important;
+    background-color: rgba(0, 113, 227, 0.1);
+}
 
-        .library-card .bottom-content {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+.dark-mode .nav-link {
+    color: var(--gray) !important;
+}
 
-        .library-card .rating-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 16px;
-            margin-bottom: 0.7rem;
-            text-align: center;
-        }
+.dark-mode .nav-link:hover,
+.dark-mode .nav-link.active {
+    color: var(--primary-light) !important;
+    background-color: rgba(71, 169, 255, 0.15);
+}
 
-        .library-card .stars {
-            display: flex;
-            gap: 2px;
-        }
+/* Search */
+.search-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+}
 
-        .library-card .star {
-            font-size: 0.85rem;
-            color: #d1d5db;
-        }
 
-        .library-card .star.filled {
-            color: #facc15;
-        }
 
-        .dark-mode .library-card .star.filled {
-            color: #fbbf24;
-        }
+.search-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-lg);
+    padding-right: 40px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--light-gray);
+    background-color: var(--white);
+    transition: all var(--transition-fast);
+}
 
-        .dark-mode .library-card .star.empty {
-            color: #6b7280;
-        }
+.dark-mode .search-input {
+    background-color: var(--light-gray);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark);
 
-        .library-card .no-rating {
-            font-size: 0.7rem;
-            color: #6b7280;
-            font-style: italic;
-            min-height: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+}
 
-        .dark-mode .library-card .no-rating {
-            color: #9ca3af;
-        }
+.dark-mode .search-input::placeholder {
+  color: #ffffff; /* Change this to whatever color you like */
+  opacity: 1;  /* Optional: makes sure the color shows fully */
+}
 
-        .library-card .buttons {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-        }
 
-        .library-card .btn {
-            font-size: 0.75rem;
-            padding: 4px 8px;
-        }
-        
-        /* Form Styling */
-        .form-control {
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e0e0e0;
-            transition: all 0.3s ease;
-            background-color: var(--white);
-            color: var(--dark);
-        }
-        
-        .dark-mode .form-control {
-            background-color: #1f2937;
-            border-color: #374151;
-            color: #e5e7eb;
-        }
-        
-        .form-control:focus {
-            box-shadow: 0 0 0 0.25rem rgba(45, 51, 107, 0.25);
-            border-color: var(--primary);
-        }
-        
-        .dark-mode .form-control:focus {
-            box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
-            border-color: #4f46e5;
-        }
-        
-        .form-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--dark);
-        }
-        
-        .dark-mode .form-label {
-            color: #e5e7eb;
-        }
-        
-        /* Alert Styling */
-        .alert {
-            border-radius: 12px;
-            border: none;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-        
-        .alert-success {
-            background-color: rgba(66, 186, 150, 0.15);
-            color: var(--success);
-        }
-        
-        .dark-mode .alert-success {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-        
-        .alert-danger {
-            background-color: rgba(223, 71, 89, 0.15);
-            color: var(--danger);
-        }
-        
-        .dark-mode .alert-danger {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-        
-        .alert-warning {
-            background-color: rgba(255, 193, 7, 0.15);
-            color: var(--warning);
-        }
-        
-        .dark-mode .alert-warning {
-            background-color: rgba(245, 158, 11, 0.1);
-            color: #fbbf24;
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-        
-        /* Dark Mode Toggle */
-        .dark-mode-toggle {
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            background-color: transparent;
-            border: none;
-            color: var(--dark);
-            font-size: 1.2rem;
-        }
-        
-        .dark-mode-toggle:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-            transform: rotate(15deg);
-        }
-        
-        .dark-mode .dark-mode-toggle {
-            color: #f3f4f6;
-        }
-        
-        .dark-mode .dark-mode-toggle:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: rotate(-15deg);
-        }
-        
-        /* Container Styling */
-        .main-container {
-            min-height: calc(100vh - 76px);
-            padding: 2rem 0;
-        }
-        
-        /* Animation Classes */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Footer styling */
-        footer {
-            background-color: var(--white);
-            color: var(--dark);
-            transition: all 0.3s ease;
-        }
-        
-        .dark-mode footer {
-            background-color: #1e293b;
-            color: #e5e7eb;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .dark-mode footer a {
-            color: #9ca3af !important;
-        }
-        
-        .dark-mode footer a:hover {
-            color: #e5e7eb !important;
-        }
-        
-        /* Dropdown styling */
-        .dropdown-menu {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 0.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .dark-mode .dropdown-menu {
-            background-color: #1e293b;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 10px rgba(79, 70, 229, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .dropdown-item {
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            transition: all 0.3s ease;
-            color: var(--dark);
-        }
-        
-        .dark-mode .dropdown-item {
-            color: #e5e7eb;
-        }
-        
-        .dropdown-item:hover {
-            background-color: rgba(45, 51, 107, 0.1);
-            color: var(--primary);
-        }
-        
-        .dark-mode .dropdown-item:hover {
-            background-color: rgba(79, 70, 229, 0.15);
-            color: #818cf8;
-        }
-        
-        .dropdown-item.text-danger {
-            color: var(--danger) !important;
-        }
-        
-        .dark-mode .dropdown-item.text-danger {
-            color: #f87171 !important;
-        }
-        
-        .dropdown-item.text-danger:hover {
-            background-color: rgba(223, 71, 89, 0.1);
-        }
-        
-        .dark-mode .dropdown-item.text-danger:hover {
-            background-color: rgba(239, 68, 68, 0.15);
-        }
-        
-        .dropdown-divider {
-            border-color: rgba(0, 0, 0, 0.1);
-        }
-        
-        .dark-mode .dropdown-divider {
-            border-color: rgba(255, 255, 255, 0.05);
-        }
-        
-        /* Scrollbar styling for dark mode */
-        .dark-mode::-webkit-scrollbar {
-            width: 12px;
-        }
-        
-        .dark-mode::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-        
-        .dark-mode::-webkit-scrollbar-thumb {
-            background-color: #4b5563;
-            border-radius: 6px;
-            border: 3px solid #1e293b;
-        }
-        
-        .dark-mode::-webkit-scrollbar-thumb:hover {
-            background-color: #6b7280;
-        }
-        
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .navbar-custom .navbar-brand {
-                font-size: 1.5rem;
-            }
-            
-            .navbar-custom .nav-link {
-                text-align: center;
-                margin: 0.2rem 0;
-            }
-            
-            .btn {
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-        }
-    </style>
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+}
+
+.dark-mode .search-input:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(71, 169, 255, 0.25);
+}
+
+.search-btn {
+    position: absolute;
+    right: var(--space-sm);
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--gray);
+    transition: color var(--transition-fast);
+}
+
+.search-btn:hover {
+    color: var(--primary);
+}
+
+.dark-mode .search-btn:hover {
+    color: var(--primary-light);
+}
+
+.search-suggestions {
+    position: absolute;
+    top: calc(100% + var(--space-sm));
+    left: 0;
+    width: 100%;
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+    padding: var(--space-sm);
+}
+
+.dark-mode .search-suggestions {
+    background-color: var(--light-gray);
+    box-shadow: var(--shadow-xl);
+}
+
+.search-suggestions.show {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    color: var(--dark);
+    margin-bottom: var(--space-xs);
+}
+
+.dark-mode .suggestion-item {
+    color: var(--dark);
+}
+
+.suggestion-item:hover {
+    background-color: rgba(80, 70, 229, 0.05);
+}
+
+.dark-mode .suggestion-item:hover {
+    background-color: rgba(110, 103, 247, 0.15);
+}
+
+.suggestion-img {
+    width: 45px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin-right: var(--space-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.suggestion-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+    font-size: 0.9rem;
+}
+
+.suggestion-meta {
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+.suggestion-type {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.suggestion-type.book {
+    background-color: rgba(80, 70, 229, 0.1);
+    color: var(--primary);
+}
+
+.suggestion-type.movie {
+    background-color: rgba(244, 63, 94, 0.1);
+    color: var(--secondary);
+}
+
+.suggestion-type.game {
+    background-color: rgba(6, 182, 212, 0.1);
+    color: var(--accent);
+}
+
+.dark-mode .suggestion-type.book {
+    background-color: rgba(110, 103, 247, 0.2);
+    color: var(--primary-light);
+}
+
+.dark-mode .suggestion-type.movie {
+    background-color: rgba(251, 113, 133, 0.2);
+    color: var(--secondary-light);
+}
+
+.dark-mode .suggestion-type.game {
+    background-color: rgba(34, 211, 238, 0.2);
+    color: var(--accent-light);
+}
+
+/* Buttons */
+.btn {
+    font-weight: 500;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary-light);
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+}
+
+.dark-mode .btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.dark-mode .btn-primary:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary-light);
+    box-shadow: 0 4px 12px rgba(71, 169, 255, 0.4);
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-light);
+    border-color: var(--secondary-light);
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: rgba(0, 113, 227, 0.05);
+    color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.15);
+}
+
+.dark-mode .btn-outline-primary {
+    border-color: var(--primary-light);
+    color: var(--primary-light);
+}
+
+.dark-mode .btn-outline-primary:hover {
+    background-color: rgba(71, 169, 255, 0.15);
+    color: var(--primary-light);
+    box-shadow: 0 4px 12px rgba(71, 169, 255, 0.25);
+}
+
+/* Cards */
+.card {
+    border-radius: var(--radius-lg);
+    border: none;
+    background-color: var(--white);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.dark-mode .card {
+    background-color: var(--light-gray);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card-body {
+    padding: var(--space-lg);
+}
+
+/* Media Cards */
+.media-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-color: var(--white);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    height: 100%;
+}
+
+.media-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.dark-mode .media-card {
+    background-color: var(--light-gray);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .media-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.media-img {
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    position: relative;
+}
+
+.media-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-normal);
+}
+
+.media-card:hover .media-img img {
+    transform: scale(1.05);
+}
+
+.media-content {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.media-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: var(--space-xs);
+    color: var(--dark);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.dark-mode .media-title {
+    color: var(--dark);
+}
+
+.media-meta {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-bottom: var(--space-sm);
+}
+
+.media-badge {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
+    font-weight: 600;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.media-badge.book {
+    background-color: rgba(80, 70, 229, 0.85);
+    color: white;
+}
+
+.media-badge.movie {
+    background-color: rgba(244, 63, 94, 0.85);
+    color: white;
+}
+
+.media-badge.game {
+    background-color: rgba(6, 182, 212, 0.85);
+    color: white;
+}
+
+/* Forms */
+.form-control {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--light-gray);
+    background-color: var(--white);
+    transition: all var(--transition-fast);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(80, 70, 229, 0.15);
+}
+
+.dark-mode .form-control {
+    background-color: var(--light-gray);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark);
+}
+
+.dark-mode .form-control:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(110, 103, 247, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: var(--space-xs);
+    color: var(--dark-gray);
+}
+
+.dark-mode .form-label {
+    color: var(--dark-gray);
+}
+
+/* Alerts */
+.alert {
+    border-radius: var(--radius-md);
+    border: none;
+    padding: var(--space-md) var(--space-lg);
+    margin-bottom: var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.alert-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.alert-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.alert-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.dark-mode .alert-success {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.dark-mode .alert-danger {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.dark-mode .alert-warning {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+/* Dark Mode Toggle */
+.dark-mode-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    color: var(--dark-gray);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.dark-mode-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--primary);
+}
+
+.dark-mode .dark-mode-toggle {
+    color: var(--gray);
+}
+
+.dark-mode .dark-mode-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--primary-light);
+}
+
+/* Footer */
+footer {
+    background-color: var(--white);
+    color: var(--dark-gray);
+    padding: var(--space-xl) 0;
+    border-top: 1px solid var(--light-gray);
+}
+
+.dark-mode footer {
+    background-color: var(--light-gray);
+    color: var(--gray);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-link {
+    color: var(--dark-gray);
+    transition: color var(--transition-fast);
+    margin-left: var(--space-md);
+}
+
+.footer-link:hover {
+    color: var(--primary);
+}
+
+.dark-mode .footer-link {
+    color: var(--gray);
+}
+
+.dark-mode .footer-link:hover {
+    color: var(--primary-light);
+}
+
+/* Dropdown */
+.dropdown-menu {
+    border-radius: var(--radius-md);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-sm);
+    min-width: 200px;
+}
+
+.dark-mode .dropdown-menu {
+    background-color: var(--light-gray);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-item {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.dropdown-item:hover {
+    background-color: rgba(80, 70, 229, 0.05);
+    color: var(--primary);
+}
+
+.dark-mode .dropdown-item {
+    color: var(--dark);
+}
+
+.dark-mode .dropdown-item:hover {
+    background-color: rgba(110, 103, 247, 0.15);
+    color: var(--primary-light);
+}
+
+.dropdown-divider {
+    margin: var(--space-xs) 0;
+    border-color: var(--light-gray);
+}
+
+.dark-mode .dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Utilities */
+.gradient-text {
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+}
+
+.dark-mode .gradient-text {
+    background: linear-gradient(90deg, var(--primary-light) 0%, var(--accent-light) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+    }
+    
+    .container {
+        padding: 0 var(--space-md);
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-custom {
+        padding: var(--space-sm) 0;
+    }
+    
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    
+    .nav-link {
+        padding: var(--space-sm);
+        margin-bottom: var(--space-xs);
+    }
+    
+    .search-container {
+        max-width: 100%;
+        margin: var(--space-sm) 0;
+    }
+    
+    .main-container {
+        padding: var(--space-xl) 0;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+    }
+    
+    .container {
+        padding: 0 var(--space-sm);
+    }
+    
+    .btn {
+        padding: var(--space-xs) var(--space-md);
+    }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-gray);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray);
+    border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-gray);
+}
+
+.dark-mode::-webkit-scrollbar-track {
+    background: var(--light-gray);
+}
+
+.dark-mode::-webkit-scrollbar-thumb {
+    background: var(--dark-gray);
+}
+
+.dark-mode::-webkit-scrollbar-thumb:hover {
+    background: var(--gray);
+}
+
+/* Media Detail Modal */
+.media-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    overflow-y: auto;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    padding: 2rem 1rem;
+}
+
+.media-modal-dialog {
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    transform: translateY(20px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark-mode .media-modal-dialog {
+    background-color: var(--light-gray);
+}
+
+.media-modal.show {
+    display: block;
+}
+
+.media-modal.show .media-modal-dialog {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.media-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.dark-mode .media-modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.media-modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.015em;
+}
+
+.media-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--gray);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.media-modal-close:hover {
+    color: var(--dark);
+    background-color: var(--light-gray);
+}
+
+.dark-mode .media-modal-close:hover {
+    color: var(--light);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+  </style>
 </head>
-<body style="background-image: linear-gradient(to right, #8fb4ff, #fff4ab);">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-        <div class="container">
-            <!-- Brand -->
-            <a class="navbar-brand" href="{% url 'user_management:dashboard' %}">
-                <i class="fas fa-book-open me-2"></i>SHELFY
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <!-- Brand -->
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <i class="fas fa-book-open"></i>
+        <span>SHELFY</span>
+      </a>
+      
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <!-- Navbar Content -->
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <!-- Navigation Links -->
+        <ul class="navbar-nav mx-auto">
+          
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'books' %}">
+              <i class="fas fa-book me-1"></i> 
             </a>
-            
-            <!-- Mobile Toggle -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'games' %}">
+              <i class="fas fa-gamepad me-1"></i> 
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'movies' %}">
+              <i class="fas fa-film me-1"></i>
+            </a>
+          </li>
+
+          <!-- Search Form -->
+        <div class="search-container">
+          <form class="d-flex" action="{% url 'media_search' %}" method="get">
+            <input class="form-control search-input" type="search" name="q" id="searchInput" placeholder="Search books, movies, games..." aria-label="Search">
+            <button class="search-btn" type="submit">
+              <i class="fas fa-search"></i>
             </button>
-            
-            <!-- Navbar Content -->
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <!-- Navigation Links -->
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'user_management:dashboard' %}">
-                            <i class="fas fa-home me-1"></i> Home
+          </form>
+          <div class="search-suggestions" id="searchSuggestions"></div>
+        </div>
+        </ul>
+        
+        
+        
+        <!-- Right Side: Auth & Dark Mode -->
+        <div class="d-flex align-items-center ms-lg-3">
+          <!-- Dark Mode Toggle -->
+          <button class="dark-mode-toggle me-2" id="darkModeToggle">
+            <i class="fas fa-moon" id="darkModeIcon"></i>
+          </button>
+          
+          <!-- Auth Buttons -->
+          {% if request.user.is_authenticated %}
+            <div class="dropdown">
+              <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user-circle me-1"></i> Profile
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                <li>
+                  <a class="dropdown-item" href="{% url 'user_management:dashboard' %}">
+                    <i class="fas fa-columns me-2"></i> Dashboard
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'user_library:index' %}">
+                    <i class="fas fa-book-open me-2"></i> My Library
+                  </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="/statistics/all-statistics">
+                        <i class="fas fa-bar-chart me-2"></i> Statistics
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-book me-1"></i> Books
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-gamepad me-1"></i> Games
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-film me-1"></i> Movies
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="/library">
-                          <i class="fas fa-film me-1"></i> My Library
-                      </a>
-                    </li>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                            <i class="fas fa-user-circle me-1"></i> Statistics
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'charts:charts' %}">
-                                    <i class="fas fa-user-edit me-2"></i> All Statistics
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'charts:movie' %}">
-                                    <i class="fas fa-user-edit me-2"></i> Movies
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user-edit me-2"></i> Book
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user-edit me-2"></i> Games
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </ul>
-                
-                <!-- Search Form -->
-                <form class="d-flex" action="{% url 'media_search' %}" method="get">
-                    <input class="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search">
-                </form>
-                
-                <!-- Right Side: Auth & Dark Mode -->
-                <div class="d-flex align-items-center">
-                    <!-- Dark Mode Toggle -->
-                    <button class="dark-mode-toggle me-3" id="darkModeToggle">
-                        <i class="fas fa-moon" id="darkModeIcon"></i>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'user_management:update_profile' %}">
+                    <i class="fas fa-user-edit me-2"></i> Edit Profile
+                  </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="/socials">
+                      <i class="fas fa-columns me-2"></i> Chat Room
+                    </a>
+                  </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="dropdown-item text-danger" type="submit">
+                      <i class="fas fa-sign-out-alt me-2"></i> Logout
                     </button>
-                    
-                    <!-- Auth Buttons -->
-                    {% if request.user.is_authenticated %}
-                        <div class="dropdown">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-1"></i> Profile
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'user_management:update_profile' %}">
-                                        <i class="fas fa-user-edit me-2"></i> Edit Profile
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{% url 'logout' %}">
-                                        {% csrf_token %}
-                                        <button class="dropdown-item text-danger" type="submit">
-                                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    {% else %}
-                        <a class="btn btn-outline-primary me-2" href="{% url 'login' %}">
-                            <i class="fas fa-sign-in-alt me-1"></i> Log In
-                        </a>
-                        <a class="btn btn-primary" href="{% url 'user_management:register' %}">
-                            <i class="fas fa-user-plus me-1"></i> Sign Up
-                        </a>
-                    {% endif %}
-                </div>
+                  </form>
+                </li>
+              </ul>
             </div>
+          {% else %}
+            <a class="btn btn-outline-primary me-2" href="{% url 'login' %}">
+              <i class="fas fa-sign-in-alt me-1"></i> Log In
+            </a>
+            <a class="btn btn-primary" href="{% url 'user_management:register' %}">
+              <i class="fas fa-user-plus me-1"></i> Sign Up
+            </a>
+          {% endif %}
         </div>
-    </nav>
-</body>
-
-    <!-- Main Content -->
-    <div class="main-container">
-        <div class="container">
-            {% if messages %}
-            <div class="messages fade-in" data-aos="fade-up" data-aos-duration="800">
-                {% for message in messages %}
-                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
-                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            
-            {% block content %}{% endblock %}
-        </div>
+      </div>
     </div>
+  </nav>
 
-    <!-- Footer -->
-    <footer class="py-4 mt-5 border-top">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0">&copy; 2025 SHELFY. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
-                    <a href="#" class="text-decoration-none me-3 text-secondary">
-                        <i class="fab fa-instagram fa-lg"></i>
-                    </a>
-                    <a href="#" class="text-decoration-none me-3 text-secondary">
-                        <i class="fab fa-twitter fa-lg"></i>
-                    </a>
-                    <a href="#" class="text-decoration-none text-secondary">
-                        <i class="fab fa-tiktok fa-lg"></i>
-                    </a>
-                </div>
-            </div>
+  <!-- Main Content -->
+  <div class="main-container">
+    <div class="container">
+      {% if messages %}
+      <div class="messages fade-in">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+          <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+          <span>{{ message }}</span>
         </div>
-    </footer>
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+      {% block content %}{% endblock %}
+    </div>
+  </div>
 
-    {% block scripts %}{% endblock scripts %}
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="mb-0">&copy; 2025 SHELFY. All rights reserved.</p>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <a href="#" class="footer-link">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="footer-link">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="footer-link">
+            <i class="fab fa-tiktok"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
-        crossorigin="anonymous"></script>
-        
-    <!-- AOS Animation Library -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  {% block scripts %}{% endblock %}
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+    crossorigin="anonymous"></script>
     
-    <script>
-        // Initialize AOS
-        AOS.init({
-            once: true,
-            duration: 800
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <script>
+    // Initialize AOS
+    AOS.init({
+      once: true,
+      duration: 800
+    });
+    
+    // Dark Mode Toggle with animation
+    document.addEventListener('DOMContentLoaded', function() {
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      const darkModeIcon = document.getElementById('darkModeIcon');
+      
+      // Check for saved dark mode preference
+      if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+        darkModeIcon.classList.remove('fa-moon');
+        darkModeIcon.classList.add('fa-sun');
+      }
+      
+      // Toggle dark mode with animation
+      darkModeToggle.addEventListener('click', function() {
+        if (document.body.classList.contains('dark-mode')) {
+          // Transition to light mode
+          darkModeIcon.style.transform = 'rotate(360deg)';
+          setTimeout(() => {
+            document.body.classList.remove('dark-mode');
+            darkModeIcon.classList.remove('fa-sun');
+            darkModeIcon.classList.add('fa-moon');
+            localStorage.setItem('darkMode', 'disabled');
+            darkModeIcon.style.transform = '';
+          }, 200);
+        } else {
+          // Transition to dark mode
+          darkModeIcon.style.transform = 'rotate(360deg)';
+          setTimeout(() => {
+            document.body.classList.add('dark-mode');
+            darkModeIcon.classList.remove('fa-moon');
+            darkModeIcon.classList.add('fa-sun');
+            localStorage.setItem('darkMode', 'enabled');
+            darkModeIcon.style.transform = '';
+          }, 200);
+        }
+      });
+      
+      // Search Suggestions
+      const searchInput = document.getElementById('searchInput');
+      const searchSuggestions = document.getElementById('searchSuggestions');
+      
+      if (searchInput) {
+        let debounceTimer;
+        
+        searchInput.addEventListener('input', function() {
+          clearTimeout(debounceTimer);
+          
+          const query = this.value.trim();
+          
+          if (query.length < 2) {
+            searchSuggestions.classList.remove('show');
+            return;
+          }
+          
+          debounceTimer = setTimeout(() => {
+            fetch(`/search/suggestions/?q=${encodeURIComponent(query)}`)
+              .then(response => response.json())
+              .then(data => {
+                if (data.suggestions && data.suggestions.length > 0) {
+                  // Build suggestions HTML
+                  let suggestionsHTML = '';
+                  
+                  data.suggestions.forEach(suggestion => {
+                    let mediaTypeLabel = '';
+                    let mediaTypeClass = '';
+                    let metaInfo = '';
+                    
+                    if (suggestion.media_type === 'book') {
+                      mediaTypeLabel = 'Book';
+                      mediaTypeClass = 'book';
+                      metaInfo = suggestion.author ? `by ${suggestion.author}` : '';
+                    } else if (suggestion.media_type === 'movie') {
+                      mediaTypeLabel = 'Movie';
+                      mediaTypeClass = 'movie';
+                      metaInfo = suggestion.year ? `(${suggestion.year})` : '';
+                    } else if (suggestion.media_type === 'game') {
+                      mediaTypeLabel = 'Game';
+                      mediaTypeClass = 'game';
+                      metaInfo = suggestion.year ? `(${suggestion.year})` : '';
+                    }
+                    
+                    suggestionsHTML += `
+                      <a href="/${suggestion.media_type}/${suggestion.external_id}/" class="suggestion-item">
+                        <img src="${suggestion.image}" alt="${suggestion.title}" class="suggestion-img">
+                        <div class="suggestion-content">
+                          <div class="suggestion-title">${suggestion.title}</div>
+                          <div class="suggestion-meta">
+                            ${metaInfo}
+                            <span class="suggestion-type ${mediaTypeClass}">${mediaTypeLabel}</span>
+                          </div>
+                        </div>
+                      </a>
+                    `;
+                  });
+                  
+                  searchSuggestions.innerHTML = suggestionsHTML;
+                  searchSuggestions.classList.add('show');
+                } else {
+                  searchSuggestions.classList.remove('show');
+                }
+              })
+              .catch(error => {
+                console.error('Error fetching suggestions:', error);
+              });
+          }, 300);
         });
         
-        // Dark Mode Toggle with animation
-        document.addEventListener('DOMContentLoaded', function() {
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const darkModeIcon = document.getElementById('darkModeIcon');
-            
-            // Check for saved dark mode preference
-            if (localStorage.getItem('darkMode') === 'enabled') {
-                document.body.classList.add('dark-mode');
-                darkModeIcon.classList.remove('fa-moon');
-                darkModeIcon.classList.add('fa-sun');
-            }
-            
-            // Toggle dark mode with animation
-            darkModeToggle.addEventListener('click', function() {
-                if (document.body.classList.contains('dark-mode')) {
-                    // Transition to light mode
-                    darkModeIcon.style.transform = 'rotate(360deg)';
-                    setTimeout(() => {
-                        document.body.classList.remove('dark-mode');
-                        darkModeIcon.classList.remove('fa-sun');
-                        darkModeIcon.classList.add('fa-moon');
-                        localStorage.setItem('darkMode', 'disabled');
-                        darkModeIcon.style.transform = '';
-                    }, 200);
-                } else {
-                    // Transition to dark mode
-                    darkModeIcon.style.transform = 'rotate(360deg)';
-                    setTimeout(() => {
-                        document.body.classList.add('dark-mode');
-                        darkModeIcon.classList.remove('fa-moon');
-                        darkModeIcon.classList.add('fa-sun');
-                        localStorage.setItem('darkMode', 'enabled');
-                        darkModeIcon.style.transform = '';
-                    }, 200);
-                }
-            });
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(event) {
+          if (!searchInput.contains(event.target) && !searchSuggestions.contains(event.target)) {
+            searchSuggestions.classList.remove('show');
+          }
         });
-    </script>
+        
+        // Show suggestions when input is focused if there's content
+        searchInput.addEventListener('focus', function() {
+          if (this.value.trim().length >= 2) {
+            searchSuggestions.classList.add('show');
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
-

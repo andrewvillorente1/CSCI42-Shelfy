@@ -1,6 +1,7 @@
 import requests
 from django.conf import settings
 
+
 class MediaAPIClient:
     """Utility class for interacting with external media APIs."""
 
@@ -30,7 +31,8 @@ class MediaAPIClient:
             if media_type and media_type != type_:
                 continue  # Skip unrelated media types
 
-            response = requests.get(data["search"], params=data["params"](query))
+            response = requests.get(
+                data["search"], params=data["params"](query))
             if response.status_code == 200:
                 results.extend(cls.format_results(type_, response.json()))
         return results
@@ -112,7 +114,8 @@ class MediaAPIClient:
                 "release_year": data.get("release_date", "").split("-")[0],
                 "genre": ", ".join([genre["name"] for genre in data.get("genres", [])]),
                 "director": next(
-                    (crew["name"] for crew in data.get("credits", {}).get("crew", []) if crew["job"] == "Director"),
+                    (crew["name"] for crew in data.get("credits", {}).get(
+                        "crew", []) if crew["job"] == "Director"),
                     None
                 ),
             }

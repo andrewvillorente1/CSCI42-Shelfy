@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Your Statistics - SHELFY{% endblock %}
+{% block title %}Book Statistics - SHELFY{% endblock %}
 
 {% block content %}
 <style>
@@ -160,12 +160,12 @@
     min-height: 100px;
   }
 
-  .stats-rating {
+  .stats-metric {
     text-align: center;
     padding: 1.5rem 0;
   }
 
-  .stats-rating-value {
+  .stats-metric-value {
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 0.25rem;
@@ -176,7 +176,7 @@
     display: inline-block;
   }
 
-  .stats-rating-label {
+  .stats-metric-label {
     color: var(--text-secondary);
     font-size: 1rem;
   }
@@ -261,8 +261,8 @@
 </style>
 
 <div class="stats-header">
-  <h1>Your Media Statistics</h1>
-  <p>Track your reading, watching, and gaming habits with detailed analytics</p>
+  <h1>Book Statistics</h1>
+  <p>Detailed analytics about your reading habits and preferences</p>
 </div>
 
 <div class="stats-nav">
@@ -272,74 +272,23 @@
   <a href="/statistics/games" class="stats-nav-item">Games</a>
 </div>
 
-{% if rating %}
+{% if book_count %}
 <div class="stats-container">
-  <!-- Overall Rating Card -->
+  <!-- Book Count Card -->
   <div class="stats-card col-span-3">
     <div class="stats-card-header">
       <div class="stats-card-title">
         <div class="stats-card-icon primary">
-          <i class="fas fa-star"></i>
+          <i class="fas fa-book"></i>
         </div>
-        Overall Rating
+        Books Read
       </div>
     </div>
     <div class="stats-card-body">
-      <div class="stats-rating">
-        <div class="stats-rating-value">{{ rating }}</div>
-        <div class="stats-rating-stars">
-          {% for i in "12345"|make_list %}
-            {% if forloop.counter <= rating|floatformat:"0" %}
-              <i class="fas fa-star"></i>
-            {% elif forloop.counter <= rating|add:"0.5"|floatformat:"0" %}
-              <i class="fas fa-star-half-alt"></i>
-            {% else %}
-              <i class="far fa-star"></i>
-            {% endif %}
-          {% endfor %}
-        </div>
-        <div class="stats-rating-label">Average Star Rating</div>
+      <div class="stats-metric">
+        <div class="stats-metric-value">{{ book_count }}</div>
+        <div class="stats-metric-label">Total Books</div>
       </div>
-    </div>
-  </div>
-
-  <!-- Movie Rating Card -->
-  <div class="stats-card col-span-3">
-    <div class="stats-card-header">
-      <div class="stats-card-title">
-        <div class="stats-card-icon secondary">
-          <i class="fas fa-film"></i>
-        </div>
-        Movie Rating
-      </div>
-    </div>
-    <div class="stats-card-body">
-      {% if movie_rating %}
-      <div class="stats-rating">
-        <div class="stats-rating-value">{{ movie_rating }}</div>
-        <div class="stats-rating-stars">
-          {% for i in "12345"|make_list %}
-            {% if forloop.counter <= movie_rating|floatformat:"0" %}
-              <i class="fas fa-star"></i>
-            {% elif forloop.counter <= movie_rating|add:"0.5"|floatformat:"0" %}
-              <i class="fas fa-star-half-alt"></i>
-            {% else %}
-              <i class="far fa-star"></i>
-            {% endif %}
-          {% endfor %}
-        </div>
-        <div class="stats-rating-label">Average Movie Rating</div>
-      </div>
-      {% else %}
-      <div class="stats-empty">
-        <div class="stats-empty-icon">
-          <i class="fas fa-film"></i>
-        </div>
-        <div class="stats-empty-text">
-          Rate at least one movie to see your statistics
-        </div>
-      </div>
-      {% endif %}
     </div>
   </div>
 
@@ -347,16 +296,15 @@
   <div class="stats-card col-span-3">
     <div class="stats-card-header">
       <div class="stats-card-title">
-        <div class="stats-card-icon primary">
-          <i class="fas fa-book"></i>
+        <div class="stats-card-icon secondary">
+          <i class="fas fa-star"></i>
         </div>
-        Book Rating
+        Average Rating
       </div>
     </div>
     <div class="stats-card-body">
-      {% if book_rating %}
-      <div class="stats-rating">
-        <div class="stats-rating-value">{{ book_rating }}</div>
+      <div class="stats-metric">
+        <div class="stats-metric-value">{{ book_rating }}</div>
         <div class="stats-rating-stars">
           {% for i in "12345"|make_list %}
             {% if forloop.counter <= book_rating|floatformat:"0" %}
@@ -368,107 +316,90 @@
             {% endif %}
           {% endfor %}
         </div>
-        <div class="stats-rating-label">Average Book Rating</div>
+        <div class="stats-metric-label">Average Book Rating</div>
       </div>
-      {% else %}
-      <div class="stats-empty">
-        <div class="stats-empty-icon">
-          <i class="fas fa-book"></i>
-        </div>
-        <div class="stats-empty-text">
-          Rate at least one book to see your statistics
-        </div>
-      </div>
-      {% endif %}
     </div>
   </div>
 
-  <!-- Game Rating Card -->
-  <div class="stats-card col-span-3">
-    <div class="stats-card-header">
-      <div class="stats-card-title">
-        <div class="stats-card-icon tertiary">
-          <i class="fas fa-gamepad"></i>
-        </div>
-        Game Rating
-      </div>
-    </div>
-    <div class="stats-card-body">
-      {% if game_rating %}
-      <div class="stats-rating">
-        <div class="stats-rating-value">{{ game_rating }}</div>
-        <div class="stats-rating-stars">
-          {% for i in "12345"|make_list %}
-            {% if forloop.counter <= game_rating|floatformat:"0" %}
-              <i class="fas fa-star"></i>
-            {% elif forloop.counter <= game_rating|add:"0.5"|floatformat:"0" %}
-              <i class="fas fa-star-half-alt"></i>
-            {% else %}
-              <i class="far fa-star"></i>
-            {% endif %}
-          {% endfor %}
-        </div>
-        <div class="stats-rating-label">Average Game Rating</div>
-      </div>
-      {% else %}
-      <div class="stats-empty">
-        <div class="stats-empty-icon">
-          <i class="fas fa-gamepad"></i>
-        </div>
-        <div class="stats-empty-text">
-          Rate at least one game to see your statistics
-        </div>
-      </div>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Media Count Chart -->
+  <!-- Book Genres Chart -->
   <div class="stats-card col-span-6">
     <div class="stats-card-header">
       <div class="stats-card-title">
         <div class="stats-card-icon primary">
-          <i class="fas fa-chart-pie"></i>
+          <i class="fas fa-tags"></i>
         </div>
-        Media Distribution
+        Top Genres
       </div>
     </div>
     <div class="stats-card-body">
       <div class="chart-container">
-        <canvas id="all_count" data-url="{% url 'charts:all_count' %}"></canvas>
+        <canvas id="books_charts" data-url="{% url 'charts:books_charts' %}"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- Ratings Distribution Chart -->
+  <!-- Book Ratings Distribution -->
   <div class="stats-card col-span-6">
     <div class="stats-card-header">
       <div class="stats-card-title">
         <div class="stats-card-icon secondary">
           <i class="fas fa-chart-bar"></i>
         </div>
-        Ratings Distribution
+        Rating Distribution
       </div>
     </div>
     <div class="stats-card-body">
       <div class="chart-container">
-        <canvas id="all_ratings" data-url="{% url 'charts:all_ratings' %}"></canvas>
+        <canvas id="books_ratings" data-url="{% url 'charts:books_ratings' %}"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Authors -->
+  <div class="stats-card col-span-6">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon tertiary">
+          <i class="fas fa-user-edit"></i>
+        </div>
+        Top Authors
+      </div>
+    </div>
+    <div class="stats-card-body">
+      <div class="chart-container">
+        <canvas id="books_author" data-url="{% url 'charts:books_authors' %}"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Publication Years -->
+  <div class="stats-card col-span-6">
+    <div class="stats-card-header">
+      <div class="stats-card-title">
+        <div class="stats-card-icon primary">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        Publication Years
+      </div>
+    </div>
+    <div class="stats-card-body">
+      <div class="chart-container">
+        <canvas id="books_release" data-url="{% url 'charts:books_release' %}"></canvas>
       </div>
     </div>
   </div>
 </div>
-
 {% else %}
 <div class="stats-card col-span-12">
   <div class="stats-empty" style="padding: 4rem 2rem;">
     <div class="stats-empty-icon">
-      <i class="fas fa-chart-line"></i>
+      <i class="fas fa-book"></i>
     </div>
     <div class="stats-empty-text" style="max-width: 400px; font-size: 1.1rem;">
-      Please rate at least one movie, book, or game before seeing your statistics.
+      Please rate at least one book before viewing your book statistics.
     </div>
-    <a href="{% url 'media_search' %}?q=" class="btn btn-primary mt-4">
-      <i class="fas fa-search me-2"></i>Discover Media
+    <a href="{% url 'media_search' %}?q=&media_type=book" class="btn btn-primary mt-4">
+      <i class="fas fa-search me-2"></i>Discover Books
     </a>
   </div>
 </div>
@@ -492,116 +423,32 @@ document.addEventListener('DOMContentLoaded', function() {
   Chart.defaults.font.size = 12;
   Chart.defaults.color = textColor;
   
-  // Media Count Chart
-  const countCanvas = document.getElementById('all_count');
-  if (countCanvas) {
+  // Book Genres Chart
+  const genresCanvas = document.getElementById('books_charts');
+  if (genresCanvas) {
     $.ajax({
-      url: countCanvas.dataset.url,
+      url: genresCanvas.dataset.url,
       success: function(data) {
-        new Chart(countCanvas, {
-          type: 'doughnut',
+        new Chart(genresCanvas, {
+          type: 'bar',
           data: {
-            labels: ["Movies", "Books", "Games"],
+            labels: data.genre,
             datasets: [{
-              data: [data.movie_count, data.book_count, data.game_count],
-              backgroundColor: [
-                'rgb(255, 45, 85)',
-                'rgb(0, 113, 227)',
-                'rgb(52, 199, 89)'
-              ],
-              borderColor: isDarkMode ? '#1d1d1f' : '#ffffff',
-              borderWidth: 2,
-              hoverOffset: 10
+              label: 'Books',
+              backgroundColor: 'rgba(0, 113, 227, 0.8)',
+              borderColor: 'rgb(0, 113, 227)',
+              borderWidth: 1,
+              borderRadius: 4,
+              data: data.book
             }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '65%',
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  padding: 20,
-                  usePointStyle: true,
-                  pointStyle: 'circle'
-                }
-              },
-              tooltip: {
-                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
-                titleColor: isDarkMode ? '#ffffff' : '#000000',
-                bodyColor: isDarkMode ? '#ffffff' : '#000000',
-                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                borderWidth: 1,
-                padding: 12,
-                boxPadding: 6,
-                usePointStyle: true,
-                callbacks: {
-                  label: function(context) {
-                    const label = context.label || '';
-                    const value = context.raw || 0;
-                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                    const percentage = Math.round((value / total) * 100);
-                    return `${label}: ${value} (${percentage}%)`;
-                  }
-                }
-              }
-            },
-            animation: {
-              animateScale: true,
-              animateRotate: true
-            }
-          }
-        });
-      },
-      error: function(err) {
-        console.error("Error fetching media count data:", err);
-      }
-    });
-  }
-
-  // Ratings Distribution Chart
-  const ratingsCanvas = document.getElementById('all_ratings');
-  if (ratingsCanvas) {
-    $.ajax({
-      url: ratingsCanvas.dataset.url,
-      success: function(data) {
-        new Chart(ratingsCanvas, {
-          type: 'bar',
-          data: {
-            labels: data.rating,
-            datasets: [
-              {
-                label: 'Movies',
-                backgroundColor: 'rgb(255, 45, 85)',
-                data: data.movie,
-                borderRadius: 4
-              },
-              {
-                label: 'Books',
-                backgroundColor: 'rgb(0, 113, 227)',
-                data: data.book,
-                borderRadius: 4
-              },
-              {
-                label: 'Games',
-                backgroundColor: 'rgb(52, 199, 89)',
-                data: data.game,
-                borderRadius: 4
-              }
-            ]
-          },
-          options: {
+            indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
               legend: {
-                position: 'bottom',
-                labels: {
-                  padding: 20,
-                  usePointStyle: true,
-                  pointStyle: 'circle'
-                }
+                display: false
               },
               tooltip: {
                 backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
@@ -615,26 +462,228 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             scales: {
               x: {
-                stacked: true,
-                grid: {
-                  display: false
-                },
-                title: {
-                  display: true,
-                  text: 'Rating',
-                  color: textColor
-                }
-              },
-              y: {
-                stacked: true,
                 beginAtZero: true,
-                precision: 0,
                 grid: {
                   color: gridColor
                 },
                 title: {
                   display: true,
-                  text: 'Number of Items',
+                  text: 'Number of Books',
+                  color: textColor
+                },
+                ticks: {
+                  precision: 0
+                }
+              },
+              y: {
+                grid: {
+                  display: false
+                }
+              }
+            }
+          }
+        });
+      },
+      error: function(err) {
+        console.error("Error fetching book genres data:", err);
+      }
+    });
+  }
+
+  // Book Ratings Chart
+  const ratingsCanvas = document.getElementById('books_ratings');
+  if (ratingsCanvas) {
+    $.ajax({
+      url: ratingsCanvas.dataset.url,
+      success: function(data) {
+        new Chart(ratingsCanvas, {
+          type: 'bar',
+          data: {
+            labels: data.rating,
+            datasets: [{
+              label: 'Books',
+              backgroundColor: 'rgba(0, 113, 227, 0.8)',
+              borderColor: 'rgb(0, 113, 227)',
+              borderWidth: 1,
+              borderRadius: 4,
+              data: data.book
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6
+              }
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Rating',
+                  color: textColor
+                },
+                grid: {
+                  display: false
+                }
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Number of Books',
+                  color: textColor
+                },
+                ticks: {
+                  precision: 0
+                },
+                grid: {
+                  color: gridColor
+                }
+              }
+            }
+          }
+        });
+      },
+      error: function(err) {
+        console.error("Error fetching book ratings data:", err);
+      }
+    });
+  }
+
+
+  // Authors Chart
+  const authorsCanvas = document.getElementById('books_author');
+  if (authorsCanvas) {
+    $.ajax({
+      url: authorsCanvas.dataset.url,
+      success: function(data) {
+        new Chart(authorsCanvas, {
+          type: 'bar',
+          data: {
+            labels: data.author,
+            datasets: [{
+              label: 'Books',
+              backgroundColor: 'rgba(52, 199, 89, 0.8)',
+              borderColor: 'rgb(52, 199, 89)',
+              borderWidth: 1,
+              borderRadius: 4,
+              data: data.book
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: {
+                  color: gridColor
+                },
+                title: {
+                  display: true,
+                  text: 'Number of Books',
+                  color: textColor
+                },
+                ticks: {
+                  precision: 0
+                }
+              },
+              y: {
+                grid: {
+                  display: false
+                }
+              }
+            }
+          }
+        });
+      },
+      error: function(err) {
+        console.error("Error fetching authors data:", err);
+      }   
+    });
+  }
+
+  // Release Years Chart
+  const releaseCanvas = document.getElementById('books_release');
+  if (releaseCanvas) {
+    $.ajax({
+      url: releaseCanvas.dataset.url,
+      success: function(data) {
+        new Chart(releaseCanvas, {
+          type: 'bar',
+          data: {
+            labels: data.release_year,
+            datasets: [{
+              label: 'Books',
+              backgroundColor: 'rgba(0, 113, 227, 0.8)',
+              borderColor: 'rgb(0, 113, 227)',
+              borderWidth: 1,
+              borderRadius: 4,
+              data: data.book
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
+                },
+                title: {
+                  display: true,
+                  text: 'Publication Year',
+                  color: textColor
+                }
+              },
+              y: {
+                beginAtZero: true,
+                grid: {
+                  color: gridColor
+                },
+                title: {
+                  display: true,
+                  text: 'Number of Books',
                   color: textColor
                 },
                 ticks: {
@@ -646,7 +695,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       },
       error: function(err) {
-        console.error("Error fetching ratings data:", err);
+        console.error("Error fetching release year data:", err);
       }
     });
   }

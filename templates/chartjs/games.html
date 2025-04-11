@@ -15,31 +15,30 @@
 
 {% block content %}
 
-<!-- Movie Charts -->
+<!-- game Charts -->
  <div>
-{% if movie_count %}
-
+{% if game_count %}
   <div id="container text-center">
     <div class="row">
       <div class="col">
-        <p class="text-center">Number of Movies Watched</p>
-        <p class="text-center">{{ movie_count }}</p>
+        <p class="text-center">Number of Games Played</p>
+        <p class="text-center">{{ game_count }}</p>
       </div>
       <div class="col">
-        <p class="text-center">Average Movie Rating</p>
-        <p class="text-center">{{ movie_rating }} ★</p>
+        <p class="text-center">Average Game Rating</p>
+        <p class="text-center">{{ game_rating }} ★</p>
       </div>
     </div>
     
     <div class="row">
       <div class="col">
         <div id="container" style="width: 100%;">
-          <canvas id="movies_charts" data-url="{% url 'charts:movies_charts' %}"></canvas>
+          <canvas id="games_charts" data-url="{% url 'charts:games_charts' %}"></canvas>
         </div>
       </div>
       <div class="col">
         <div id="container" style="width: 100%;">
-          <canvas id="movies_ratings" data-url="{% url 'charts:movies_ratings' %}"></canvas>
+          <canvas id="games_ratings" data-url="{% url 'charts:games_ratings' %}"></canvas>
         </div>
       </div>
       
@@ -47,12 +46,12 @@
     <div class="row">
       <div class="col">
         <div id="container" style="width: 100%;">
-          <canvas id="movies_directors" data-url="{% url 'charts:movies_directors' %}"></canvas>
+          <canvas id="games_studios" data-url="{% url 'charts:games_studio' %}"></canvas>
         </div>
       </div>
       <div class="col">
         <div id="container" style="width: 100%;">
-          <canvas id="movies_release" data-url="{% url 'charts:movies_release' %}"></canvas>
+          <canvas id="games_release" data-url="{% url 'charts:games_release' %}"></canvas>
         </div>
       </div>
     </div>
@@ -60,9 +59,9 @@
   </div>
 
  </div>
- {% else %}
- <p>Please rate a movie first before viewing your statistics.</p>
- {% endif %}
+{% else %}
+<p>Please rate a game first before viewing your statistics.</p>
+{% endif %}
 
 {% endblock content %}
 
@@ -72,35 +71,35 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script>
 
-  const ctx = document.getElementById('movies_charts');
+  const ctx = document.getElementById('games_charts');
   $(function () {
-    var $movies_charts = $("#movies_charts");
+    var $games_charts = $("#games_charts");
 
-    console.log("Canvas found:", $movies_charts[0]);
+    console.log("Canvas found:", $games_charts[0]);
     
     $.ajax({
-        url: $movies_charts.data("url"),
+        url: $games_charts.data("url"),
         success: function (data) {
           console.log('AJAX data:', data);  // Debug: Check if data is correct
 
           // Check if data exists and is in the expected format
-          if (data && Array.isArray(data.genre) && Array.isArray(data.movie)) {
-            var ctx = $movies_charts[0].getContext("2d");
+          if (data && Array.isArray(data.genre) && Array.isArray(data.game)) {
+            var ctx = $games_charts[0].getContext("2d");
 
             // Log to ensure that the context is set up correctly
             console.log('Canvas context:', ctx);
-            console.log('Canvas element:', $movies_charts[0]);
+            console.log('Canvas element:', $games_charts[0]);
 
             // Initialize the chart
-            var movieChart = new Chart(ctx, {
+            new Chart(ctx, {
               type: 'horizontalBar',
               data: {
                 labels: data.genre,
                 datasets: [{
                   axis: 'y',
-                  label: 'Movies',
+                  label: 'Games',
                   backgroundColor: 'blue',
-                  data: data.movie
+                  data: data.game
                 }]
               },
               options: {
@@ -111,7 +110,7 @@
                 },
                 title: {
                   display: true,
-                  text: 'Top 10 Movie Genres'
+                  text: 'Top 10 Game Genres'
                 },
                 scales: {
                   xAxes: [{
@@ -135,24 +134,24 @@
     });
 
     // ratings chart
-    const ratings = document.getElementById('movies_ratings');
+    const ratings = document.getElementById('games_ratings');
     $(function () {
-    var $movies_ratings = $("#movies_ratings");
+    var $games_ratings = $("#games_ratings");
 
-    console.log("Canvas found:", $movies_ratings[0]);
+    console.log("Canvas found:", $games_ratings[0]);
     
     $.ajax({
-        url: $movies_ratings.data("url"),
+        url: $games_ratings.data("url"),
         success: function (data) {
           console.log('AJAX data:', data);  // Debug: Check if data is correct
 
           // Check if data exists and is in the expected format
-          if (data && Array.isArray(data.rating) && Array.isArray(data.movie)) {
-            var rating = $movies_ratings[0].getContext("2d");
+          if (data && Array.isArray(data.rating) && Array.isArray(data.game)) {
+            var rating = $games_ratings[0].getContext("2d");
 
             // Log to ensure that the context is set up correctly
             console.log('Canvas context:', rating);
-            console.log('Canvas element:', $movies_ratings[0]);
+            console.log('Canvas element:', $games_ratings[0]);
 
             // Initialize the chart
             new Chart(rating, {
@@ -160,9 +159,9 @@
               data: {
                 labels: data.rating,
                 datasets: [{
-                  label: 'Movies',
+                  label: 'Games',
                   backgroundColor: 'blue',
-                  data: data.movie
+                  data: data.game
                 }]
               },
               options: {
@@ -172,7 +171,7 @@
                 },
                 title: {
                   display: true,
-                  text: 'Movie Ratings'
+                  text: 'Game Ratings'
                 },
                 scales: {
                   yAxes: [{
@@ -194,35 +193,35 @@
       });
     });
 
-    // directors chart
-    const directors = document.getElementById('movies_directors');
+    // studios chart
+    const studios = document.getElementById('games_studios');
     $(function () {
-    var $movies_directors = $("#movies_directors");
+    var $games_studios = $("#games_studios");
 
-    console.log("Canvas found:", $movies_directors[0]);
+    console.log("Canvas found:", $games_studios[0]);
     
     $.ajax({
-        url: $movies_directors.data("url"),
+        url: $games_studios.data("url"),
         success: function (data) {
           console.log('AJAX data:', data);  // Debug: Check if data is correct
 
           // Check if data exists and is in the expected format
-          if (data && Array.isArray(data.director) && Array.isArray(data.movie)) {
-            var director = $movies_directors[0].getContext("2d");
+          if (data && Array.isArray(data.studio) && Array.isArray(data.game)) {
+            var studio = $games_studios[0].getContext("2d");
 
             // Log to ensure that the context is set up correctly
-            console.log('Canvas context:', director);
-            console.log('Canvas element:', $movies_directors[0]);
+            console.log('Canvas context:', studio);
+            console.log('Canvas element:', $games_studios[0]);
 
             // Initialize the chart
-            new Chart(director, {
+            new Chart(studio, {
               type: 'bar',
               data: {
-                labels: data.directors,
+                labels: data.studios,
                 datasets: [{
-                  label: 'Movies',
+                  label: 'Games',
                   backgroundColor: 'blue',
-                  data: data.movie
+                  data: data.game
                 }]
               },
               options: {
@@ -233,7 +232,7 @@
                 },
                 title: {
                   display: true,
-                  text: 'Movie Directors'
+                  text: 'Game Studio/Developer'
                 },
                 scales: {
                   yAxes: [{
@@ -256,24 +255,24 @@
     });
 
     // scatter chart for release year
-    const release_year = document.getElementById('movies_release');
+    const release_year = document.getElementById('games_release');
     $(function () {
-    var $movies_release = $("#movies_release");
+    var $games_release = $("#games_release");
 
-    console.log("Canvas found:", $movies_release[0]);
+    console.log("Canvas found:", $games_release[0]);
     
     $.ajax({
-        url: $movies_release.data("url"),
+        url: $games_release.data("url"),
         success: function (data) {
           console.log('AJAX data:', data);  // Debug: Check if data is correct
 
           // Check if data exists and is in the expected format
-          if (data && Array.isArray(data.release_year) && Array.isArray(data.movie)) {
-            var release_year = $movies_release[0].getContext("2d");
+          if (data && Array.isArray(data.release_year) && Array.isArray(data.game)) {
+            var release_year = $games_release[0].getContext("2d");
 
             // Log to ensure that the context is set up correctly
             console.log('Canvas context:', release_year);
-            console.log('Canvas element:', $movies_release[0]);
+            console.log('Canvas element:', $games_release[0]);
 
             // Initialize the chart
             new Chart(release_year, {
@@ -281,9 +280,9 @@
               data: {
                 labels: data.release_year,
                 datasets: [{
-                  label: 'Movies',
+                  label: 'games',
                   backgroundColor: 'blue',
-                  data: data.movie
+                  data: data.game
                 }]
               },
               options: {
@@ -294,7 +293,7 @@
                 },
                 title: {
                   display: true,
-                  text: 'Movie Release Years'
+                  text: 'Game Release Years'
                 },
                 scales: {
                   yAxes: [{

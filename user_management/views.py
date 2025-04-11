@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.views import LoginView
+from user_library.models import UserLibraryItem
 from .models import Profile
 from .forms import ProfileForm, UserRegistrationForm
 import logging
@@ -79,9 +80,17 @@ def register(request):
 @login_required
 def dashboard(request):
     user_profile = Profile.objects.get(user=request.user)
+    movie_count = len(UserLibraryItem.objects.filter(user=request.user, media__media_type__iexact="movie"))
+    book_count = len(UserLibraryItem.objects.filter(user=request.user, media__media_type__iexact="book"))
+    game_count = len(UserLibraryItem.objects.filter(user=request.user, media__media_type__iexact="game"))
+    all_count = movie_count + book_count + game_count
     context = {
         'username': request.user.username,
-        'profile': user_profile
+        'profile': user_profile,
+        'movie_count': movie_count,
+        'book_count': book_count,
+        'game_count': game_count,
+        'all_count': all_count,
     }
     return render(request, 'user_management/dashboard.html', context)
 

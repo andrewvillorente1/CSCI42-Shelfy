@@ -1,22 +1,78 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
+{% load static %}
 {% block content %}
-    <h1>Your Shelves</h1>
+<div class="container my-5">
+    <h2>Your Shelves</h2>
 
-    {% if shelves %}
-        <ul>
-            {% for shelf in shelves %}
-                <li>
-                    <strong>{{ shelf.name }}</strong> 
-                    {% if shelf.is_public %}
-                        (Public)
-                    {% else %}
-                        (Private)
-                    {% endif %}
-                </li>
+    {% for shelf in shelves %}
+        <div class="card my-3">
+            <div class="card-body">
+                <h4 class="card-title">{{ shelf.name }}</h4>
+                <p class="card-text">{{ shelf.description|default:"No description." }}</p>
+                
+                <div class="row">
+                    {% for item in shelf.items.all %}
+                        <div class="col-md-2 col-4 text-center mb-3">
+                            <a href="{% url 'shelves:shelf_detail' shelf.user.username shelf.id item.id %}">
+                                <img src="{{ item.item.media.cover_image }}" class="img-fluid mb-1" alt="{{ item.item.media.title }}">
+                                <small>{{ item.item.media.title|truncatewords:5 }}</small>
+                            </a>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No items in this shelf yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">You don't have any shelves yet.</p>
+    {% endfor %}
+
+    <hr>
+    <h3>Add Items to Shelves</h3>
+        <div class="row">
+            {% for item in library_items %}
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="card h-100">
+                        <img src="{{ item.media.cover_image }}" class="card-img-top" alt="{{ item.media.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.media.title }}</h5>
+
+                            <form method="post" action="{% url 'shelves:add_to_shelf' 0 0 %}" 
+                                onsubmit="this.action=this.action.replace('0/0', this.elements.shelf_id.value + '/' + '{{ item.id }}');">
+                                {% csrf_token %}
+                                <div class="mb-2">
+                                    <select name="shelf_id" class="form-select" required>
+                                        <option value="" disabled selected>Select Shelf</option>
+                                        {% for shelf in shelves %}
+                                            <option value="{{ shelf.id }}">{{ shelf.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm">Add to Shelf</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>You have no items in your library.</p>
             {% endfor %}
-        </ul>
-    {% else %}
-        <p>You don't have any shelves yet.</p>
-    {% endif %}
+        </div>
+
+    <hr>
+    <h3>Create New Shelf</h3>
+    <form method="post" class="mt-3">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+            <label for="id_name" class="form-label">Shelf Name</label>
+            {{ form.name }}
+        </div>
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Description</label>
+            {{ form.description }}
+        </div>
+        <button type="submit" class="btn btn-success">Create Shelf</button>
+    </form>
+</div>
 {% endblock %}

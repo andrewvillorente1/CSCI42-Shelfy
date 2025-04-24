@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>{{ shelf.name }}</h2>
+    <p class="text-muted">{{ shelf.description }}</p>
+    <p><strong>Owner:</strong> {{ shelf.user.username }}</p>
+    <hr>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for shelf_item in items %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ shelf_item.item.media.cover_image }}" class="card-img-top" alt="{{ shelf_item.item.media.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ shelf_item.item.media.title }}</h5>
+                    <p class="card-text">
+                        {{ shelf_item.item.media.media_type|title }} | {{ shelf_item.item.media.release_year }}
+                    </p>
+                    <a href="{% url 'shelves:shelf_detail' shelf.user.username shelf.id shelf_item.item.id %}" class="btn btn-outline-primary btn-sm">View</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">This shelf is currently empty.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

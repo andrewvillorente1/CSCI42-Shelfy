@@ -6,7 +6,7 @@ from user_library.models import UserLibraryItem
 class Shelf(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="shelves")
     name = models.CharField(max_length=255, blank=True)
-    is_public = models.BooleanField(default=True)
+    description = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if not self.name:

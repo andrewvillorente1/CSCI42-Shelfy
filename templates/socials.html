@@ -132,6 +132,8 @@
                         <div class="message-content">${data.content}</div>
                     </div>`
           sseData.innerHTML += messageHTML
+          const messagesContainer = document.querySelector('.messages')
+          messagesContainer.scrollTop = messagesContainer.scrollHeight
         }
       }
 

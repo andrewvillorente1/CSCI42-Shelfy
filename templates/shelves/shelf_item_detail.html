@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ shelf_item.item.media.title }} - {{ shelf_item.shelf.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'user_management:profile' shelf_item.shelf.user.username %}">{{ shelf_item.shelf.user.username }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shelves:public_shelf' shelf_item.shelf.user.username %}">{{ shelf_item.shelf.name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ shelf_item.item.media.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+            <div class="row g-0">
+                <!-- Media Cover/Image -->
+                <div class="col-md-4 position-relative">
+                    {% if media.cover_image %}
+                        <img src="{{ media.cover_image }}" class="img-fluid rounded-start-4 h-100 w-100" alt="{{ media.title }}" style="object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center h-100 rounded-start-4">
+                            <i class="fas fa-image fa-5x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <span class="badge bg-{{ media.media_type|lower }}-badge fs-6 px-3 py-2">
+                            {{ media.get_media_type_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Media Details -->
+                <div class="col-md-8">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h1 class="card-title mb-0">{{ media.title }}</h1>
+                            {% if request.user == shelf_item.shelf.user %}
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
+                                    <li>
+                                        <form method="post" action="{% url 'shelves:remove_from_shelf' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="shelf_id" value="{{ shelf_item.shelf.id }}">
+                                            <input type="hidden" name="item_id" value="{{ shelf_item.item.id }}">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-trash-alt me-2"></i>Remove from Shelf
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li><a class="dropdown-item" href="{% url 'user_library:edit' shelf_item.item.id %}"><i class="fas fa-edit me-2"></i>Edit in Library</a></li>
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="fs-5 text-muted mb-2">
+                                {% if media.author %}{{ media.author }}{% endif %}
+                                {% if media.release_year %} ({{ media.release_year }}){% endif %}
+                            </p>
+                            
+                            {% if library_item.rating %}
+                            <div class="stars mb-2">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= library_item.rating %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% elif forloop.counter <= library_item.rating|add:"0.5" %}
+                                        <i class="fas fa-star-half-alt text-warning"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-warning"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2 fs-5">{{ library_item.rating }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if media.genre %}
+                            <div class="mb-2">
+                                <span class="badge bg-secondary me-1">{{ media.genre }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if media.description %}
+                        <div class="mb-4">
+                            <h5 class="fw-bold">Description</h5>
+                            <p>{{ media.description }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <h5 class="fw-bold">On Shelf</h5>
+                            <p>
+                                <i class="fas fa-bookmark me-2 text-primary"></i>
+                                <a href="{% url 'shelves:public_shelf' shelf_item.shelf.user.username %}">{{ shelf_item.shelf.name }}</a>
+                                by <a href="{% url 'user_management:profile' shelf_item.shelf.user.username %}">{{ shelf_item.shelf.user.username }}</a>
+                            </p>
+                        </div>
+                        
+                        {% if library_item.notes %}
+                        <div class="mb-4">
+                            <h5 class="fw-bold">Notes</h5>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <p class="mb-0">{{ library_item.notes }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if library_item.status %}
+                        <div class="mb-4">
+                            <h5 class="fw-bold">Status</h5>
+                            <span class="badge bg-primary fs-6 px-3 py-2">{{ library_item.get_status_display }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex flex-wrap gap-2 mt-4">
+                            {% if request.user.is_authenticated and request.user != shelf_item.shelf.user %}
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-plus-circle me-2"></i>Add to My Library
+                                </button>
+                            {% endif %}
+                            
+                            <a href="#" class="btn btn-outline-primary">
+                                <i class="fas fa-share-alt me-2"></i>Share
+                            </a>
+                            
+                            {% if media.media_type == 'BOOK' %}
+                                <a href="https://www.goodreads.com/search?q={{ media.title|urlencode }}" target="_blank" class="btn btn-outline-secondary">
+                media.title|urlencode}}" target="_blank" class="btn btn-outline-secondary">
+                    <i class="fas fa-external-link-alt me-2"></i>Goodreads
+                </a>
+                            {% elif media.media_type == 'MOVIE' %}
+                                <a href="https://www.imdb.com/find?q={{ media.title|urlencode }}" target="_blank" class="btn btn-outline-secondary">
+                                    <i class="fas fa-external-link-alt me-2"></i>IMDb
+                                </a>
+                            {% elif media.media_type == 'GAME' %}
+                                <a href="https://www.igdb.com/search?type=1&q={{ media.title|urlencode }}" target="_blank" class="btn btn-outline-secondary">
+                                    <i class="fas fa-external-link-alt me-2"></i>IGDB
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Items Section -->
+    <div class="mt-5">
+        <h3 class="mb-4"><i class="fas fa-layer-group me-2"></i>More from this shelf</h3>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for related_item in shelf_item.shelf.items.all|slice:":4" %}
+                {% if related_item != shelf_item %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm hover-card">
+                        <div class="position-relative">
+                            {% if related_item.item.media.cover_image %}
+                                <img src="{{ related_item.item.media.cover_image }}" class="card-img-top" alt="{{ related_item.item.media.title }}" style="height: 180px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-{{ related_item.item.media.media_type|lower }}-badge">
+                                    {{ related_item.item.media.get_media_type_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">{{ related_item.item.media.title }}</h5>
+                            <p class="card-text small text-muted">
+                                {% if related_item.item.media.author %}{{ related_item.item.media.author }}{% endif %}
+                                {% if related_item.item.media.release_year %} ({{ related_item.item.media.release_year }}){% endif %}
+                            </p>
+                            <a href="{% url 'shelves:shelf_item_detail' shelf_item.shelf.user.username related_item.item.id %}" class="btn btn-outline-primary w-100 mt-2">
+                                <i class="fas fa-info-circle me-2"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom gradients */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+    
+    /* Media type badges */
+    .bg-book-badge {
+        background-color: #28a745;
+    }
+    
+    .bg-movie-badge {
+        background-color: #dc3545;
+    }
+    
+    .bg-game-badge {
+        background-color: #6f42c1;
+    }
+    
+    /* Card hover effect */
+    .hover-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Rounded corners */
+    .rounded-4 {
+        border-radius: 0.75rem !important;
+    }
+    
+    .rounded-start-4 {
+        border-top-left-radius: 0.75rem !important;
+        border-bottom-left-radius: 0.75rem !important;
+    }
+</style>
+{% endblock %}

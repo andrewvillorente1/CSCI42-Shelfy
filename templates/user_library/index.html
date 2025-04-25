@@ -1,464 +1,278 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Library{% endblock %}
 
 {% block content %}
 <style>
-    /* Apple Books inspired styling */
     .library-container {
-        padding: 2rem 0;
-    }
-    
-    .library-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
+        padding: 2rem;
+        background-color: #f5f5f7;
+        min-height: 100vh;
     }
     
     .library-title {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
         font-weight: 700;
-        color: var(--dark);
+        margin-bottom: 1.5rem;
+        color: #333;
     }
     
-    .dark-mode .library-title {
-        color: var(--light);
-    }
-    
-    .library-controls {
+    .controls-row {
         display: flex;
-        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .control-button {
+        display: inline-flex;
         align-items: center;
-    }
-    
-    .view-toggle {
-        display: flex;
-        background-color: #f0f0f0;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    
-    .dark-mode .view-toggle {
-        background-color: #2d3748;
-    }
-    
-    .view-toggle button {
-        border: none;
-        background: transparent;
-        padding: 0.5rem 1rem;
+        justify-content: center;
+        padding: 0.75rem;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        margin-right: 1rem;
         cursor: pointer;
-        transition: all 0.2s ease;
+        width: 120px;
+        height: 80px;
     }
     
-    .view-toggle button.active {
-        background-color: var(--white);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    .control-button svg {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 0.5rem;
     }
     
-    .dark-mode .view-toggle button.active {
-        background-color: #1e293b;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-    
-    .filter-dropdown {
-        position: relative;
-    }
-    
-    .filter-dropdown select {
-        appearance: none;
-        background-color: var(--white);
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 0.5rem 2.5rem 0.5rem 1rem;
+    .control-button-text {
+        display: block;
+        text-align: center;
         font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .sort-options, .filter-options {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.5rem;
+    }
+    
+    .sort-option, .filter-option {
+        padding: 0.5rem 1rem;
+        color: #0066cc;
         cursor: pointer;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 1rem center;
+        font-size: 0.9rem;
+        margin-right: 1rem;
+        margin-bottom: 0.5rem;
     }
     
-    .dark-mode .filter-dropdown select {
-        background-color: #1e293b;
-        border-color: #4b5563;
-        color: #e5e7eb;
+    .sort-option:hover, .filter-option:hover {
+        text-decoration: underline;
     }
     
-    /* Apple Books style grid */
-    .books-grid {
+    .library-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 2rem;
     }
     
-    /* Book card styling */
-    .book-card {
+    .library-item {
         display: flex;
         flex-direction: column;
-        position: relative;
-        transition: all 0.3s ease;
     }
     
-    .book-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .book-cover {
+    .item-cover {
         position: relative;
-        height: 260px;
-        border-radius: 8px;
+        height: 250px;
         overflow: hidden;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        transition: all 0.3s ease;
-        background-color: #f0f0f0;
+        margin-bottom: 0.5rem;
     }
     
-    .dark-mode .book-cover {
-        background-color: #2d3748;
-    }
-    
-    .book-cover img {
+    .item-cover img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.5s ease;
     }
     
-    .book-card:hover .book-cover {
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-    }
-    
-    .book-card:hover .book-cover img {
-        transform: scale(1.05);
-    }
-    
-    .book-status {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.8rem;
-        color: white;
-        z-index: 2;
-    }
-    
-    .status-reading {
-        background-color: #3b82f6;
-    }
-    
-    .status-completed {
-        background-color: #10b981;
-    }
-    
-    .status-want-to-read {
-        background-color: #f59e0b;
-    }
-    
-    .status-dropped {
-        background-color: #ef4444;
-    }
-    
-    .book-info {
-        padding: 1rem 0.5rem;
-        text-align: center;
-    }
-    
-    .book-title {
-        font-weight: 600;
-        font-size: 1rem;
-        margin-bottom: 0.3rem;
-        color: var(--dark);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .dark-mode .book-title {
-        color: white;
-    }
-    
-    .book-author {
-        font-size: 0.85rem;
-        color: var(--gray);
-        margin-bottom: 0.5rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .dark-mode .book-author {
-        color: #9ca3af;
-    }
-    
-    .book-rating {
-        display: flex;
-        justify-content: center;
-        gap: 2px;
-        margin-bottom: 0.5rem;
-    }
-    
-    .book-rating .star {
-        color: #d1d5db;
-        font-size: 0.8rem;
-    }
-    
-    .book-rating .star.filled {
-        color: #f59e0b;
-    }
-    
-    .dark-mode .book-rating .star.filled {
-        color: #fbbf24;
-    }
-    
-    .book-actions {
+    .item-status {
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-        padding: 2rem 0.5rem 0.5rem;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        border-radius: 0 0 8px 8px;
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
     }
     
-    .book-card:hover .book-actions {
-        opacity: 1;
+    .item-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
     }
     
-    .action-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.9);
-        border: none;
+    .item-author {
+        color: #666;
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .item-actions {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #1f2937;
+        margin-top: auto;
+    }
+    
+    .action-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
         cursor: pointer;
-        transition: all 0.2s ease;
+        background: none;
+        border: none;
+        color: #0066cc;
     }
     
-    .action-btn:hover {
-        background-color: white;
-        transform: scale(1.1);
+    .action-button:hover {
+        text-decoration: underline;
+    }
+    
+    .action-button.remove {
+        color: #666;
+        border: 1px solid #ddd;
+        margin-left: 0.5rem;
     }
     
     .empty-library {
         text-align: center;
         padding: 3rem;
-        background-color: var(--white);
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    }
-    
-    .dark-mode .empty-library {
-        background-color: #1e293b;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
     
     .empty-library-icon {
-        font-size: 4rem;
-        color: #d1d5db;
-        margin-bottom: 1.5rem;
-    }
-    
-    .dark-mode .empty-library-icon {
-        color: #4b5563;
+        font-size: 3rem;
+        color: #ccc;
+        margin-bottom: 1rem;
     }
     
     .empty-library-title {
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 1rem;
-        color: var(--dark);
-    }
-    
-    .dark-mode .empty-library-title {
-        color: var(--light);
     }
     
     .empty-library-text {
-        color: var(--gray);
-        margin-bottom: 2rem;
-    }
-    
-    .dark-mode .empty-library-text {
-        color: #9ca3af;
-    }
-    
-    /* Media type indicators */
-    .media-type-badge {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        z-index: 2;
-    }
-    
-    .media-type-book {
-        background-color: rgba(45, 51, 107, 0.8);
-        color: white;
-    }
-    
-    .media-type-movie {
-        background-color: rgba(255, 107, 107, 0.8);
-        color: white;
-    }
-    
-    .media-type-game {
-        background-color: rgba(78, 205, 196, 0.8);
-        color: white;
+        color: #666;
+        margin-bottom: 1.5rem;
     }
     
     /* Responsive adjustments */
-    @media (max-width: 992px) {
-        .books-grid {
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .book-cover {
-            height: 230px;
-        }
-    }
-    
     @media (max-width: 768px) {
-        .books-grid {
+        .library-grid {
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 1.2rem;
+            gap: 1rem;
         }
         
-        .book-cover {
+        .item-cover {
             height: 200px;
         }
         
-        .library-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
+        .controls-row {
+            flex-wrap: wrap;
         }
         
-        .library-controls {
-            width: 100%;
-            justify-content: space-between;
-        }
-    }
-    
-    @media (max-width: 576px) {
-        .books-grid {
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 1rem;
-        }
-        
-        .book-cover {
-            height: 170px;
+        .control-button {
+            margin-bottom: 0.5rem;
         }
     }
 </style>
 
-<div class="container library-container">
-    <div class="library-header">
-        <h1 class="library-title">My Library</h1>
+<div class="library-container">
+    <h1 class="library-title">My Library</h1>
+    
+    <div class="controls-row">
+        <div class="control-button" id="sortButton">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                </svg>
+                <span class="control-button-text">Sort</span>
+            </div>
+        </div>
         
-        <div class="library-controls">
-            <div class="filter-dropdown">
-                <select id="mediaTypeFilter" class="form-select">
-                    <option value="all">All Media</option>
-                    <option value="book">Books</option>
-                    <option value="movie">Movies</option>
-                    <option value="game">Games</option>
-                </select>
-            </div>
-            
-            <div class="filter-dropdown">
-                <select id="statusFilter" class="form-select">
-                    <option value="all">All Status</option>
-                    <option value="reading">Reading</option>
-                    <option value="completed">Completed</option>
-                    <option value="want_to_read">Want to Read</option>
-                    <option value="dropped">Dropped</option>
-                </select>
-            </div>
-            
-            <div class="view-toggle">
-                <button class="active" id="gridViewBtn">
-                    <i class="fas fa-th"></i>
-                </button>
-                <button id="listViewBtn">
-                    <i class="fas fa-list"></i>
-                </button>
+        <div class="control-button" id="filterButton">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <span class="control-button-text">Filter</span>
             </div>
         </div>
     </div>
     
+    <div class="sort-options" id="sortOptions" style="display: none;">
+        <div class="sort-option" data-sort="title-asc">Title (A-Z)</div>
+        <div class="sort-option" data-sort="title-desc">Title (Z-A)</div>
+        <div class="sort-option" data-sort="date-desc">Date Added (Newest)</div>
+        <div class="sort-option" data-sort="date-asc">Date Added (Oldest)</div>
+        <div class="sort-option" data-sort="rating-desc">Rating (Highest)</div>
+        <div class="sort-option" data-sort="rating-asc">Rating (Lowest)</div>
+    </div>
+    
+    <div class="filter-options" id="filterOptions" style="display: none;">
+        <div class="filter-option" data-filter="all">All Items</div>
+        <div class="filter-option" data-filter="book">Books</div>
+        <div class="filter-option" data-filter="movie">Movies</div>
+        <div class="filter-option" data-filter="game">Games</div>
+        <div class="filter-option" data-filter="planned">Planned</div>
+        <div class="filter-option" data-filter="in_progress">In Progress</div>
+        <div class="filter-option" data-filter="completed">Completed</div>
+        <div class="filter-option" data-filter="dropped">Dropped</div>
+    </div>
+    
     {% if library %}
-
-    <div class="books-grid" id="libraryGrid">
-        {% for entry in library %}
-        <div class="book-card" data-media-type="{{ entry.media.media_type }}" data-status="{{ entry.status }}">
-            <div class="book-cover">
-                <a href="{% url 'media_detail' media_type=entry.media.media_type external_id=entry.media.external_id %}">
-                    <img src="{{ entry.media.cover_image }}" alt="{{ entry.media.title }}">
-                </a>
-                <div class="media-type-badge media-type-{{ entry.media.media_type }}">
-                    {% if entry.media.media_type == "book" %}Book{% elif entry.media.media_type == "movie" %}Movie{% elif entry.media.media_type == "game" %}Game{% endif %}
+    <div class="library-grid">
+        {% for item in library %}
+        <div class="library-item" data-media-type="{{ item.media.media_type }}" data-status="{{ item.status }}">
+            <div class="item-cover">
+                {% if item.media.cover_image %}
+                <img src="{{ item.media.cover_image }}" alt="{{ item.media.title }}">
+                {% else %}
+                <div class="placeholder-cover">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
                 </div>
-                
-                <div class="book-status status-{{ entry.status }}">
-                    {% if entry.status == "reading" %}
-                        <i class="fas fa-book-reader"></i>
-                    {% elif entry.status == "completed" %}
-                        <i class="fas fa-check"></i>
-                    {% elif entry.status == "want_to_read" %}
-                        <i class="fas fa-bookmark"></i>
-                    {% elif entry.status == "dropped" %}
-                        <i class="fas fa-times"></i>
-                    {% endif %}
-                </div>
-                
-                <div class="book-actions">
-                    <a href="{% url 'user_library:edit' entry.get_hashed_id %}" class="action-btn">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <button class="action-btn delete-btn" data-item-id="{{ entry.id }}" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+                {% endif %}
+                <div class="item-status">{{ item.get_status_display }}</div>
             </div>
             
-            <div class="book-info">
-                <h3 class="book-title">{{ entry.media.title }}</h3>
-                <p class="book-author">
-                    {% if entry.media.author %}{{ entry.media.author }}
-                    {% elif entry.media.director %}{{ entry.media.director }}
-                    {% elif entry.media.studio %}{{ entry.media.studio }}
-                    {% endif %}
-                </p>
-                
-                {% if entry.status == "completed" or entry.status == "dropped" %}
-                    {% if entry.rating and entry.rating > 0 %}
-                    <div class="book-rating">
-                        {% for i in star_range %}
-                            {% if i < entry.rating %}
-                                <span class="star filled">★</span>
-                            {% else %}
-                                <span class="star">☆</span>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    {% endif %}
+            <h3 class="item-title">
+                {% if item.media.media_type and item.media.external_id %}
+                <a href="{% url 'media_detail' media_type=item.media.media_type external_id=item.media.external_id %}">
+                    {{ item.media.title }}
+                </a>
+                {% else %}
+                {{ item.media.title }}
                 {% endif %}
+            </h3>
+            
+            <div class="item-author">
+                {% if item.media.media_type == 'book' and item.media.author %}
+                {{ item.media.author }}
+                {% elif item.media.media_type == 'movie' and item.media.director %}
+                {{ item.media.director }}
+                {% elif item.media.media_type == 'game' and item.media.studio %}
+                {{ item.media.studio }}
+                {% endif %}
+            </div>
+            
+            <div class="item-actions">
+                <a href="{% url 'user_library:edit' hashid=item.get_hashed_id %}" class="action-button">Edit</a>
+                <button class="action-button remove" onclick="confirmDelete({{ item.id }})">Remove</button>
+                <form id="delete-form-{{ item.id }}" action="{% url 'user_library:delete' item_id=item.id %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
             </div>
         </div>
         {% endfor %}
@@ -466,177 +280,132 @@
     {% else %}
     <div class="empty-library">
         <div class="empty-library-icon">
-            <i class="fas fa-books"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
         </div>
         <h2 class="empty-library-title">Your library is empty</h2>
-        <p class="empty-library-text">Start adding books, movies, and games to build your collection!</p>
-        <a href="{% url 'media_search' %}?q=" class="btn btn-primary">
-            <i class="fas fa-search me-2"></i>Discover Media
+        <p class="empty-library-text">Start building your collection by searching for books, movies, or games.</p>
+        <a href="{% url 'media_search' %}" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Search for media
         </a>
     </div>
     {% endif %}
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Once you delete this, there's no going back. You sure you wanna do this?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Status update functionality
-        document.querySelectorAll('.status-form').forEach(form => {
-            form.addEventListener('change', function (event) {
-                event.preventDefault();
-
-                let itemId = this.getAttribute('data-item-id');
-                let statusDropdown = this.querySelector('.status-dropdown');
-                let newStatus = statusDropdown.value;
-                let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-
-                fetch(/library/update/${itemId}/, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRFToken": csrfToken,
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: new URLSearchParams({ status: newStatus })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log("Status updated successfully!");
-                        
-                        let entryCard = form.closest(".card-body");
-                        let ratingField = entryCard.querySelector(".rating-field");
-
-                        if (newStatus === "completed" || newStatus === "dropped") {
-                            ratingField.style.display = "block";
-                        } else {
-                            ratingField.style.display = "none";
-                        }
-
-                        if (data.csrf_token) {
-                            let csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
-                            if (csrfInput) csrfInput.value = data.csrf_token;
-                        }
-                    } else {
-                        alert("Yikes! That status change didn't stick. Maybe try again with a little more determination?");
-                    }
-                })
-                .catch(error => console.error("Error:", error));
+        // Sort functionality
+        const sortButton = document.getElementById('sortButton');
+        const sortOptions = document.getElementById('sortOptions');
+        
+        sortButton.addEventListener('click', function() {
+            sortOptions.style.display = sortOptions.style.display === 'none' ? 'flex' : 'none';
+            filterOptions.style.display = 'none'; // Hide filter options when sort is clicked
+        });
+        
+        // Filter functionality
+        const filterButton = document.getElementById('filterButton');
+        const filterOptions = document.getElementById('filterOptions');
+        
+        filterButton.addEventListener('click', function() {
+            filterOptions.style.display = filterOptions.style.display === 'none' ? 'flex' : 'none';
+            sortOptions.style.display = 'none'; // Hide sort options when filter is clicked
+        });
+        
+        // Sort options click handlers
+        document.querySelectorAll('.sort-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const sortType = this.getAttribute('data-sort');
+                sortLibrary(sortType);
+                sortOptions.style.display = 'none';
             });
         });
         
-        // Delete functionality
-        let deleteItemId = null;
-
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                deleteItemId = this.getAttribute('data-item-id');
+        // Filter options click handlers
+        document.querySelectorAll('.filter-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const filterType = this.getAttribute('data-filter');
+                filterLibrary(filterType);
+                filterOptions.style.display = 'none';
             });
         });
-
-        document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-            if (deleteItemId) {
-                fetch(/library/delete/${deleteItemId}/, {
-                    method: "POST",
-                    headers: { "X-CSRFToken": "{{ csrf_token }}" }
-                }).then(response => {
-                    if (response.ok) {
-                        const bookCard = document.querySelector(.delete-btn[data-item-id="${deleteItemId}"]).closest('.book-card');
-                        bookCard.style.opacity = '0';
-                        bookCard.style.transform = 'scale(0.8)';
-                        
-                        setTimeout(() => {
-                            bookCard.remove();
-                            
-                            // Check if library is empty after deletion
-                            if (document.querySelectorAll('.book-card').length === 0) {
-                                const libraryGrid = document.getElementById('libraryGrid');
-                                libraryGrid.innerHTML = 
-                                    <div class="empty-library">
-                                        <div class="empty-library-icon">
-                                            <i class="fas fa-books"></i>
-                                        </div>
-                                        <h2 class="empty-library-title">Your library is empty</h2>
-                                        <p class="empty-library-text">Start adding books, movies, and games to build your collection!</p>
-                                        <a href="{% url 'media_search' %}?q=" class="btn btn-primary">
-                                            <i class="fas fa-search me-2"></i>Discover Media
-                                        </a>
-                                    </div>
-                                ;
-                            }
-                        }, 300);
-                        
-                        deleteItemId = null;
-                        let modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-                        modal.hide();
-                    } else {
-                        alert("Uh-oh! The delete button must be on strike. Try again in a bit.");
-                    }
-                });
-            }
-        });
         
-        // Filtering functionality
-        const mediaTypeFilter = document.getElementById('mediaTypeFilter');
-        const statusFilter = document.getElementById('statusFilter');
-        const libraryGrid = document.getElementById('libraryGrid');
-        
-        function filterLibrary() {
-            const mediaType = mediaTypeFilter.value;
-            const status = statusFilter.value;
+        // Sort library items
+        function sortLibrary(sortType) {
+            const libraryGrid = document.querySelector('.library-grid');
+            const items = Array.from(libraryGrid.querySelectorAll('.library-item'));
             
-            document.querySelectorAll('.book-card').forEach(card => {
-                const cardMediaType = card.getAttribute('data-media-type');
-                const cardStatus = card.getAttribute('data-status');
+            items.sort((a, b) => {
+                if (sortType === 'title-asc') {
+                    return a.querySelector('.item-title').textContent.trim().localeCompare(
+                        b.querySelector('.item-title').textContent.trim()
+                    );
+                } else if (sortType === 'title-desc') {
+                    return b.querySelector('.item-title').textContent.trim().localeCompare(
+                        a.querySelector('.item-title').textContent.trim()
+                    );
+                }
+                // Add other sort types as needed
                 
-                const mediaTypeMatch = mediaType === 'all' || cardMediaType === mediaType;
-                const statusMatch = status === 'all' || cardStatus === status;
-                
-                if (mediaTypeMatch && statusMatch) {
-                    card.style.display = 'flex';
+                return 0;
+            });
+            
+            // Clear and re-append sorted items
+            libraryGrid.innerHTML = '';
+            items.forEach(item => libraryGrid.appendChild(item));
+        }
+        
+        // Filter library items
+        function filterLibrary(filterType) {
+            const items = document.querySelectorAll('.library-item');
+            
+            items.forEach(item => {
+                if (filterType === 'all') {
+                    item.style.display = 'flex';
+                } else if (filterType === item.getAttribute('data-media-type') || 
+                           filterType === item.getAttribute('data-status')) {
+                    item.style.display = 'flex';
                 } else {
-                    card.style.display = 'none';
+                    item.style.display = 'none';
                 }
             });
         }
-        
-        mediaTypeFilter.addEventListener('change', filterLibrary);
-        statusFilter.addEventListener('change', filterLibrary);
-        
-        // View toggle functionality
-        const gridViewBtn = document.getElementById('gridViewBtn');
-        const listViewBtn = document.getElementById('listViewBtn');
-        
-        gridViewBtn.addEventListener('click', function() {
-            libraryGrid.classList.remove('list-view');
-            libraryGrid.classList.add('grid-view');
-            gridViewBtn.classList.add('active');
-            listViewBtn.classList.remove('active');
-        });
-        
-        listViewBtn.addEventListener('click', function() {
-            libraryGrid.classList.remove('grid-view');
-            libraryGrid.classList.add('list-view');
-            listViewBtn.classList.add('active');
-            gridViewBtn.classList.remove('active');
-        });
     });
+    
+    // Delete confirmation
+    function confirmDelete(itemId) {
+        if (confirm('Are you sure you want to remove this item from your library?')) {
+            document.getElementById(`delete-form-${itemId}`).submit();
+        }
+    }
+    
+    // Update status functionality
+    function updateStatus(itemId, newStatus) {
+        fetch(`/library/update-status/${itemId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `status=${newStatus}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Refresh the page to show updated status
+                window.location.reload();
+            } else {
+                alert(data.error || 'An error occurred while updating the status.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the status.');
+        });
+    }
 </script>
 {% endblock %}

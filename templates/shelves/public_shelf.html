@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ shelf.name }} - {{ shelf.user.username }}'s Shelf{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'user_management:profile' shelf.user.username %}">{{ shelf.user.username }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ shelf.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-5">
+        <div class="card-header bg-gradient-primary text-white py-4 rounded-top-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-1">{{ shelf.name }}</h1>
+                    <p class="mb-0">
+                        <i class="fas fa-user me-2"></i>{{ shelf.user.username }}'s shelf
+                    </p>
+                </div>
+                {% if request.user == shelf.user %}
+                <a href="{% url 'shelves:user_shelves' %}" class="btn btn-light">
+                    <i class="fas fa-edit me-2"></i>Edit Shelf
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body p-4">
+            {% if shelf.description %}
+            <div class="mb-4">
+                <h5 class="text-muted mb-2">About this shelf</h5>
+                <p>{{ shelf.description }}</p>
+            </div>
+            <hr>
+            {% endif %}
+            
+            <h4 class="mb-4"><i class="fas fa-layer-group me-2"></i>Items on this shelf</h4>
+            
+            {% if items %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+                    {% for shelf_item in items %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-card">
+                            <div class="position-relative">
+                                {% if shelf_item.item.media.cover_image %}
+                                    <img src="{{ shelf_item.item.media.cover_image }}" class="card-img-top" alt="{{ shelf_item.item.media.title }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-image fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="position-absolute top-0 end-0 m-2">
+                                    <span class="badge bg-{{ shelf_item.item.media.media_type|lower }}-badge">
+                                        {{ shelf_item.item.media.get_media_type_display }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ shelf_item.item.media.title }}</h5>
+                                <p class="card-text text-muted">
+                                    {% if shelf_item.item.media.author %}{{ shelf_item.item.media.author }}{% endif %}
+                                    {% if shelf_item.item.media.release_year %} ({{ shelf_item.item.media.release_year }}){% endif %}
+                                </p>
+                                
+                                {% if shelf_item.item.rating %}
+                                <div class="mb-3">
+                                    <div class="stars">
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= shelf_item.item.rating %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% elif forloop.counter <= shelf_item.item.rating|add:"0.5" %}
+                                                <i class="fas fa-star-half-alt text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="ms-1 text-muted small">{{ shelf_item.item.rating }}</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <a href="{% url 'shelves:shelf_item_detail' shelf.user.username shelf_item.item.id %}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-info-circle me-2"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-book-open fa-4x text-muted"></i>
+                    </div>
+                    <h4>This shelf is empty</h4>
+                    <p class="text-muted">No items have been added to this shelf yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if request.user.is_authenticated and request.user != shelf.user %}
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <h4 class="mb-3">Follow {{ shelf.user.username }}</h4>
+            <p class="text-muted">Stay updated with {{ shelf.user.username }}'s activity and recommendations.</p>
+            <button class="btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i>Follow
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    /* Custom gradients */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+    
+    /* Media type badges */
+    .bg-book-badge {
+        background-color: #28a745;
+    }
+    
+    .bg-movie-badge {
+        background-color: #dc3545;
+    }
+    
+    .bg-game-badge {
+        background-color: #6f42c1;
+    }
+    
+    /* Card hover effect */
+    .hover-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Rounded corners */
+    .rounded-4 {
+        border-radius: 0.75rem !important;
+    }
+    
+    .rounded-top-4 {
+        border-top-left-radius: 0.75rem !important;
+        border-top-right-radius: 0.75rem !important;
+    }
+</style>
+{% endblock %}

@@ -3,15 +3,17 @@ import asyncio
 
 from typing import AsyncGenerator
 from django.shortcuts import render, redirect
-from django.http import HttpRequest, StreamingHttpResponse, HttpResponse
+from django.http import HttpRequest, StreamingHttpResponse, HttpResponse, JsonResponse
 from . import models
 import json
 from django.contrib.auth.decorators import login_required
 from user_management.models import Profile
 
+
 @login_required(login_url='login/')
 def chat(request: HttpRequest) -> HttpResponse:
     return render(request, 'chat.html')
+
 
 @login_required(login_url='login/')
 def create_message(request: HttpRequest) -> HttpResponse:
@@ -24,6 +26,7 @@ def create_message(request: HttpRequest) -> HttpResponse:
         return HttpResponse(status=201)
     else:
         return HttpResponse(status=200)
+
 
 @login_required(login_url='login/')
 async def stream_chat_messages(request: HttpRequest) -> StreamingHttpResponse:
@@ -48,7 +51,8 @@ async def stream_chat_messages(request: HttpRequest) -> StreamingHttpResponse:
             async for message in new_messages:
                 yield f"data: {json.dumps(message)}\n\n"
                 last_id = message['id']
-            await asyncio.sleep(0.1)  # Adjust sleep time as needed to reduce db queries.
+            # Adjust sleep time as needed to reduce db queries.
+            await asyncio.sleep(0.1)
 
     async def get_existing_messages() -> AsyncGenerator:
         messages = models.Message.objects.all().order_by('created_at').values(

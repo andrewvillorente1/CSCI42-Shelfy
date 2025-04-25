@@ -78,55 +78,68 @@ class MediaDetailView(View):
 
         if not details:
             return JsonResponse({"error": "Media not found"}, status=404)
-        
+
         media, created = Media.objects.get_or_create(
             external_id=external_id,
             media_type=media_type,
             defaults={
-                "title": details["title"],
-                "description": details["description"],
-                "cover_image": details["cover_image"],
+                "title": details.get("title", "Untitled"),
+                "description": details.get("description", ""),
+                "cover_image": details.get("cover_image", ""),
                 "release_year": details.get("release_year", None),
                 "genre": details.get("genre", ""),
                 "author": details.get("author", ""),
             }
         )
-        
+
         comments = Comment.objects.all()
-    
+
         return render(request, "media/media_detail.html", {
             "media": media,
             "comments": comments,
         })
-    
-    def post(self, request, media_type, external_id): 
+
+    def post(self, request, media_type, external_id):
         details = MediaAPIClient.get_media_details(media_type, external_id)
 
         if not details:
             return JsonResponse({"error": "Media not found"}, status=404)
-        
-        media, created = Media.objects.get_or_create( #https://docs.djangoproject.com/en/5.1/ref/models/querysets/#get-or-create
-            external_id=external_id,
-            defaults={
-                "title": details["title"],
-                "description": details["description"],
-                "cover_image": details["cover_image"],
-                "release_year": details.get("release_year", None),
-                "genre": details.get("genre", ""),
-                "author": details.get("author", ""),
-                "media_type": media_type,
-            }
-        )
-        form = CommentForms(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False) #https://stackoverflow.com/questions/12848605/django-modelform-what-is-savecommit-false-used-for --> GETS YOU A MODEL OBJECT
-            comment.media = media
-            comment.comment_author = self.request.user.profile
-            comment.save()
-            return redirect('media_detail', media_type = media_type, external_id=comment.media.external_id)
-        else:
-            return render(request, "media/media_detail.html", {"media": media, "form": form, "media_type": media_type, "external_id": external_id})
 
+        # Add error handling for missing keys in the details dictionary
+        try:
+            media, created = Media.objects.get_or_create(
+                external_id=external_id,
+                media_type=media_type,
+                defaults={
+                    "title": details.get("title", "Untitled"),
+                    "description": details.get("description", ""),
+                    "cover_image": details.get("cover_image", ""),
+                    "release_year": details.get("release_year"),
+                    "genre": details.get("genre", ""),
+                    "author": details.get("author", ""),
+                }
+            )
+
+            form = CommentForms(request.POST)
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.media = media
+                comment.comment_author = request.user.profile
+                comment.save()
+                return redirect('media_detail', media_type=media_type, external_id=comment.media.external_id)
+            else:
+                return render(request, "media/media_detail.html", {
+                    "media": media,
+                    "form": form,
+                    "media_type": media_type,
+                    "external_id": external_id
+                })
+
+        except Exception as e:
+            # Log the error and return a user-friendly error message
+            print(f"Error creating media: {e}")
+            print(f"Details received: {details}")
+            return JsonResponse({"error": "An error occurred while processing the media details"}, status=500)
 
 
 def home_view(request):
@@ -366,10 +379,12 @@ def games_view(request):
 
     return render(request, 'media/games.html', context)
 
+
 def media_detail_api(request, media_type, external_id):
     """API endpoint to get media details for the modal view"""
-    media = get_object_or_404(Media, media_type=media_type, external_id=external_id)
-    
+    media = get_object_or_404(
+        Media, media_type=media_type, external_id=external_id)
+
     # Return media details as JSON
     return JsonResponse({
         'title': media.title,
@@ -383,5 +398,3 @@ def media_detail_api(request, media_type, external_id):
         'media_type': media.media_type,
         'external_id': media.external_id,
     })
-
-

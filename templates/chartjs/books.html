@@ -307,9 +307,9 @@
         <div class="stats-metric-value">{{ book_rating }}</div>
         <div class="stats-rating-stars">
           {% for i in "12345"|make_list %}
-            {% if forloop.counter <= book_rating|floatformat:"0" %}
+            {% if forloop.counter <= book_rating %}
               <i class="fas fa-star"></i>
-            {% elif forloop.counter <= book_rating|add:"0.5"|floatformat:"0" %}
+            {% elif forloop.counter <= book_rating|add:"0.5" %}
               <i class="fas fa-star-half-alt"></i>
             {% else %}
               <i class="far fa-star"></i>

@@ -69,7 +69,8 @@ INSTALLED_APPS = [
     'user_library',
     'socials',
     'ai',
-    'statistics'
+    'statistics',
+    'shelves',
 ]
 
 MIDDLEWARE = [
@@ -133,7 +134,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 
 # Internationalization

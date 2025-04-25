@@ -366,13 +366,12 @@ def movies_directors(request):
     movie_directors = UserLibraryItem.objects.filter(user=request.user, media__media_type__iexact="movie")
     
     for entry in movie_directors:
-        # # Splitting the list of genres if a movie has more than one genre
-        # directors = entry.media.director.split(",")
-        
-        # # Increment the count for each genre
-        # for director in directors:
-        #     director_count[director.strip()] += 1  # Cleans whitespace between genres
-        director_count[entry.media.director] += 1
+        if entry.media.studio:
+            directors = entry.media.studio
+            director_count[directors] += 1
+        else:
+            directors = "Unknown"
+            director_count[directors] += 1
 
     # Prepare the genre and movie count lists
     directors = list(director_count.keys())
@@ -431,12 +430,13 @@ def games_studio(request):
     
     for entry in movie_directors:
         # # Splitting the list of genres if a movie has more than one genre
-        # directors = entry.media.director.split(",")
-        
-        # # Increment the count for each genre
-        # for director in directors:
-        #     director_count[director.strip()] += 1  # Cleans whitespace between genres
-        director_count[entry.media.studio] += 1
+        if entry.media.studio:
+            directors = entry.media.studio
+            director_count[directors] += 1
+        else:
+            directors = "Unknown"
+            director_count[directors] += 1
+            
 
     # Prepare the genre and movie count lists
     directors = list(director_count.keys())

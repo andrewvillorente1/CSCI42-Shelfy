@@ -1,0 +1,175 @@
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+    <style>
+
+
+      .messages {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
+        height: 50vh;
+        overflow-y: scroll;
+      }
+
+      .message {
+        border-bottom: 1px solid #ced6e0;
+        padding: 15px 0;
+      }
+
+      .message:last-child {
+        border-bottom: none;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      textarea,
+      input,
+      button {
+        margin-bottom: 15px;
+        padding: 15px;
+        border: 1px solid #ced6e0;
+        border-radius: 6px;
+        font-size: 16px;
+      }
+
+      .message-box {
+        background: rgba(247, 248, 245, 0.42);
+        border-left: 4px solid #2D336B;
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .message-author {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .message-content {
+        font-size: 16px;
+        line-height: 1.4;
+      }
+
+      textarea {
+        background: #f8f9fa;
+        border: 1px solid #ced4da;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 12px 20px;
+        border-radius: 6px;
+        min-height: 100px;
+        font-size: 16px;
+        line-height: 1.5;
+        resize: none;
+        outline: none;
+      }
+    </style>
+    <style>
+      [x-cloak] {
+        display: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>Welcome {{ user }}</h1>
+    </div>
+
+    <div class="container">
+      <div class="messages">
+        <div id="sse-data"></div>
+      </div>
+
+      <form
+        x-cloak
+        @submit.prevent="submit"
+        x-data="{state: 'composing', errors: {}}"
+      >
+        <div>
+          <textarea
+            name="content"
+            @input="state = 'composing'"
+            autofocus
+            placeholder="Your next message..."
+          ></textarea>
+          <button class="btn btn-primary">Send</button>
+        </div>
+
+        <div x-show="state === 'error'">
+          <p>Error sending your message ❌</p>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      let eventSource
+      const sseData = document.getElementById('sse-data')
+
+      function startSSE() {
+        eventSource = new EventSource("{% url 'socials:stream-chat-messages' %}")
+        eventSource.onmessage = (event) => {
+          const data = JSON.parse(event.data)
+          const messageHTML = `
+                    <div class="message-box">
+                        <div class="message-author">${data.author__display_name}</div>
+                        <div class="message-content">${data.content}</div>
+                    </div>`
+          sseData.innerHTML += messageHTML
+        }
+      }
+
+      // On load, start SSE if the browser supports it.
+      if (typeof EventSource !== 'undefined') {
+        startSSE()
+      } else {
+        sseData.innerHTML =
+          "Whoops! Your browser doesn't receive server-sent events."
+      }
+    </script>
+
+    <script>
+      function submit(event) {
+        event.preventDefault()
+        const formData = new FormData(event.target)
+
+        const endpointUrl = "{% url 'socials:create-message' %}"
+        fetch(endpointUrl, {
+          method: 'post',
+          body: formData,
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+        })
+          .then((response) => {
+            this.state = response.ok ? 'success' : 'error'
+            return response.json()
+          })
+          .then((data) => {
+            this.errors = data.errors || {}
+          })
+      }
+    </script>
+    <script
+      defer=""
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.3/dist/cdn.min.js"
+    ></script>
+  </body>
+</html>
+{% endblock content %}

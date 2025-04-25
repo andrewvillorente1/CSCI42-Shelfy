@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User # Added for User model access if needed later
 from user_library.models import UserLibraryItem
-from user_management.models import Profile 
+from user_management.models import Profile # Referenced in original code
 from .models import Chat
 
 from google import genai
@@ -12,11 +12,12 @@ import markdown
 
 def get_user_feedback_summary(user):
     try:
+        # Fetch items with actual feedback (rating or review)
         feedback_items = UserLibraryItem.objects.filter(
             user=user
         ).select_related('media').exclude(
             rating__isnull=True, review__isnull=True, review__exact=''
-        ).order_by('-last_updated')[:10] # Limit to recent 10 feedback items
+        ).order_by('-last_updated')[:10] # Limit to recent 10 feedback items for brevity
 
         if not feedback_items:
             return None
@@ -53,18 +54,26 @@ def ask_gemini(message, display_name="User", feedback_context=None):
 
     print(f"--- Sending prompt to Gemini: ---\n{prompt}\n-------------------------------")
 
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
+        if response and hasattr(response, 'text'):
+             return response.text
+        else:
+             print("Gemini response object issue:", response)
+             return "Sorry, I encountered an issue generating a response."
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt
-    )
-    
-    return response.text
-        
+    except Exception as e:
+        print(f"Error calling Gemini API: {e}")
+        # Log the error
+        return "Sorry, I couldn't connect to the AI service right now."
+
 
 @login_required
 def chatbot(request):
-    chats = Chat.objects.filter(user=request.user).order_by('created_at') 
+    chats = Chat.objects.filter(user=request.user).order_by('created_at') # Added ordering
 
     if request.method == 'POST':
         message = request.POST.get('message')
@@ -74,7 +83,7 @@ def chatbot(request):
         try:
             profile = request.user.profile
             display_name = profile.display_name or request.user.username
-        except Profile.DoesNotExist:
+        except Profile.DoesNotExist:    
             display_name = request.user.username
         except AttributeError:
              display_name = request.user.username
@@ -84,7 +93,7 @@ def chatbot(request):
         raw_response = ask_gemini(
             message,
             display_name=display_name,
-            feedback_context=user_feedback_context
+            feedback_context=user_feedback_context # Pass the summary here
         )
 
         html_response = markdown.markdown(raw_response)
@@ -96,6 +105,8 @@ def chatbot(request):
             created_at=timezone.now()
         )
 
+        # Return the processed response for display
         return JsonResponse({'message': message, 'response': html_response})
 
+    # Render the chat page for GET requests
     return render(request, 'ai/chatbot.html', {'chats': chats})

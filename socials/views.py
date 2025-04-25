@@ -12,7 +12,7 @@ from user_management.models import Profile
 
 @login_required(login_url='login/')
 def chat(request: HttpRequest) -> HttpResponse:
-    return render(request, 'chat.html')
+    return render(request, 'socials.html')
 
 
 @login_required(login_url='login/')

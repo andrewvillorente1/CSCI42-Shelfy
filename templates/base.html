@@ -16,6 +16,135 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
   <style>
+  /* Dark theme search styling for navigation bar */
+  .search-container-nav {
+  position: relative;
+  width: 100%;
+  max-width: 400px; /* Increased from 300px to 400px */
+}
+
+.search-bar-nav {
+  position: relative;
+  width: 100%;
+  background-color: #ffffff; /* Changed from #202124 to white */
+  border-radius: 24px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Lightened shadow */
+}
+
+.search-bar-nav form {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon-nav {
+  position: absolute;
+  left: 16px; /* Increased from 12px to 16px */
+  color: #0071e3; /* Changed from #bdc1c6 to blue */
+  font-size: 18px; /* Increased from 16px to 18px */
+}
+
+.search-bar-nav input {
+  width: 100%;
+  padding: 14px 40px 14px 44px; /* Increased from 10px 36px 10px 36px */
+  border-radius: 24px;
+  border: none;
+  background-color: #ffffff; /* Changed from #202124 to white */
+  color: #202124; /* Changed from #e8eaed to dark text */
+  font-size: 16px; /* Increased from 14px */
+  outline: none;
+}
+
+.clear-search-nav {
+  position: absolute;
+  right: 16px; /* Increased from 12px to 16px */
+  color: #0071e3; /* Changed from #bdc1c6 to blue */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px; /* Increased from 16px to 18px */
+  display: none;
+}
+
+/* Google-style search suggestions */
+.search-suggestions-nav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #ffffff; /* Changed from #202124 to white */
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Lightened shadow */
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  margin-top: -8px;
+  padding-top: 8px;
+}
+
+.suggestion-item-nav {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.suggestion-item-nav:hover {
+  background-color: #f5f5f7; /* Changed from #303134 to light gray */
+}
+
+/* Update the suggestion icon color to match */
+.suggestion-icon-nav {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0071e3; /* Changed from #bdc1c6 to blue */
+}
+
+.suggestion-content-nav {
+  flex: 1;
+}
+
+.suggestion-title-nav {
+  color: #202124; /* Changed from #e8eaed to dark text */
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.suggestion-subtitle-nav {
+  color: #5f6368; /* Changed from #9aa0a6 to darker gray */
+  font-size: 12px;
+}
+
+/* Loading indicator */
+.loading-indicator-nav {
+  display: none;
+  text-align: center;
+  padding: 10px;
+}
+
+.loading-spinner-nav {
+  border: 2px solid rgba(0, 113, 227, 0.2); /* Changed to blue */
+  border-radius: 50%;
+  border-top: 2px solid #0071e3; /* Changed to blue */
+  width: 14px;
+  height: 14px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 /* Chat Toggle Button */
 .chat-toggle-btn {
   width: 40px;
@@ -633,7 +762,7 @@ a:hover {
     transition: all var(--transition-fast);
 }
 
-.search-input::placeholder {
+#search-input::placeholder {
     font-size: 11px;
 }
 
@@ -1422,15 +1551,26 @@ footer {
             </a>
           </li>
 
-          <div class="search-container">
-          <form class="d-flex" action="{% url 'media_search' %}" method="get">
-            <input class="form-control search-input" type="search" name="q" id="searchInput" placeholder="Search books, movies, games" aria-label="Search">
-            <button class="search-btn" type="submit">
-              <i class="fas fa-search"></i>
-            </button>
-          </form>
-          <div class="search-suggestions" id="searchSuggestions"></div>
-        </div>
+          <!-- Replace the existing search form in the navigation bar with this: -->
+<div class="search-container-nav">
+  <div class="search-bar-nav">
+    <form action="{% url 'media_search' %}" method="get" id="nav-search-form">
+      <div class="search-icon-nav">
+        <i class="fas fa-search"></i>
+      </div>
+      <input type="text" name="q" placeholder="Search books, movies, games..." id="search-input" autocomplete="off">
+      <button type="button" class="clear-search-nav" id="nav-clear-search">×</button>
+    </form>
+    <div id="nav-search-suggestions" class="search-suggestions-nav">
+      <!-- Loading indicator -->
+      <div id="nav-loading-indicator" class="loading-indicator-nav">
+        <div class="loading-spinner-nav"></div>
+      </div>
+      
+      <!-- Suggestions will be inserted here -->
+    </div>
+  </div>
+</div>
         </ul>
         
         
@@ -1879,6 +2019,233 @@ footer {
 
 
   });
-  </script>
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Navigation search suggestions functionality
+    const navSearchInput = document.getElementById('search-input');
+    const navSuggestionsContainer = document.getElementById('nav-search-suggestions');
+    const navSearchForm = document.getElementById('nav-search-form');
+    const navLoadingIndicator = document.getElementById('nav-loading-indicator');
+    
+    if (!navSearchInput) return; // Exit if search input doesn't exist
+    
+    let navDebounceTimer;
+    
+    // Show/hide clear button based on initial input content
+    const navClearSearchBtn = document.getElementById('nav-clear-search');
+    if (navClearSearchBtn) {
+      navClearSearchBtn.style.display = navSearchInput.value ? 'block' : 'none';
+      
+      navSearchInput.addEventListener('input', function() {
+        // Show/hide clear button based on input content
+        navClearSearchBtn.style.display = this.value ? 'block' : 'none';
+      
+        const query = this.value.trim();
+        
+        clearTimeout(navDebounceTimer);
+        
+        if (query.length < 2) {
+          navSuggestionsContainer.style.display = 'none';
+          return;
+        }
+        
+        // Show loading indicator
+        navSuggestionsContainer.style.display = 'block';
+        navLoadingIndicator.style.display = 'block';
+        
+        navDebounceTimer = setTimeout(() => {
+          fetchNavSuggestions(query);
+        }, 300);
+      });
+      
+      navSearchInput.addEventListener('focus', function() {
+        const query = this.value.trim();
+        if (query.length >= 2) {
+          // Show loading indicator
+          navSuggestionsContainer.style.display = 'block';
+          navLoadingIndicator.style.display = 'block';
+          fetchNavSuggestions(query);
+        }
+      });
+      
+      // Close suggestions when clicking outside
+      document.addEventListener('click', function(event) {
+        if (!navSearchInput.contains(event.target) && !navSuggestionsContainer.contains(event.target)) {
+          navSuggestionsContainer.style.display = 'none';
+        }
+      });
+      
+      // Submit search form when pressing Enter
+      navSearchInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          navSearchForm.submit();
+        }
+      });
+      
+      // Clear search button functionality
+      navClearSearchBtn.addEventListener('click', function() {
+        navSearchInput.value = '';
+        navClearSearchBtn.style.display = 'none';
+        navSuggestionsContainer.style.display = 'none';
+        navSuggestionsContainer.innerHTML = '';
+        navSearchInput.focus();
+      });
+    }
+    
+    function fetchNavSuggestions(query) {
+      // Always show mock suggestions first for immediate feedback
+      displayNavMockSuggestions(query);
+      
+      fetch(`/search/suggestions/?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+          navLoadingIndicator.style.display = 'none';
+          
+          if (data.error) {
+            console.error('API error:', data.error);
+            return;
+          }
+          
+          if (data.suggestions && data.suggestions.length > 0) {
+            displayNavSuggestions(data.suggestions);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching suggestions:', error);
+          navLoadingIndicator.style.display = 'none';
+        });
+    }
+
+    function displayNavSuggestions(suggestions) {
+      // Clear previous suggestions but keep the loading indicator
+      const tempHTML = navLoadingIndicator.outerHTML;
+      navSuggestionsContainer.innerHTML = tempHTML;
+      navLoadingIndicator.style.display = 'none';
+      
+      if (!suggestions || suggestions.length === 0) {
+        return;
+      }
+      
+      suggestions.forEach((suggestion, index) => {
+        const item = document.createElement('div');
+        item.className = 'suggestion-item-nav';
+        
+        // Determine icon based on media type
+        let iconClass = 'fa-search';
+        if (suggestion.media_type === 'book') {
+          iconClass = 'fa-book';
+        } else if (suggestion.media_type === 'movie') {
+          iconClass = 'fa-film';
+        } else if (suggestion.media_type === 'game') {
+          iconClass = 'fa-gamepad';
+        }
+        
+        // For recent searches (first 2 items), use clock icon
+        if (index < 2 && suggestion.recent) {
+          iconClass = 'fa-clock';
+        }
+        
+        let subtitle = '';
+        if (suggestion.media_type === 'book' && suggestion.author) {
+          subtitle = suggestion.author;
+        } else if (suggestion.media_type === 'movie' && suggestion.year) {
+          subtitle = `Movie — ${suggestion.year}`;
+        } else if (suggestion.media_type === 'game' && suggestion.studio) {
+          subtitle = suggestion.studio;
+        } else if (suggestion.subtitle) {
+          subtitle = suggestion.subtitle;
+        }
+        
+        item.innerHTML = `
+          <div class="suggestion-icon-nav">
+            <i class="fas ${iconClass}"></i>
+          </div>
+          <div class="suggestion-content-nav">
+            <div class="suggestion-title-nav">${suggestion.title}</div>
+            ${subtitle ? `<div class="suggestion-subtitle-nav">${subtitle}</div>` : ''}
+          </div>
+        `;
+        
+        item.addEventListener('click', function() {
+          if (suggestion.external_id) {
+            window.location.href = `/${suggestion.media_type}/${suggestion.external_id}/`;
+          } else {
+            navSearchInput.value = suggestion.title;
+            navSearchForm.submit();
+          }
+        });
+        
+        navSuggestionsContainer.appendChild(item);
+      });
+      
+      // Make suggestion items focusable
+      document.querySelectorAll('.suggestion-item-nav').forEach(item => {
+        item.setAttribute('tabindex', '0');
+      });
+    }
+
+    // Display mock suggestions immediately while waiting for API
+    function displayNavMockSuggestions(query) {
+      const mockSuggestions = [
+        {
+          title: query,
+          media_type: "search",
+          recent: false,
+          subtitle: "Search for exact term"
+        },
+        {
+          title: `${query} movie`,
+          media_type: "movie",
+          recent: false
+        },
+        {
+          title: `${query} book`,
+          media_type: "book",
+          recent: false
+        }
+      ];
+      
+      displayNavSuggestions(mockSuggestions);
+    }
+    
+    // Add keyboard navigation for suggestions
+    document.addEventListener('keydown', function(event) {
+      const suggestions = document.querySelectorAll('.suggestion-item-nav');
+      if (!suggestions.length || navSuggestionsContainer.style.display === 'none') return;
+      
+      const activeElement = document.activeElement;
+      let activeIndex = -1;
+      
+      // Find current active suggestion
+      suggestions.forEach((suggestion, index) => {
+        if (suggestion === activeElement) {
+          activeIndex = index;
+        }
+      });
+      
+      // Handle arrow keys
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (activeIndex < suggestions.length - 1) {
+          suggestions[activeIndex + 1].focus();
+        } else {
+          suggestions[0].focus();
+        }
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (activeIndex > 0) {
+          suggestions[activeIndex - 1].focus();
+        } else {
+          navSearchInput.focus();
+        }
+      } else if (event.key === 'Escape') {
+        navSuggestionsContainer.style.display = 'none';
+        navSearchInput.focus();
+      }
+    });
+  });
+</script>
   </body>
 </html>

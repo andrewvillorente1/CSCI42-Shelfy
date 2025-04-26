@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views import View
 from django.contrib.auth.models import User
@@ -7,6 +7,10 @@ import random
 import json
 from django.shortcuts import get_object_or_404
 from .models import Media
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.db.models import Q
+
 
 # Import the MediaAPIClient
 from .api_utils import MediaAPIClient
@@ -26,48 +30,128 @@ class MediaSearchView(View):
         return render(request, "media/search.html", {"search_results": results, "query": query, "media_type": media_type})
 
 
+# Update the SearchSuggestionsView class to better handle database-based suggestions
+
 class SearchSuggestionsView(View):
     def get(self, request):
         query = request.GET.get("q", "")
+        # Debug print
+        print(f"Received search suggestion request for query: {query}")
 
         if not query or len(query) < 2:
             return JsonResponse({"suggestions": []})
 
-        # Get suggestions from API (limit to 5 results)
+        # Get suggestions from database and API
         suggestions = []
 
-        # Get book suggestions
-        book_results = MediaAPIClient.search_media(query, "book")[:2]
-        for book in book_results:
-            suggestions.append({
-                "title": book["title"],
-                "media_type": "book",
-                "external_id": book["external_id"],
-                "image": book["cover_image"],
-                "author": book.get("author", "")
+        try:
+            # First, try to get suggestions from the database
+            db_suggestions = []
+
+            # Search for media titles in the database that match the query
+            db_media = Media.objects.filter(title__icontains=query)[:8]
+
+            for media in db_media:
+                suggestion = {
+                    "title": media.title,
+                    "media_type": media.media_type,
+                    "external_id": media.external_id,
+                }
+
+                # Add media-specific details
+                if media.media_type == "book":
+                    suggestion["subtitle"] = media.author if media.author else "Book"
+                elif media.media_type == "movie":
+                    suggestion["subtitle"] = f"Movie — {media.release_year}" if media.release_year else "Movie"
+                elif media.media_type == "game":
+                    suggestion["subtitle"] = f"Game — {media.studio}" if media.studio else "Game"
+
+                db_suggestions.append(suggestion)
+
+            # Add database suggestions to the list
+            suggestions.extend(db_suggestions)
+
+            # If we don't have enough suggestions from the database, add some from the API
+            if len(suggestions) < 8:
+                # Try to get real suggestions from API
+                try:
+                    # Get book suggestions
+                    book_results = MediaAPIClient.search_media(query, "book")[
+                        :2]
+                    for book in book_results:
+                        suggestions.append({
+                            "title": book["title"],
+                            "media_type": "book",
+                            "external_id": book["external_id"],
+                            "subtitle": book.get("author", "Book")
+                        })
+
+                    # Get movie suggestions
+                    movie_results = MediaAPIClient.search_media(query, "movie")[
+                        :2]
+                    for movie in movie_results:
+                        suggestions.append({
+                            "title": movie["title"],
+                            "media_type": "movie",
+                            "external_id": movie["external_id"],
+                            "subtitle": f"Movie — {movie.get('release_year', '')}"
+                        })
+
+                    # Get game suggestions
+                    game_results = MediaAPIClient.search_media(query, "game")[
+                        :1]
+                    for game in game_results:
+                        suggestions.append({
+                            "title": game["title"],
+                            "media_type": "game",
+                            "external_id": game["external_id"],
+                            "subtitle": f"Game — {game.get('studio', '')}"
+                        })
+                except Exception as e:
+                    print(f"Error fetching API suggestions: {e}")
+
+            # Add direct search suggestion at the top
+            suggestions.insert(0, {
+                "title": query,
+                "media_type": "search",
+                "subtitle": "Search for exact term"
             })
 
-        # Get movie suggestions
-        movie_results = MediaAPIClient.search_media(query, "movie")[:2]
-        for movie in movie_results:
-            suggestions.append({
-                "title": movie["title"],
-                "media_type": "movie",
-                "external_id": movie["external_id"],
-                "image": movie["cover_image"],
-                "year": movie.get("release_year", "")
-            })
+            # Add category search suggestions if we still need more
+            if len(suggestions) < 8:
+                if not any(s["title"].lower() == f"{query} book".lower() for s in suggestions):
+                    suggestions.append({
+                        "title": f"{query} book",
+                        "media_type": "book",
+                        "subtitle": "Search for books"
+                    })
 
-        # Get game suggestions
-        game_results = MediaAPIClient.search_media(query, "game")[:1]
-        for game in game_results:
-            suggestions.append({
-                "title": game["title"],
-                "media_type": "game",
-                "external_id": game["external_id"],
-                "image": game["cover_image"],
-                "year": game.get("release_year", "")
-            })
+                if not any(s["title"].lower() == f"{query} movie".lower() for s in suggestions):
+                    suggestions.append({
+                        "title": f"{query} movie",
+                        "media_type": "movie",
+                        "subtitle": "Search for movies"
+                    })
+
+                if not any(s["title"].lower() == f"{query} game".lower() for s in suggestions):
+                    suggestions.append({
+                        "title": f"{query} game",
+                        "media_type": "game",
+                        "subtitle": "Search for games"
+                    })
+
+            # Limit to 8 suggestions
+            suggestions = suggestions[:8]
+
+            print(f"Returning {len(suggestions)} suggestions")  # Debug print
+        except Exception as e:
+            print(f"Error in suggestions view: {e}")
+            # Return a basic suggestion if everything fails
+            suggestions = [{
+                "title": query,
+                "media_type": "search",
+                "subtitle": "Search for exact term"
+            }]
 
         return JsonResponse({"suggestions": suggestions})
 
@@ -398,3 +482,148 @@ def media_detail_api(request, media_type, external_id):
         'media_type': media.media_type,
         'external_id': media.external_id,
     })
+
+
+def home(request):
+    return render(request, 'home.html')
+
+
+def media_search(request):
+    query = request.GET.get('q', '')
+    search_results = []
+
+    if query:
+        # Use MediaAPIClient to search for all media types
+        results = MediaAPIClient.search_media(query)
+        search_results = results
+
+    return render(request, 'media/search.html', {
+        'query': query,
+        'search_results': search_results
+    })
+
+
+def search_suggestions(request):
+    query = request.GET.get('q', '')
+
+    if not query or len(query) < 2:
+        return JsonResponse({'suggestions': []})
+
+    try:
+        # Get suggestions from APIs
+        suggestions = []
+
+        # Add book suggestions
+        book_results = MediaAPIClient.search_media(query, "book")[:3]
+        for book in book_results:
+            suggestions.append({
+                'title': book.get('title', 'Unknown Title'),
+                'subtitle': book.get('author', 'Book'),
+                'image': book.get('cover_image', '/static/images/placeholder.jpg'),
+                'media_type': 'book',
+                'external_id': book.get('external_id'),
+                'year': book.get('release_year')
+            })
+
+        # Add movie suggestions
+        movie_results = MediaAPIClient.search_media(query, "movie")[:3]
+        for movie in movie_results:
+            suggestions.append({
+                'title': movie.get('title', 'Unknown Title'),
+                'subtitle': f"Movie — {movie.get('release_year', '')}",
+                'image': movie.get('cover_image', '/static/images/placeholder.jpg'),
+                'media_type': 'movie',
+                'external_id': movie.get('external_id'),
+                'year': movie.get('release_year')
+            })
+
+        # Add game suggestions
+        game_results = MediaAPIClient.search_media(query, "game")[:2]
+        for game in game_results:
+            suggestions.append({
+                'title': game.get('title', 'Unknown Title'),
+                'subtitle': f"Game — {game.get('release_year', '')}",
+                'image': game.get('cover_image', '/static/images/placeholder.jpg'),
+                'media_type': 'game',
+                'external_id': game.get('external_id'),
+                'year': game.get('release_year')
+            })
+
+        # Add direct search suggestion
+        suggestions.insert(0, {
+            'title': query,
+            'subtitle': 'Search for exact term',
+            'media_type': 'search',
+            'recent': False
+        })
+
+        # Add search category suggestions
+        if len(suggestions) < 8:
+            category_suggestions = [
+                {
+                    'title': f"{query} book",
+                    'subtitle': 'Search for books',
+                    'media_type': 'book',
+                    'recent': False
+                },
+                {
+                    'title': f"{query} movie",
+                    'subtitle': 'Search for movies',
+                    'media_type': 'movie',
+                    'recent': False
+                },
+                {
+                    'title': f"{query} game",
+                    'subtitle': 'Search for games',
+                    'media_type': 'game',
+                    'recent': False
+                }
+            ]
+
+            # Add some category suggestions to fill out the list
+            for suggestion in category_suggestions:
+                if len(suggestions) < 8:
+                    suggestions.append(suggestion)
+
+        return JsonResponse({'suggestions': suggestions})
+    except Exception as e:
+        return JsonResponse({'error': str(e), 'suggestions': []})
+
+
+def book_detail(request, book_id):
+    book_details = MediaAPIClient.get_media_details("book", book_id)
+    if not book_details:
+        return render(request, 'media/search_not_found.html')
+    return render(request, 'media/books.html', {'book': book_details})
+
+
+def movie_detail(request, movie_id):
+    movie_details = MediaAPIClient.get_media_details("movie", movie_id)
+    if not movie_details:
+        return render(request, 'media/search_not_found.html')
+    return render(request, 'media/movies.html', {'movie': movie_details})
+
+
+def game_detail(request, game_id):
+    game_details = MediaAPIClient.get_media_details("game", game_id)
+    if not game_details:
+        return render(request, 'media/search_not_found.html')
+    return render(request, 'media/games.html', {'game': game_details})
+
+
+@login_required
+def comments(request):
+    comments = Comment.objects.all().order_by('-created_at')
+    return render(request, 'comments.html', {'comments': comments})
+
+
+@login_required
+@require_POST
+def add_comment(request):
+    form = CommentForms(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.comment_author = request.user
+        comment.save()
+        return redirect('comments')
+    return redirect('comments')

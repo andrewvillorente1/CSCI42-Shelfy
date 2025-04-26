@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
@@ -29,22 +29,27 @@ class UserShelvesView(LoginRequiredMixin, CreateView):
         return context
 
 
-class PublicShelfView(DetailView):
+class PublicShelfView(View):
     model = Shelf
     template_name = 'shelves/public_shelf.html'
     context_object_name = 'shelf'
-
+    
     def get_object(self):
         username = self.kwargs['username']
         user = get_object_or_404(User, username=username)
         return get_object_or_404(Shelf, user=user)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self):
         shelf = self.get_object()
-        context["items"] = ShelfItem.objects.filter(
-            shelf=shelf).select_related('item__media')
-        return context
+        return {
+            "shelf": shelf,
+            "items": ShelfItem.objects.filter(shelf=shelf).select_related('item__media')
+        }
+
+    def get(self, request, *args, **kwargs):
+        shelf = self.get_object()
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
 
 
 class AddToShelfView(LoginRequiredMixin, View):

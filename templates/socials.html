@@ -102,14 +102,14 @@
         @submit.prevent="submit"
         x-data="{state: 'composing', errors: {}}"
       >
-        <div>
+        <div id="text-input">
           <textarea
             name="content"
             @input="state = 'composing'"
             autofocus
             placeholder="Your next message..."
           ></textarea>
-          <button class="btn btn-primary">Send</button>
+          <button class="btn btn-primary" onclick="document.getElementById('text-input').value=''">Send</button>
         </div>
 
         <div x-show="state === 'error'">

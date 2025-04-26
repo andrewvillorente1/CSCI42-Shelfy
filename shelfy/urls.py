@@ -52,7 +52,7 @@ urlpatterns = [
     path('books/', books_view, name='books'),
     path('movies/', movies_view, name='movies'),
     path('games/', games_view, name='games'),
-    path('shelf/', include('shelves.urls')),
+    path('shelf/', include('shelves.urls', namespace='shelves')),
     path('charts/', include('charts.urls')),
     path('comments/', views.comments, name='comments'),
     path('comments/add/', views.add_comment, name='add_comment'),

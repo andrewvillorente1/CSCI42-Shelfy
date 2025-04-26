@@ -8,7 +8,7 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'user_management:profile' shelf.user.username %}">{{ shelf.user.username }}</a></li>
+            <li class="breadcrumb-item"><a> {{ shelf.user.username }}</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{ shelf.name }}</li>
         </ol>
     </nav>

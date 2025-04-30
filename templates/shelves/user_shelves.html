@@ -1,293 +1,123 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}My Shelves{% endblock %}
+{% block title %}My Public Shelf{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="fw-bold">My Shelves</h1>
-        <a href="{% url 'user_library:index' %}" class="btn btn-outline-primary">
-            <i class="fas fa-book me-2"></i>Back to Library
-        </a>
-    </div>
-
-    <div class="row g-4">
-        <!-- Create New Shelf Card -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card shadow-sm h-100 border-0 rounded-4">
-                <div class="card-header bg-gradient-primary text-white py-3 rounded-top-4">
-                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create New Shelf</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post" class="needs-validation" novalidate>
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="form-label fw-medium">Shelf Name</label>
-                            {{ form.name|safe }}
-                            <div class="invalid-feedback">Please provide a shelf name.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label fw-medium">Description</label>
-                            {{ form.description|safe }}
-                            <div class="form-text text-muted">Optional: Add details about this shelf</div>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 py-2 mt-2">
-                            <i class="fas fa-save me-2"></i>Create Shelf
-                        </button>
-                    </form>
-                </div>
-            </div>
+<div class="container mt-4">
+    <h1 class="mb-4">My Public Shelf</h1>
+    
+    <!-- Shelf Settings -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Shelf Settings</h5>
         </div>
-
-        <!-- Existing Shelves -->
-        {% if shelves %}
-            {% for shelf in shelves %}
-            <div class="col-lg-4 col-md-6">
-                <div class="card shadow-sm h-100 border-0 rounded-4">
-                    <div class="card-header bg-gradient-secondary py-3 rounded-top-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 text-truncate">{{ shelf.name }}</h5>
-                            <a href="{% url 'shelves:public_shelf' request.user.username %}" class="btn btn-sm btn-light">
-                                <i class="fas fa-eye me-1"></i>View Public
-                            </a>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        {% if shelf.description %}
-                            <p class="text-muted mb-3">{{ shelf.description }}</p>
-                        {% endif %}
-                        
-                        <h6 class="fw-bold mb-3"><i class="fas fa-layer-group me-2"></i>Items on this shelf:</h6>
-                        
-                        {% if shelf.items.all %}
-                            <div class="shelf-items">
-                                <div class="row g-2">
-                                    {% for shelf_item in shelf.items.all %}
-                                    <div class="col-md-6">
-                                        <div class="card h-100 border shadow-sm">
-                                            <div class="card-body p-2">
-                                                <div class="d-flex align-items-center">
-                                                    {% if shelf_item.item.media.cover_image %}
-                                                    <div class="flex-shrink-0 me-2">
-                                                        <img src="{{ shelf_item.item.media.cover_image }}" alt="{{ shelf_item.item.media.title }}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
-                                                    </div>
-                                                    {% endif %}
-                                                    <div class="flex-grow-1 min-width-0">
-                                                        <h6 class="card-title mb-0 text-truncate">{{ shelf_item.item.media.title }}</h6>
-                                                        <p class="card-text small text-muted mb-0">{{ shelf_item.item.media.get_media_type_display }}</p>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex justify-content-between mt-2">
-                                                    <a href="{% url 'shelves:shelf_item_detail' request.user.username shelf_item.item.id %}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="fas fa-info-circle"></i>
-                                                    </a>
-                                                    <form method="post" action="{% url 'shelves:remove_from_shelf' %}">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="shelf_id" value="{{ shelf.id }}">
-                                                        <input type="hidden" name="item_id" value="{{ shelf_item.item.id }}">
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                            <i class="fas fa-trash-alt"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4">
-                                <div class="mb-3 text-muted">
-                                    <i class="fas fa-book-open fa-3x"></i>
-                                </div>
-                                <p>No items on this shelf yet.</p>
-                                <p class="small text-muted">Add items from your library below.</p>
-                            </div>
-                        {% endif %}
-                    </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="name" class="form-label">Shelf Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ shelf.name }}" required>
                 </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="col-lg-8">
-                <div class="alert alert-info d-flex align-items-center" role="alert">
-                    <i class="fas fa-info-circle fa-lg me-3"></i>
-                    <div>
-                        You don't have any shelves yet. Create one to organize your library items!
-                    </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3">{{ shelf.description }}</textarea>
                 </div>
-            </div>
-        {% endif %}
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+        </div>
     </div>
     
-    <!-- My Library Items Section -->
-    <div class="mt-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold"><i class="fas fa-book me-2"></i>My Library Items</h2>
-            <div class="d-flex gap-2">
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-filter me-1"></i>Filter
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
-                        <li><a class="dropdown-item" href="#">All Items</a></li>
-                        <li><a class="dropdown-item" href="#">Books</a></li>
-                        <li><a class="dropdown-item" href="#">Movies</a></li>
-                        <li><a class="dropdown-item" href="#">Games</a></li>
-                    </ul>
-                </div>
-                <div class="input-group" style="width: 250px;">
-                    <input type="text" class="form-control" placeholder="Search library..." id="searchLibrary">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </div>
+    <!-- Current Shelf Items -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Items on My Shelf</h5>
+            <a href="{% url 'shelves:public_shelf' request.user.username %}" class="btn btn-sm btn-outline-primary">View Public Shelf</a>
         </div>
-
-        {% if library_items %}
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" id="libraryItemsContainer">
-                {% for item in library_items %}
-                <div class="col library-item" data-media-type="{{ item.media.media_type }}">
-                    <div class="card h-100 shadow-sm border-0 rounded-3 hover-card">
-                        <div class="position-relative">
-                            {% if item.media.cover_image %}
-                                <img src="{{ item.media.cover_image }}" class="card-img-top rounded-top-3" alt="{{ item.media.title }}" style="height: 180px; object-fit: cover;">
-                            {% else %}
-                                <div class="bg-light rounded-top-3 d-flex align-items-center justify-content-center" style="height: 180px;">
-                                    <i class="fas fa-image fa-3x text-muted"></i>
-                                </div>
-                            {% endif %}
-                            <div class="position-absolute top-0 end-0 m-2">
-                                <span class="badge bg-{{ item.media.media_type|lower }}-badge">
-                                    {{ item.media.get_media_type_display }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title text-truncate mb-1">{{ item.media.title }}</h5>
-                            <p class="card-text small text-muted mb-3">
-                                {% if item.media.author %}{{ item.media.author }}{% endif %}
-                                {% if item.media.release_year %} ({{ item.media.release_year }}){% endif %}
-                            </p>
-                            
-                            <div class="dropdown mt-2">
-                                <button class="btn btn-primary dropdown-toggle w-100" type="button" id="addToShelfDropdown{{ item.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-plus-circle me-1"></i>Add to Shelf
-                                </button>
-                                <ul class="dropdown-menu w-100" aria-labelledby="addToShelfDropdown{{ item.id }}">
-                                    {% for shelf in shelves %}
-                                    <li>
-                                        <form method="post" action="{% url 'shelves:add_to_shelf' %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="shelf_id" value="{{ shelf.id }}">
-                                            <input type="hidden" name="item_id" value="{{ item.id }}">
-                                            <button type="submit" class="dropdown-item">
-                                                <i class="fas fa-bookmark me-2"></i>{{ shelf.name }}
-                                            </button>
-                                        </form>
-                                    </li>
-                                    {% empty %}
-                                    <li><span class="dropdown-item disabled">No shelves available</span></li>
-                                    {% endfor %}
-                                </ul>
+        <div class="card-body">
+            {% if shelf_items %}
+                <div class="row">
+                    {% for shelf_item in shelf_items %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ shelf_item.item.media.title }}</h5>
+                                <p class="card-text">
+                                    <span class="badge bg-secondary">{{ shelf_item.item.media.get_media_type_display }}</span>
+                                </p>
+                                <form method="post" action="{% url 'shelves:remove_from_shelf' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ shelf_item.item.id }}">
+                                    <button type="submit" class="btn btn-sm btn-danger">Remove from Shelf</button>
+                                </form>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="text-center py-5">
-                <div class="mb-4">
-                    <i class="fas fa-books fa-4x text-muted"></i>
+            {% else %}
+                <p>You haven't added any items to your shelf yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Add Items to Shelf -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Add Items to My Shelf</h5>
+        </div>
+        <div class="card-body">
+            {% if library_items %}
+                <div class="mb-3">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search your library...">
                 </div>
-                <h4>Your library is empty</h4>
-                <p class="text-muted">Add items to your library to start creating shelves.</p>
-                <a href="{% url 'user_library:index' %}" class="btn btn-primary mt-2">
-                    <i class="fas fa-plus-circle me-2"></i>Add to Library
-                </a>
-            </div>
-        {% endif %}
+                <div class="mb-3">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary filter-btn active" data-filter="all">All</button>
+                        <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="BOOK">Books</button>
+                        <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="MOVIE">Movies</button>
+                        <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="GAME">Games</button>
+                    </div>
+                </div>
+                <div class="row" id="libraryItems">
+                    {% for item in library_items %}
+                    <div class="col-md-4 mb-3 library-item" data-type="{{ item.media.media_type }}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.media.title }}</h5>
+                                <p class="card-text">
+                                    <span class="badge bg-secondary">{{ item.media.get_media_type_display }}</span>
+                                </p>
+                                <form method="post" action="{% url 'shelves:add_to_shelf' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                                    <button type="submit" class="btn btn-sm btn-primary">Add to Shelf</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>You don't have any items in your library yet.</p>
+                <a href="{% url 'user_library:index' %}" class="btn btn-primary">Go to My Library</a>
+            {% endif %}
+        </div>
     </div>
 </div>
-
-<style>
-    /* Custom gradients */
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-    }
-    
-    .bg-gradient-secondary {
-        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-    }
-    
-    /* Media type badges */
-    .bg-book-badge {
-        background-color: #28a745;
-    }
-    
-    .bg-movie-badge {
-        background-color: #dc3545;
-    }
-    
-    .bg-game-badge {
-        background-color: #6f42c1;
-    }
-    
-    /* Form styling */
-    .form-control:focus {
-        border-color: #4e73df;
-        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
-    }
-    
-    /* Card hover effect */
-    .hover-card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-    
-    .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
-    
-    /* Rounded corners */
-    .rounded-4 {
-        border-radius: 0.75rem !important;
-    }
-    
-    .rounded-top-4 {
-        border-top-left-radius: 0.75rem !important;
-        border-top-right-radius: 0.75rem !important;
-    }
-    
-    .rounded-3 {
-        border-radius: 0.5rem !important;
-    }
-    
-    .rounded-top-3 {
-        border-top-left-radius: 0.5rem !important;
-        border-top-right-radius: 0.5rem !important;
-    }
-</style>
 
 <script>
     // Search functionality
     document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('searchLibrary');
-        const libraryItems = document.querySelectorAll('.library-item');
-        
+        const searchInput = document.getElementById('searchInput');
         if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
+            searchInput.addEventListener('keyup', function() {
+                const searchValue = this.value.toLowerCase();
+                const items = document.querySelectorAll('.library-item');
                 
-                libraryItems.forEach(item => {
+                items.forEach(item => {
                     const title = item.querySelector('.card-title').textContent.toLowerCase();
-                    const author = item.querySelector('.card-text').textContent.toLowerCase();
-                    
-                    if (title.includes(searchTerm) || author.includes(searchTerm)) {
+                    if (title.includes(searchValue)) {
                         item.style.display = '';
                     } else {
                         item.style.display = 'none';
@@ -296,18 +126,26 @@
             });
         }
         
-        // Form validation
-        const forms = document.querySelectorAll('.needs-validation');
-        
-        Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
                 
-                form.classList.add('was-validated');
-            }, false);
+                const filter = this.getAttribute('data-filter');
+                const items = document.querySelectorAll('.library-item');
+                
+                items.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-type') === filter) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
         });
     });
 </script>

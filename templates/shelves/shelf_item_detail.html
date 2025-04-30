@@ -1,237 +1,222 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ shelf_item.item.media.title }} - {{ shelf_item.shelf.name }}{% endblock %}
+{% block title %}{{ media.title }} - {{ shelf_owner.username }}'s Shelf{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <nav aria-label="breadcrumb" class="mb-4">
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'user_management:profile' shelf_item.shelf.user.username %}">{{ shelf_item.shelf.user.username }}</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'shelves:public_shelf' shelf_item.shelf.user.username %}">{{ shelf_item.shelf.name }}</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ shelf_item.item.media.title }}</li>
+            <li class="breadcrumb-item"><a href="{% url 'shelves:public_shelf' shelf_owner.username %}">{{ shelf_owner.username }}'s Shelf</a></li>
+            <li class="breadcrumb-item active">{{ media.title }}</li>
         </ol>
     </nav>
 
-    <div class="card border-0 shadow-sm rounded-4">
-        <div class="card-body p-0">
-            <div class="row g-0">
-                <!-- Media Cover/Image -->
-                <div class="col-md-4 position-relative">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center mb-4 mb-md-0">
                     {% if media.cover_image %}
-                        <img src="{{ media.cover_image }}" class="img-fluid rounded-start-4 h-100 w-100" alt="{{ media.title }}" style="object-fit: cover;">
+                        <img src="{{ media.cover_image }}" alt="{{ media.title }}" class="img-fluid rounded shadow" style="max-height: 400px;">
                     {% else %}
-                        <div class="bg-light d-flex align-items-center justify-content-center h-100 rounded-start-4">
-                            <i class="fas fa-image fa-5x text-muted"></i>
+                        <div class="placeholder-image rounded" style="height: 400px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-image fa-4x text-muted"></i>
                         </div>
                     {% endif %}
-                    <div class="position-absolute top-0 start-0 m-3">
-                        <span class="badge bg-{{ media.media_type|lower }}-badge fs-6 px-3 py-2">
-                            {{ media.get_media_type_display }}
-                        </span>
+                    
+                    <div class="mt-3">
+                        <span class="badge bg-primary">{{ media.get_media_type_display }}</span>
+                        {% if library_item.status %}
+                            <span class="badge bg-info ms-2">{{ library_item.get_status_display }}</span>
+                        {% endif %}
                     </div>
                 </div>
                 
-                <!-- Media Details -->
                 <div class="col-md-8">
-                    <div class="card-body p-4 p-md-5">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h1 class="card-title mb-0">{{ media.title }}</h1>
-                            {% if request.user == shelf_item.shelf.user %}
-                            <div class="dropdown">
-                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="actionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
-                                    <li>
-                                        <form method="post" action="{% url 'shelves:remove_from_shelf' %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="shelf_id" value="{{ shelf_item.shelf.id }}">
-                                            <input type="hidden" name="item_id" value="{{ shelf_item.item.id }}">
-                                            <button type="submit" class="dropdown-item text-danger">
-                                                <i class="fas fa-trash-alt me-2"></i>Remove from Shelf
-                                            </button>
-                                        </form>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{% url 'user_library:edit' shelf_item.item.id %}"><i class="fas fa-edit me-2"></i>Edit in Library</a></li>
-                                </ul>
-                            </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="mb-4">
-                            <p class="fs-5 text-muted mb-2">
-                                {% if media.author %}{{ media.author }}{% endif %}
-                                {% if media.release_year %} ({{ media.release_year }}){% endif %}
-                            </p>
-                            
-                            {% if library_item.rating %}
-                            <div class="stars mb-2">
-                                {% for i in "12345"|make_list %}
-                                    {% if forloop.counter <= library_item.rating %}
-                                        <i class="fas fa-star text-warning"></i>
-                                    {% elif forloop.counter <= library_item.rating|add:"0.5" %}
-                                        <i class="fas fa-star-half-alt text-warning"></i>
-                                    {% else %}
-                                        <i class="far fa-star text-warning"></i>
-                                    {% endif %}
-                                {% endfor %}
-                                <span class="ms-2 fs-5">{{ library_item.rating }}</span>
-                            </div>
-                            {% endif %}
-                            
-                            {% if media.genre %}
-                            <div class="mb-2">
-                                <span class="badge bg-secondary me-1">{{ media.genre }}</span>
-                            </div>
-                            {% endif %}
-                        </div>
-                        
-                        {% if media.description %}
-                        <div class="mb-4">
-                            <h5 class="fw-bold">Description</h5>
-                            <p>{{ media.description }}</p>
-                        </div>
+                    <h1 class="mb-2">{{ media.title }}</h1>
+                    
+                    <div class="mb-3 text-muted">
+                        {% if media.author %}
+                            <div><strong>Author:</strong> {{ media.author }}</div>
                         {% endif %}
                         
-                        <div class="mb-4">
-                            <h5 class="fw-bold">On Shelf</h5>
-                            <p>
-                                <i class="fas fa-bookmark me-2 text-primary"></i>
-                                <a href="{% url 'shelves:public_shelf' shelf_item.shelf.user.username %}">{{ shelf_item.shelf.name }}</a>
-                                by <a href="{% url 'user_management:profile' shelf_item.shelf.user.username %}">{{ shelf_item.shelf.user.username }}</a>
-                            </p>
-                        </div>
+                        {% if media.director %}
+                            <div><strong>Director:</strong> {{ media.director }}</div>
+                        {% endif %}
                         
-                        {% if library_item.notes %}
-                        <div class="mb-4">
-                            <h5 class="fw-bold">Notes</h5>
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <p class="mb-0">{{ library_item.notes }}</p>
-                                </div>
+                        {% if media.studio %}
+                            <div><strong>Studio:</strong> {{ media.studio }}</div>
+                        {% endif %}
+                        
+                        {% if media.release_year %}
+                            <div><strong>Year:</strong> {{ media.release_year }}</div>
+                        {% endif %}
+                        
+                        {% if media.genre %}
+                            <div><strong>Genre:</strong> {{ media.genre }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if library_item.rating %}
+                    <div class="mb-3">
+                        <strong>Rating:</strong>
+                        <div class="stars">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= library_item.rating %}
+                                    <i class="fas fa-star text-warning"></i>
+                                {% elif forloop.counter <= library_item.rating|add:"0.5" %}
+                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                {% else %}
+                                    <i class="far fa-star text-warning"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="ms-2">{{ library_item.rating }}/5</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if library_item.notes %}
+                    <div class="mb-3">
+                        <h5>Notes from {{ shelf_owner.username }}:</h5>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                {{ library_item.notes|linebreaks }}
                             </div>
                         </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if media.description %}
+                    <div class="mb-3">
+                        <h5>Description:</h5>
+                        <p>{{ media.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'shelves:public_shelf' shelf_owner.username %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Shelf
+                        </a>
+                        
+                        {% if media.external_id %}
+                        <a href="{% url 'media_detail' media_type=media.media_type external_id=media.external_id %}" class="btn btn-primary ms-2">
+                            <i class="fas fa-info-circle me-2"></i>View in Catalog
+                        </a>
                         {% endif %}
                         
-                        {% if library_item.status %}
-                        <div class="mb-4">
-                            <h5 class="fw-bold">Status</h5>
-                            <span class="badge bg-primary fs-6 px-3 py-2">{{ library_item.get_status_display }}</span>
-                        </div>
+                        {% if user.is_authenticated and user != shelf_owner %}
+                        <button class="btn btn-success ms-2" id="addToLibraryBtn">
+                            <i class="fas fa-plus me-2"></i>Add to My Library
+                        </button>
                         {% endif %}
-                        
-                        <div class="d-flex flex-wrap gap-2 mt-4">
-                            {% if request.user.is_authenticated and request.user != shelf_item.shelf.user %}
-                                <button class="btn btn-primary">
-                                    <i class="fas fa-plus-circle me-2"></i>Add to My Library
-                                </button>
-                            {% endif %}
-                            
-                            <a href="#" class="btn btn-outline-primary">
-                                <i class="fas fa-share-alt me-2"></i>Share
-                            </a>
-                            
-                            {% if media.media_type == 'BOOK' %}
-                                <a href="https://www.goodreads.com/search?q={{ media.title|urlencode }}" target="_blank" class="btn btn-outline-secondary">
-                media.title|urlencode}}" target="_blank" class="btn btn-outline-secondary">
-                    <i class="fas fa-external-link-alt me-2"></i>Goodreads
-                </a>
-                            {% elif media.media_type == 'MOVIE' %}
-                                <a href="https://www.imdb.com/find?q={{ media.title|urlencode }}" target="_blank" class="btn btn-outline-secondary">
-                                    <i class="fas fa-external-link-alt me-2"></i>IMDb
-                                </a>
-                            {% elif media.media_type == 'GAME' %}
-                                <a href="https://www.igdb.com/search?type=1&q={{ media.title|urlencode }}" target="_blank" class="btn btn-outline-secondary">
-                                    <i class="fas fa-external-link-alt me-2"></i>IGDB
-                                </a>
-                            {% endif %}
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Related Items Section -->
-    <div class="mt-5">
-        <h3 class="mb-4"><i class="fas fa-layer-group me-2"></i>More from this shelf</h3>
-        
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-            {% for related_item in shelf_item.shelf.items.all|slice:":4" %}
-                {% if related_item != shelf_item %}
-                <div class="col">
-                    <div class="card h-100 shadow-sm hover-card">
-                        <div class="position-relative">
-                            {% if related_item.item.media.cover_image %}
-                                <img src="{{ related_item.item.media.cover_image }}" class="card-img-top" alt="{{ related_item.item.media.title }}" style="height: 180px; object-fit: cover;">
-                            {% else %}
-                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
-                                    <i class="fas fa-image fa-3x text-muted"></i>
-                                </div>
-                            {% endif %}
-                            <div class="position-absolute top-0 end-0 m-2">
-                                <span class="badge bg-{{ related_item.item.media.media_type|lower }}-badge">
-                                    {{ related_item.item.media.get_media_type_display }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title text-truncate">{{ related_item.item.media.title }}</h5>
-                            <p class="card-text small text-muted">
-                                {% if related_item.item.media.author %}{{ related_item.item.media.author }}{% endif %}
-                                {% if related_item.item.media.release_year %} ({{ related_item.item.media.release_year }}){% endif %}
-                            </p>
-                            <a href="{% url 'shelves:shelf_item_detail' shelf_item.shelf.user.username related_item.item.id %}" class="btn btn-outline-primary w-100 mt-2">
-                                <i class="fas fa-info-circle me-2"></i>View Details
-                            </a>
-                        </div>
+    {% if user.is_authenticated and user != shelf_owner %}
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Follow {{ shelf_owner.username }}</h5>
+        </div>
+        <div class="card-body">
+            <p>Like {{ shelf_owner.username }}'s taste? Follow them to see their latest additions and recommendations.</p>
+            <button class="btn btn-primary" id="followUserBtn">
+                <i class="fas fa-user-plus me-2"></i>Follow
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if user.is_authenticated and user != shelf_owner %}
+<!-- Add to Library Modal -->
+<div class="modal fade" id="addToLibraryModal" tabindex="-1" aria-labelledby="addToLibraryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addToLibraryModalLabel">Add to My Library</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addToLibraryForm" method="post" action="{% url 'user_library:add' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="media_type" value="{{ media.media_type }}">
+                    <input type="hidden" name="external_id" value="{{ media.external_id }}">
+                    
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="PLAN_TO_READ">Plan to Read/Watch/Play</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="COMPLETED">Completed</option>
+                            <option value="ON_HOLD">On Hold</option>
+                            <option value="DROPPED">Dropped</option>
+                        </select>
                     </div>
-                </div>
-                {% endif %}
-            {% endfor %}
+                    
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating</label>
+                        <select class="form-select" id="rating" name="rating">
+                            <option value="">No Rating</option>
+                            <option value="1">1 - Poor</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="3">3 - Good</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="5">5 - Excellent</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add your thoughts..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitAddToLibrary">Add to Library</button>
+            </div>
         </div>
     </div>
 </div>
+{% endif %}
 
-<style>
-    /* Custom gradients */
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-    }
-    
-    /* Media type badges */
-    .bg-book-badge {
-        background-color: #28a745;
-    }
-    
-    .bg-movie-badge {
-        background-color: #dc3545;
-    }
-    
-    .bg-game-badge {
-        background-color: #6f42c1;
-    }
-    
-    /* Card hover effect */
-    .hover-card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-    
-    .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
-    
-    /* Rounded corners */
-    .rounded-4 {
-        border-radius: 0.75rem !important;
-    }
-    
-    .rounded-start-4 {
-        border-top-left-radius: 0.75rem !important;
-        border-bottom-left-radius: 0.75rem !important;
-    }
-</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if user.is_authenticated and user != shelf_owner %}
+        // Add to Library functionality
+        const addToLibraryBtn = document.getElementById('addToLibraryBtn');
+        const submitAddToLibrary = document.getElementById('submitAddToLibrary');
+        
+        if (addToLibraryBtn) {
+            addToLibraryBtn.addEventListener('click', function() {
+                const modal = new bootstrap.Modal(document.getElementById('addToLibraryModal'));
+                modal.show();
+            });
+        }
+        
+        if (submitAddToLibrary) {
+            submitAddToLibrary.addEventListener('click', function() {
+                document.getElementById('addToLibraryForm').submit();
+            });
+        }
+        
+        // Follow user functionality
+        const followUserBtn = document.getElementById('followUserBtn');
+        if (followUserBtn) {
+            followUserBtn.addEventListener('click', function() {
+                // This would be connected to your follow user API
+                alert('Follow functionality will be implemented soon!');
+                // Change button text and style after following
+                this.innerHTML = '<i class="fas fa-check me-2"></i>Following';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-success');
+            });
+        }
+        {% endif %}
+    });
+</script>
 {% endblock %}

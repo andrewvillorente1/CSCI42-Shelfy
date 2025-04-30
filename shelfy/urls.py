@@ -8,13 +8,15 @@ from .views import MediaSearchView, MediaDetailView, home_view, SearchSuggestion
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('user/', include('user_management.urls')),
-    path('library/', include('user_library.urls', namespace='user_library')),
-    path("ai/", include("ai.urls")),
-    path('socials/', include('socials.urls')),
-    path('statistics/', include('charts.urls', namespace='statistics')),
-    # Home page URLs
     path('', views.home, name='home'),
+    path('library/', include('user_library.urls')),
+    path('user/', include('user_management.urls')),
+    path('charts/', include('charts.urls')),
+    path('ai/', include('ai.urls')),
+    path('social/', include('socials.urls')),
+    # Add this line to include shelves URLs
+    path('shelf/', include('shelves.urls')),
+    # Home page URLs
     path('home/', home_view, name='home_alt'),
 
     # Search and detail URLs
@@ -52,8 +54,6 @@ urlpatterns = [
     path('books/', books_view, name='books'),
     path('movies/', movies_view, name='movies'),
     path('games/', games_view, name='games'),
-    path('shelf/', include('shelves.urls')),
-    path('charts/', include('charts.urls')),
     path('comments/', views.comments, name='comments'),
     path('comments/add/', views.add_comment, name='add_comment'),
 

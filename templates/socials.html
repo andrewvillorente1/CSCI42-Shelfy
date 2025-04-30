@@ -128,7 +128,11 @@
           const data = JSON.parse(event.data)
           const messageHTML = `
                     <div class="message-box">
-                        <div class="message-author">${data.author__display_name}</div>
+                        <div class="message-author">
+                          <a href=/shelf/user/${data.author__user__username}/>
+                            ${data.author__display_name}
+                          </a>
+                        </div>
                         <div class="message-content">${data.content}</div>
                     </div>`
           sseData.innerHTML += messageHTML

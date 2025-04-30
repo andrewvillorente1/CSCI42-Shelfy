@@ -46,7 +46,7 @@ async def stream_chat_messages(request: HttpRequest) -> StreamingHttpResponse:
         # Continuously check for new messages
         while True:
             new_messages = models.Message.objects.filter(id__gt=last_id).order_by('created_at').values(
-                'id', 'author__display_name', 'content'
+                'id', 'author__display_name', 'author__user__username', 'content'
             )
             async for message in new_messages:
                 yield f"data: {json.dumps(message)}\n\n"
@@ -56,7 +56,7 @@ async def stream_chat_messages(request: HttpRequest) -> StreamingHttpResponse:
 
     async def get_existing_messages() -> AsyncGenerator:
         messages = models.Message.objects.all().order_by('created_at').values(
-            'id', 'author__display_name', 'content'
+            'id', 'author__display_name', 'author__user__username',  'content'
         )
         async for message in messages:
             yield f"data: {json.dumps(message)}\n\n"

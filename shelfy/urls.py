@@ -11,9 +11,9 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('library/', include('user_library.urls')),
     path('user/', include('user_management.urls')),
-    path('charts/', include('charts.urls')),
+    path('statistics/', include('charts.urls')),
     path('ai/', include('ai.urls')),
-    path('social/', include('socials.urls')),
+    path('socials/', include('socials.urls')),
     # Add this line to include shelves URLs
     path('shelf/', include('shelves.urls')),
     # Home page URLs
@@ -55,7 +55,6 @@ urlpatterns = [
     path('movies/', movies_view, name='movies'),
     path('games/', games_view, name='games'),
     path('shelf/', include('shelves.urls', namespace='shelves')),
-    path('charts/', include('charts.urls')),
     path('comments/', views.comments, name='comments'),
     path('comments/add/', views.add_comment, name='add_comment'),
 

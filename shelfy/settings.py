@@ -153,8 +153,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-LOGIN_URL = "/login"
-LOGOUT_REDIRECT_URL = '/login'
+LOGIN_URL = "/login/"
+LOGOUT_REDIRECT_URL = '/login/'
 LOGIN_REDIRECT_URL = 'user_management:dashboard'
 
 # Default primary key field type

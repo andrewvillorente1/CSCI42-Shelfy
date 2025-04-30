@@ -1,138 +1,253 @@
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
-from django.views.generic import DetailView, CreateView
 from django.contrib.auth.models import User
-from django.urls import reverse_lazy
+from django.http import JsonResponse, Http404
+from django.views.decorators.http import require_POST
+from django.db import transaction
+
 from .models import Shelf, ShelfItem
 from user_library.models import UserLibraryItem
 
 
-class UserShelvesView(LoginRequiredMixin, CreateView):
-    model = Shelf
-    fields = ['name', 'description']
-    template_name = 'shelves/user_shelves.html'
-    success_url = reverse_lazy('shelves:user_shelves')
-    context_object_name = 'form'
+@login_required
+def user_shelves(request):
+    """
+    View for managing a user's shelves.
+    Each user has one default shelf for now.
+    """
+    # Handle the case where a user might have multiple shelves
+    shelves = Shelf.objects.filter(user=request.user)
 
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        messages.success(self.request, "Shelf created successfully.")
-        return super().form_valid(form)
+    if shelves.count() > 1:
+        # Keep the first shelf and merge items from other shelves
+        primary_shelf = shelves.first()
+        with transaction.atomic():
+            for shelf in shelves.exclude(id=primary_shelf.id):
+                # Move items from other shelves to the primary shelf
+                for item in ShelfItem.objects.filter(shelf=shelf):
+                    # Only add if not already on the primary shelf
+                    if not ShelfItem.objects.filter(shelf=primary_shelf, item=item.item).exists():
+                        ShelfItem.objects.create(
+                            shelf=primary_shelf, item=item.item)
+                # Delete the extra shelf
+                shelf.delete()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['shelves'] = Shelf.objects.filter(user=self.request.user)
-        context['library_items'] = UserLibraryItem.objects.filter(
-            user=self.request.user)
-        return context
+        messages.info(request, "We've consolidated your shelves into one.")
+        shelf = primary_shelf
+    elif shelves.count() == 1:
+        shelf = shelves.first()
+    else:
+        # Create a new shelf if none exists
+        shelf = Shelf.objects.create(user=request.user)
 
+    # Handle form submission to update shelf settings
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
 
-class PublicShelfView(View):
-    model = Shelf
-    template_name = 'shelves/public_shelf.html'
-    context_object_name = 'shelf'
-    
-    def get_object(self):
-        username = self.kwargs['username']
-        user = get_object_or_404(User, username=username)
-        return get_object_or_404(Shelf, user=user)
-
-    def get_context_data(self):
-        shelf = self.get_object()
-        return {
-            "shelf": shelf,
-            "items": ShelfItem.objects.filter(shelf=shelf).select_related('item__media')
-        }
-
-    def get(self, request, *args, **kwargs):
-        shelf = self.get_object()
-        context = self.get_context_data()
-        return render(request, self.template_name, context)
-
-
-class AddToShelfView(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        shelf_id = request.POST.get("shelf_id")
-        item_id = request.POST.get("item_id")
-
-        if not shelf_id or not item_id:
-            messages.error(request, "Missing required parameters.")
-            return redirect("shelves:user_shelves")
-
-        shelf = get_object_or_404(Shelf, id=shelf_id, user=request.user)
-        user_library_item = get_object_or_404(
-            UserLibraryItem, id=item_id, user=request.user)
-
-        # Get item title safely
-        item_title = "Item"
-        if hasattr(user_library_item, 'media') and user_library_item.media:
-            if hasattr(user_library_item.media, 'title'):
-                item_title = user_library_item.media.title
-            elif hasattr(user_library_item, 'title'):
-                item_title = user_library_item.title
-
-        if ShelfItem.objects.filter(shelf=shelf, item=user_library_item).exists():
-            messages.info(
-                request, f"{item_title} is already on '{shelf.name}'.")
+        if name:
+            shelf.name = name
+            shelf.description = description
+            shelf.save()
+            messages.success(request, "Your shelf has been updated!")
         else:
-            ShelfItem.objects.create(shelf=shelf, item=user_library_item)
-            messages.success(request, f"Added {item_title} to '{shelf.name}'.")
+            messages.error(request, "Shelf name cannot be empty.")
 
-        return redirect("shelves:user_shelves")
+        return redirect('shelves:user_shelves')
 
+    # Get all library items that are not already on the shelf
+    library_items = UserLibraryItem.objects.filter(user=request.user)
 
-class RemoveFromShelfView(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        shelf_id = request.POST.get("shelf_id")
-        item_id = request.POST.get("item_id")
+    # Get all shelf items
+    shelf_items = ShelfItem.objects.filter(shelf=shelf)
 
-        if not shelf_id or not item_id:
-            messages.error(request, "Missing required parameters.")
-            return redirect("shelves:user_shelves")
+    # Get IDs of items already on the shelf
+    shelf_item_ids = shelf_items.values_list('item_id', flat=True)
 
-        shelf = get_object_or_404(Shelf, id=shelf_id, user=request.user)
-        shelf_item = ShelfItem.objects.filter(
-            shelf=shelf, item__id=item_id).first()
+    # Filter library items to exclude those already on the shelf
+    available_library_items = library_items.exclude(id__in=shelf_item_ids)
 
-        if shelf_item:
-            # Get item title safely
-            item_title = "Item"
-            if hasattr(shelf_item.item, 'media') and shelf_item.item.media:
-                if hasattr(shelf_item.item.media, 'title'):
-                    item_title = shelf_item.item.media.title
-                elif hasattr(shelf_item.item, 'title'):
-                    item_title = shelf_item.item.title
+    context = {
+        'shelf': shelf,
+        'shelf_items': shelf_items,
+        'library_items': available_library_items,
+    }
 
-            shelf_item.delete()
-            messages.success(
-                request, f"Removed {item_title} from '{shelf.name}'.")
-        else:
-            messages.warning(request, f"Item not found on '{shelf.name}'.")
-
-        return redirect("shelves:user_shelves")
+    return render(request, 'shelves/user_shelves.html', context)
 
 
-class ShelfItemDetailView(DetailView):
-    model = ShelfItem
-    template_name = 'shelves/shelf_item_detail.html'
-    context_object_name = 'shelf_item'
+@login_required
+@require_POST
+def add_to_shelf(request):
+    """
+    Add a library item to the user's shelf.
+    """
+    item_id = request.POST.get('item_id')
 
-    def get_object(self):
-        username = self.kwargs['username']
-        item_id = self.kwargs['item_id']
+    if not item_id:
+        messages.error(request, "No item selected.")
+        return redirect('shelves:user_shelves')
 
-        user = get_object_or_404(User, username=username)
-        # Find the shelf that contains this item for this user
-        shelf_item = get_object_or_404(ShelfItem,
-                                       item__id=item_id,
-                                       shelf__user=user)
-        return shelf_item
+    # Handle the case where a user might have multiple shelves
+    shelves = Shelf.objects.filter(user=request.user)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["library_item"] = self.object.item
-        if hasattr(self.object.item, 'media'):
-            context["media"] = self.object.item.media
-        return context
+    if shelves.count() > 1:
+        # Keep the first shelf and merge items from other shelves
+        primary_shelf = shelves.first()
+        with transaction.atomic():
+            for shelf in shelves.exclude(id=primary_shelf.id):
+                # Move items from other shelves to the primary shelf
+                for item in ShelfItem.objects.filter(shelf=shelf):
+                    # Only add if not already on the primary shelf
+                    if not ShelfItem.objects.filter(shelf=primary_shelf, item=item.item).exists():
+                        ShelfItem.objects.create(
+                            shelf=primary_shelf, item=item.item)
+                # Delete the extra shelf
+                shelf.delete()
+
+        shelf = primary_shelf
+    elif shelves.count() == 1:
+        shelf = shelves.first()
+    else:
+        # Create a new shelf if none exists
+        shelf = Shelf.objects.create(user=request.user)
+
+    # Get the library item
+    try:
+        library_item = UserLibraryItem.objects.get(
+            id=item_id, user=request.user)
+    except UserLibraryItem.DoesNotExist:
+        messages.error(request, "Item not found in your library.")
+        return redirect('shelves:user_shelves')
+
+    # Check if the item is already on the shelf
+    if ShelfItem.objects.filter(shelf=shelf, item=library_item).exists():
+        messages.info(
+            request, f"'{library_item.media.title}' is already on your shelf.")
+    else:
+        # Add the item to the shelf
+        ShelfItem.objects.create(shelf=shelf, item=library_item)
+        messages.success(
+            request, f"'{library_item.media.title}' added to your shelf!")
+
+    return redirect('shelves:user_shelves')
+
+
+@login_required
+@require_POST
+def remove_from_shelf(request):
+    """
+    Remove a library item from the user's shelf.
+    """
+    item_id = request.POST.get('item_id')
+
+    if not item_id:
+        messages.error(request, "No item selected.")
+        return redirect('shelves:user_shelves')
+
+    # Handle the case where a user might have multiple shelves
+    shelves = Shelf.objects.filter(user=request.user)
+
+    if shelves.count() > 1:
+        # Keep the first shelf and merge items from other shelves
+        primary_shelf = shelves.first()
+        with transaction.atomic():
+            for shelf in shelves.exclude(id=primary_shelf.id):
+                # Move items from other shelves to the primary shelf
+                for item in ShelfItem.objects.filter(shelf=shelf):
+                    # Only add if not already on the primary shelf
+                    if not ShelfItem.objects.filter(shelf=primary_shelf, item=item.item).exists():
+                        ShelfItem.objects.create(
+                            shelf=primary_shelf, item=item.item)
+                # Delete the extra shelf
+                shelf.delete()
+
+        shelf = primary_shelf
+    elif shelves.count() == 1:
+        shelf = shelves.first()
+    else:
+        messages.error(request, "You don't have a shelf yet.")
+        return redirect('shelves:user_shelves')
+
+    # Get the library item
+    try:
+        library_item = UserLibraryItem.objects.get(
+            id=item_id, user=request.user)
+    except UserLibraryItem.DoesNotExist:
+        messages.error(request, "Item not found in your library.")
+        return redirect('shelves:user_shelves')
+
+    # Remove the item from the shelf
+    try:
+        shelf_item = ShelfItem.objects.get(shelf=shelf, item=library_item)
+        shelf_item.delete()
+        messages.success(
+            request, f"'{library_item.media.title}' removed from your shelf.")
+    except ShelfItem.DoesNotExist:
+        messages.error(request, "Item not found on your shelf.")
+
+    return redirect('shelves:user_shelves')
+
+
+def public_shelf(request, username):
+    """
+    View a user's public shelf.
+    """
+    # Get the user
+    user = get_object_or_404(User, username=username)
+
+    # Handle the case where a user might have multiple shelves
+    shelves = Shelf.objects.filter(user=user)
+
+    if shelves.count() > 0:
+        # Just use the first shelf for public viewing
+        shelf = shelves.first()
+    else:
+        raise Http404("This user doesn't have a public shelf.")
+
+    # Get all items on the shelf
+    items = ShelfItem.objects.filter(shelf=shelf)
+
+    context = {
+        'shelf': shelf,
+        'items': items,
+        'shelf_owner': user,
+    }
+
+    return render(request, 'shelves/public_shelf.html', context)
+
+
+def shelf_item_detail(request, username, item_id):
+    """
+    View details of a specific item on a user's shelf.
+    """
+    # Get the user
+    user = get_object_or_404(User, username=username)
+
+    # Handle the case where a user might have multiple shelves
+    shelves = Shelf.objects.filter(user=user)
+
+    if shelves.count() > 0:
+        # Just use the first shelf for public viewing
+        shelf = shelves.first()
+    else:
+        raise Http404("This user doesn't have a public shelf.")
+
+    # Get the library item
+    library_item = get_object_or_404(UserLibraryItem, id=item_id)
+
+    # Get the shelf item
+    shelf_item = get_object_or_404(ShelfItem, shelf=shelf, item=library_item)
+
+    # Get the media
+    media = library_item.media
+
+    context = {
+        'shelf_item': shelf_item,
+        'library_item': library_item,
+        'media': media,
+        'shelf_owner': user,
+    }
+
+    return render(request, 'shelves/shelf_item_detail.html', context)

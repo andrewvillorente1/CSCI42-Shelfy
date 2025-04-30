@@ -4,155 +4,384 @@
 {% block title %}{{ shelf.name }} - {{ shelf.user.username }}'s Shelf{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a> {{ shelf.user.username }}</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ shelf.name }}</li>
-        </ol>
-    </nav>
-
-    <div class="card border-0 shadow-sm rounded-4 mb-5">
-        <div class="card-header bg-gradient-primary text-white py-4 rounded-top-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="h2 mb-1">{{ shelf.name }}</h1>
-                    <p class="mb-0">
-                        <i class="fas fa-user me-2"></i>{{ shelf.user.username }}'s shelf
-                    </p>
-                </div>
-                {% if request.user == shelf.user %}
-                <a href="{% url 'shelves:user_shelves' %}" class="btn btn-light">
-                    <i class="fas fa-edit me-2"></i>Edit Shelf
-                </a>
-                {% endif %}
-            </div>
-        </div>
-        <div class="card-body p-4">
-            {% if shelf.description %}
-            <div class="mb-4">
-                <h5 class="text-muted mb-2">About this shelf</h5>
-                <p>{{ shelf.description }}</p>
-            </div>
-            <hr>
-            {% endif %}
-            
-            <h4 class="mb-4"><i class="fas fa-layer-group me-2"></i>Items on this shelf</h4>
-            
-            {% if items %}
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
-                    {% for shelf_item in items %}
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-card">
-                            <div class="position-relative">
-                                {% if shelf_item.item.media.cover_image %}
-                                    <img src="{{ shelf_item.item.media.cover_image }}" class="card-img-top" alt="{{ shelf_item.item.media.title }}" style="height: 200px; object-fit: cover;">
-                                {% else %}
-                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                        <i class="fas fa-image fa-3x text-muted"></i>
-                                    </div>
-                                {% endif %}
-                                <div class="position-absolute top-0 end-0 m-2">
-                                    <span class="badge bg-{{ shelf_item.item.media.media_type|lower }}-badge">
-                                        {{ shelf_item.item.media.get_media_type_display }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <h5 class="card-title">{{ shelf_item.item.media.title }}</h5>
-                                <p class="card-text text-muted">
-                                    {% if shelf_item.item.media.author %}{{ shelf_item.item.media.author }}{% endif %}
-                                    {% if shelf_item.item.media.release_year %} ({{ shelf_item.item.media.release_year }}){% endif %}
-                                </p>
-                                
-                                {% if shelf_item.item.rating %}
-                                <div class="mb-3">
-                                    <div class="stars">
-                                        {% for i in "12345"|make_list %}
-                                            {% if forloop.counter <= shelf_item.item.rating %}
-                                                <i class="fas fa-star text-warning"></i>
-                                            {% elif forloop.counter <= shelf_item.item.rating|add:"0.5" %}
-                                                <i class="fas fa-star-half-alt text-warning"></i>
-                                            {% else %}
-                                                <i class="far fa-star text-warning"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                        <span class="ms-1 text-muted small">{{ shelf_item.item.rating }}</span>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                
-                                <a href="{% url 'shelves:shelf_item_detail' shelf.user.username shelf_item.item.id %}" class="btn btn-outline-primary w-100">
-                                    <i class="fas fa-info-circle me-2"></i>View Details
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="text-center py-5">
-                    <div class="mb-4">
-                        <i class="fas fa-book-open fa-4x text-muted"></i>
-                    </div>
-                    <h4>This shelf is empty</h4>
-                    <p class="text-muted">No items have been added to this shelf yet.</p>
-                </div>
-            {% endif %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ shelf.name }}</h1>
+        <div>
+            <span class="text-muted">Shelf by: {{ shelf.user.username }}</span>
         </div>
     </div>
     
-    {% if request.user.is_authenticated and request.user != shelf.user %}
-    <div class="card border-0 shadow-sm rounded-4">
-        <div class="card-body p-4">
-            <h4 class="mb-3">Follow {{ shelf.user.username }}</h4>
-            <p class="text-muted">Stay updated with {{ shelf.user.username }}'s activity and recommendations.</p>
-            <button class="btn btn-primary">
-                <i class="fas fa-user-plus me-2"></i>Follow
-            </button>
+    {% if shelf.description %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <p class="card-text">{{ shelf.description }}</p>
         </div>
     </div>
     {% endif %}
+    
+    
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .bookshelf-container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .bookshelf {
+            height: 220px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            padding: 0 20px;
+        }
+        .books-wrapper {
+            display: flex;
+            gap: 4px;
+            transform: translateX(0px);
+            transition: transform 0.5s ease;
+        }
+        .book {
+            height: 220px;
+            display: flex;
+            flex-shrink: 0;
+            perspective: 1000px;
+            cursor: pointer;
+            transition: width 0.5s ease;
+        }
+        .book:not(.selected) {
+            width: 41.5px;
+        }
+        .book.selected {
+            width: 207.5px; /* 41.5px (spine) + 166px (cover) */
+        }
+        .spine {
+            width: 41.5px;
+            height: 220px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            flex-shrink: 0;
+            transform-origin: right;
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d;
+            position: relative;
+            z-index: 2;
+            filter: brightness(0.8) contrast(2);
+        }
+        .book:not(.selected) .spine {
+            transform: rotateY(0deg);
+        }
+        .book.selected .spine {
+            transform: rotateY(-60deg);
+        }
+        .spine-content {
+            writing-mode: vertical-rl;
+            padding-top: 12px;
+            font-weight: bold;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 196px;
+            user-select: none;
+        }
+        .cover {
+            width: 166px;
+            height: 220px;
+            transform-origin: left;
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d;
+            overflow: hidden;
+            position: relative;
+            filter: brightness(0.8) contrast(2);
+        }
+        .book:not(.selected) .cover {
+            transform: rotateY(88.8deg);
+        }
+        .book.selected .cover {
+            transform: rotateY(30deg);
+        }
+        .cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+        .cover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 2px, rgba(255, 255, 255, 0.5) 3px, rgba(255, 255, 255, 0.25) 4px, rgba(255, 255, 255, 0.25) 6px, transparent 7px, transparent 9px, rgba(255, 255, 255, 0.25) 9px, transparent 12px);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .paper-texture {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="8"/><feDiffuseLighting in="noise" lighting-color="white" surfaceScale="1"><feDistantLight azimuth="45" elevation="35"/></feDiffuseLighting></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>');
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .nav-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+        .nav-button.prev {
+            left: -36px;
+        }
+        .nav-button.next {
+            right: -36px;
+        }
+        .nav-button svg {
+            width: 12px;
+            height: 12px;
+        }
+        .book-details-card {
+            background-color: #f5f5dc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 40px auto 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 700px;
+            text-align: center;
+            min-height: 300px;
+        }
+        .book-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1a202c;
+        }
+        .book-meta {
+            font-size: 18px;
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        .book-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        /* Media type badges */
+        .media-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .media-badge.BOOK {
+            background-color: #4299e1;
+            color: white;
+        }
+        .media-badge.MOVIE {
+            background-color: #f56565;
+            color: white;
+        }
+        .media-badge.GAME {
+            background-color: #48bb78;
+            color: white;
+        }
+        
+        /* Spine colors based on media type */
+        .spine.BOOK {
+            background-color: #4299e1;
+        }
+        .spine.MOVIE {
+            background-color: #f56565;
+        }
+        .spine.GAME {
+            background-color: #48bb78;
+        }
+    </style>
+    
+    {% if items %}
+        <div class="bookshelf-container">
+            <button class="nav-button prev">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+                </svg>
+            </button>
+            
+            <div class="bookshelf">
+                <div class="books-wrapper">
+                   {% for shelf_item in items %}
+                      <div class="book shelf-item" 
+                           data-type="{{ shelf_item.item.media.media_type }}"
+                           data-title="{{ shelf_item.item.media.title }}"
+                           data-author="{% if shelf_item.item.media.author %}{{ shelf_item.item.media.author }}{% elif shelf_item.item.media.director %}{{ shelf_item.item.media.director }}{% elif shelf_item.item.media.studio %}{{ shelf_item.item.media.studio }}{% else %}Unknown{% endif %}"
+                           data-year="{% if shelf_item.item.media.release_year %}{{ shelf_item.item.media.release_year }}{% else %}Unknown{% endif %}"
+                           data-description="{% if shelf_item.item.media.description %}{{ shelf_item.item.media.description }}{% else %}No description available.{% endif %}"
+                           data-url="{% url 'shelves:shelf_item_detail' shelf_item.shelf.user.username shelf_item.item.id %}">
+                         <div class="spine {{ shelf_item.item.media.media_type }}">
+                               <div class="spine-content" style="color: #fff;">{{ shelf_item.item.media.title }}</div>
+                               <div class="paper-texture"></div>
+                         </div>
+                         <div class="cover">
+                               <img src="{{ shelf_item.item.media.cover_image }}" alt="{{ shelf_item.item.media.title }}">
+                               <div class="paper-texture"></div>
+                         </div>
+                      </div>
+                   {% endfor %}
+                </div>
+            </div>
+            
+            <button class="nav-button next">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="book-details-card">
+            <h1 class="book-title">Select an item</h1>
+            <div class="book-meta">Click on any item to see details</div>
+            <div class="book-description">This shelf contains {{ items|length }} items. Select one to view more information.</div>
+            <div class="action-buttons">
+                <a href="#" class="btn btn-primary view-details-btn" style="display: none;">View Full Details</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            This shelf is empty. {{ shelf.user.username }} hasn't added any items yet.
+        </div>
+    {% endif %}
 </div>
 
-<style>
-    /* Custom gradients */
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-    }
-    
-    /* Media type badges */
-    .bg-book-badge {
-        background-color: #28a745;
-    }
-    
-    .bg-movie-badge {
-        background-color: #dc3545;
-    }
-    
-    .bg-game-badge {
-        background-color: #6f42c1;
-    }
-    
-    /* Card hover effect */
-    .hover-card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-    
-    .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
-    
-    /* Rounded corners */
-    .rounded-4 {
-        border-radius: 0.75rem !important;
-    }
-    
-    .rounded-top-4 {
-        border-top-left-radius: 0.75rem !important;
-        border-top-right-radius: 0.75rem !important;
-    }
-</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const books = document.querySelectorAll('.book');
+        const booksWrapper = document.querySelector('.books-wrapper');
+        const prevButton = document.querySelector('.nav-button.prev');
+        const nextButton = document.querySelector('.nav-button.next');
+        const bookTitle = document.querySelector('.book-title');
+        const bookMeta = document.querySelector('.book-meta');
+        const bookDescription = document.querySelector('.book-description');
+        const viewDetailsBtn = document.querySelector('.view-details-btn');
+        
+        let currentPosition = 0;
+        const bookWidth = 45.5; // spine width + gap
+        
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                const items = document.querySelectorAll('.shelf-item');
+                
+                items.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-type') === filter) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        books.forEach((book, index) => {
+            book.addEventListener('click', function() {
+                // Deselect currently selected book
+                const currentlySelected = document.querySelector('.book.selected');
+                if (currentlySelected) {
+                    currentlySelected.classList.remove('selected');
+                }
+                
+                // Select this book
+                this.classList.add('selected');
+                
+                // Center the selected book
+                const bookIndex = Array.from(books).indexOf(this);
+                const containerWidth = document.querySelector('.bookshelf').offsetWidth;
+                const scrollAmount = (bookIndex * bookWidth) - (containerWidth / 2) + 100;
+                booksWrapper.style.transform = `translateX(-${scrollAmount}px)`;
+                
+                // Update book details
+                const title = this.dataset.title;
+                const author = this.dataset.author;
+                const year = this.dataset.year;
+                const type = this.dataset.type;
+                const description = this.dataset.description;
+                const url = this.dataset.url;
+                
+                bookTitle.textContent = title;
+                
+                // Create media type badge
+                let mediaTypeLabel = '';
+                if (type === 'BOOK') mediaTypeLabel = 'Book';
+                else if (type === 'MOVIE') mediaTypeLabel = 'Movie';
+                else if (type === 'GAME') mediaTypeLabel = 'Game';
+                
+                bookMeta.innerHTML = `By: ${author} ${year !== 'Unknown' ? `(${year})` : ''} <span class="media-badge ${type}">${mediaTypeLabel}</span>`;
+                bookDescription.textContent = description;
+                
+                // Update view details button
+                viewDetailsBtn.style.display = 'inline-block';
+                viewDetailsBtn.href = url;
+            });
+        });
+        
+        prevButton.addEventListener('click', function() {
+            const containerWidth = document.querySelector('.bookshelf').offsetWidth;
+            currentPosition = Math.min(currentPosition + containerWidth / 2, 0);
+            booksWrapper.style.transform = `translateX(${currentPosition}px)`;
+        });
+        
+        nextButton.addEventListener('click', function() {
+            const containerWidth = document.querySelector('.bookshelf').offsetWidth;
+            const wrapperWidth = booksWrapper.scrollWidth;
+            const maxScroll = wrapperWidth - containerWidth;
+            currentPosition = Math.max(currentPosition - containerWidth / 2, -maxScroll);
+            booksWrapper.style.transform = `translateX(${currentPosition}px)`;
+        });
+        
+        // Select first book by default if available
+        if (books.length > 0) {
+            books[0].click();
+        }
+    });
+</script>
 {% endblock %}

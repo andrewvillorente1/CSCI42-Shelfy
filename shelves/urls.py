@@ -1,12 +1,13 @@
 from django.urls import path
-from .views import UserShelvesView, PublicShelfView, AddToShelfView, RemoveFromShelfView, ShelfItemDetailView
+from . import views
+
 app_name = 'shelves'
 
 urlpatterns = [
-    path('', UserShelvesView.as_view(), name='user_shelves'),
-    path('add/', AddToShelfView.as_view(), name='add_to_shelf'),
-    path('remove/', RemoveFromShelfView.as_view(), name='remove_from_shelf'),
-    path('<str:username>/myshelf', PublicShelfView.as_view(), name='public_shelf'),
-    path('<str:username>/item/<int:item_id>/',
-         ShelfItemDetailView.as_view(), name='shelf_item_detail'),
+    path('', views.user_shelves, name='user_shelves'),
+    path('add/', views.add_to_shelf, name='add_to_shelf'),
+    path('remove/', views.remove_from_shelf, name='remove_from_shelf'),
+    path('user/<str:username>/', views.public_shelf, name='public_shelf'),
+    path('user/<str:username>/item/<int:item_id>/',
+         views.shelf_item_detail, name='shelf_item_detail'),
 ]

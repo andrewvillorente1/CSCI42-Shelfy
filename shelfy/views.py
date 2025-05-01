@@ -484,10 +484,6 @@ def media_detail_api(request, media_type, external_id):
     })
 
 
-def home(request):
-    return render(request, 'home.html')
-
-
 def media_search(request):
     query = request.GET.get('q', '')
     search_results = []

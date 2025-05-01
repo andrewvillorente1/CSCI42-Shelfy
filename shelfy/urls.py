@@ -8,7 +8,7 @@ from .views import MediaSearchView, MediaDetailView, home_view, SearchSuggestion
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    path('', views.home_view, name='home'),
     path('library/', include('user_library.urls')),
     path('user/', include('user_management.urls')),
     path('statistics/', include('charts.urls')),

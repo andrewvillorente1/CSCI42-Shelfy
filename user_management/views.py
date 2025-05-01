@@ -57,9 +57,6 @@ def register(request):
                     password=password
                 )
                 
-                # Create profile
-                Profile.objects.create(user=user)
-                
                 # Log the user in
                 login(request, user)
                 

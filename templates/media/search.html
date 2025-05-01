@@ -324,30 +324,32 @@
   {% if search_results %}
   <div class="search-results-grid">
     {% for media in search_results %}
-    <div class="media-card">
-      <div class="media-img">
-        <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-        <div class="media-type-badge media-type-{{ media.media_type }}">
-          {% if media.media_type == "book" %}BOOK{% elif media.media_type == "movie" %}MOVIE{% elif media.media_type == "game" %}GAME{% endif %}
-        </div>
+    <a href ="{% url 'media_detail' media_type=media.media_type external_id=media.external_id %}">
+      <div class="media-card">
+          <div class="media-img">
+            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+            <div class="media-type-badge media-type-{{ media.media_type }}">
+              {% if media.media_type == "book" %}BOOK{% elif media.media_type == "movie" %}MOVIE{% elif media.media_type == "game" %}GAME{% endif %}
+            </div>
+          </div>
+          <div class="media-content">
+            <h3 class="media-title">{{ media.title }}</h3>
+            <div class="media-meta">
+              {% if media.author %}{{ media.author }}{% endif %}
+              {% if media.director %}{{ media.director }}{% endif %}
+              {% if media.studio %}{{ media.studio }}{% endif %}
+              {% if media.release_year %} • {{ media.release_year }}{% endif %}
+            </div>
+            
+            <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+              {% csrf_token %}
+              <input type="hidden" name="media_type" value="{{ media.media_type }}">
+              <input type="hidden" name="external_id" value="{{ media.external_id }}">
+              <button type="submit" class="add-btn">Add to Library</button>
+            </form>
+          </div>
       </div>
-      <div class="media-content">
-        <h3 class="media-title">{{ media.title }}</h3>
-        <div class="media-meta">
-          {% if media.author %}{{ media.author }}{% endif %}
-          {% if media.director %}{{ media.director }}{% endif %}
-          {% if media.studio %}{{ media.studio }}{% endif %}
-          {% if media.release_year %} • {{ media.release_year }}{% endif %}
-        </div>
-        
-        <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-          {% csrf_token %}
-          <input type="hidden" name="media_type" value="{{ media.media_type }}">
-          <input type="hidden" name="external_id" value="{{ media.external_id }}">
-          <button type="submit" class="add-btn">Add to Library</button>
-        </form>
-      </div>
-    </div>
+   </a>
     {% endfor %}
   </div>
   {% else %}

@@ -3,13 +3,37 @@
 {% block content %}
 <style>
   /* Apple-inspired design */
-  body {
-    background: linear-gradient(180deg, #c4d3ff 0%, #d8e1ff 100%);
+  :root {
+    --apple-background: #f5f5f7;
+    --apple-text: #1d1d1f;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #0071e3;
+    --apple-border: #d2d2d7;
+    --apple-card: #ffffff;
+    --apple-shadow: rgba(0, 0, 0, 0.1);
+    --apple-new-tag: #0071e3;
+    --apple-finished-tag: #86868b;
+}
+
+.dark-mode {
+    --apple-background: #000000;
+    --apple-text: #f5f5f7;
+    --apple-secondary-text: #86868b;
+    --apple-highlight: #2997ff;
+    --apple-border: #424245;
+    --apple-card: #1d1d1f;
+    --apple-shadow: rgba(0, 0, 0, 0.3);
+    --apple-new-tag: #2997ff;
+    --apple-finished-tag: #86868b;
+}
+
+body {
+    background-color: var(--apple-background);
     color: var(--apple-text);
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
+}
 
   .search-container {
     max-width: 1200px;
@@ -91,6 +115,305 @@
     margin-bottom: 40px;
   }
 
+  /* Integrated book-item styles from books.html */
+  .book-item {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .book-item:hover {
+    transform: translateY(-5px);
+  }
+
+  .book-cover {
+    aspect-ratio: 2/3;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--apple-shadow);
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .book-tag {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+  }
+
+  .book-tag.new {
+    background-color: var(--apple-new-tag);
+  }
+
+  .book-tag.finished {
+    background-color: var(--apple-finished-tag);
+  }
+
+  .book-info {
+    display: flex;
+    flex-direction: column;
+    padding: 0 5px;
+  }
+
+  .book-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--apple-text);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .book-author {
+    font-size: 13px;
+    color: var(--apple-secondary-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .book-progress {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--apple-secondary-text);
+  }
+
+  .book-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .book-item:hover .book-actions {
+    opacity: 1;
+  }
+
+  .book-action-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    font-size: 14px;
+  }
+
+  .dark-mode .book-action-btn {
+    background-color: rgba(50, 50, 50, 0.8);
+    color: #f5f5f7;
+  }
+
+  /* Media Detail Modal */
+  .media-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .media-modal-dialog {
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: var(--apple-card);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px var(--apple-shadow);
+    overflow: hidden;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .media-modal.show {
+    display: block;
+  }
+
+  .media-modal.show .media-modal-dialog {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .media-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--apple-border);
+  }
+
+  .media-modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: var(--apple-text);
+  }
+
+  .media-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: var(--apple-secondary-text);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .media-modal-close:hover {
+    color: var(--apple-text);
+    background-color: rgba(142, 142, 147, 0.1);
+  }
+
+  .media-modal-body {
+    padding: 20px;
+  }
+
+  .media-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  @media (min-width: 768px) {
+    .media-modal-content {
+      flex-direction: row;
+    }
+  }
+
+  .media-modal-cover {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .media-modal-cover {
+      margin: 0;
+    }
+  }
+
+  .media-modal-cover img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px var(--apple-shadow);
+  }
+
+  .media-modal-info {
+    flex-grow: 1;
+  }
+
+  .media-modal-meta {
+    margin-bottom: 20px;
+    color: var(--apple-secondary-text);
+    font-size: 15px;
+  }
+
+  .media-modal-meta span {
+    display: inline-block;
+    margin-right: 15px;
+  }
+
+  .media-modal-meta i {
+    margin-right: 6px;
+  }
+
+  .media-modal-description {
+    margin-bottom: 20px;
+    line-height: 1.6;
+    color: var(--apple-text);
+    font-size: 15px;
+  }
+
+  .media-modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .media-modal-actions .btn {
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .media-modal-actions .btn-primary {
+    background-color: var(--apple-highlight);
+    border: none;
+  }
+
+  .media-modal-actions .btn-outline-primary {
+    border-color: var(--apple-highlight);
+    color: var(--apple-highlight);
+  }
+
+  .media-modal-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+  }
+
+  .media-modal-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--apple-highlight);
+    animation: spin 1s linear infinite;
+  }
+
+  .dark-mode .media-modal-spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-top-color: var(--apple-highlight);
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Original search.html styles */
   .media-card {
     position: relative;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -324,32 +647,63 @@
   {% if search_results %}
   <div class="search-results-grid">
     {% for media in search_results %}
-    <a href ="{% url 'media_detail' media_type=media.media_type external_id=media.external_id %}">
-      <div class="media-card">
-          <div class="media-img">
-            <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-            <div class="media-type-badge media-type-{{ media.media_type }}">
-              {% if media.media_type == "book" %}BOOK{% elif media.media_type == "movie" %}MOVIE{% elif media.media_type == "game" %}GAME{% endif %}
-            </div>
-          </div>
-          <div class="media-content">
-            <h3 class="media-title">{{ media.title }}</h3>
-            <div class="media-meta">
-              {% if media.author %}{{ media.author }}{% endif %}
-              {% if media.director %}{{ media.director }}{% endif %}
-              {% if media.studio %}{{ media.studio }}{% endif %}
-              {% if media.release_year %} • {{ media.release_year }}{% endif %}
-            </div>
-            
-            <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-              {% csrf_token %}
-              <input type="hidden" name="media_type" value="{{ media.media_type }}">
-              <input type="hidden" name="external_id" value="{{ media.external_id }}">
-              <button type="submit" class="add-btn">Add to Library</button>
-            </form>
-          </div>
+    {% if media.media_type == "book" %}
+    <!-- Book item using the books.html card structure -->
+    <div class="book-item" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
+      <div class="book-cover">
+        <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+        {% if forloop.counter|divisibleby:3 %}
+        <div class="book-tag finished">Finished</div>
+        {% else %}
+        <div class="book-tag new">New</div>
+        {% endif %}
+        <div class="book-actions">
+          <button class="book-action-btn add-to-library" data-media-type="{{ media.media_type }}" data-external-id="{{ media.external_id }}">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button class="book-action-btn">
+            <i class="fas fa-ellipsis-h"></i>
+          </button>
+        </div>
       </div>
-   </a>
+      <div class="book-info">
+        <h3 class="book-title">{{ media.title }}</h3>
+        <div class="book-author">{% if media.author %}{{ media.author }}{% endif %}</div>
+        {% if forloop.counter|divisibleby:3 %}
+        <div class="book-progress">100%</div>
+        {% elif forloop.counter|divisibleby:5 %}
+        <div class="book-progress">{{ forloop.counter }}%</div>
+        {% endif %}
+      </div>
+    </div>
+    {% else %}
+    <!-- Original media card for non-book items -->
+    <a href="{% url 'media_detail' media_type=media.media_type external_id=media.external_id %}">
+      <div class="media-card">
+        <div class="media-img">
+          <img src="{{ media.cover_image }}" alt="{{ media.title }}">
+          <div class="media-type-badge media-type-{{ media.media_type }}">
+            {% if media.media_type == "movie" %}MOVIE{% elif media.media_type == "game" %}GAME{% endif %}
+          </div>
+        </div>
+        <div class="media-content">
+          <h3 class="media-title">{{ media.title }}</h3>
+          <div class="media-meta">
+            {% if media.director %}{{ media.director }}{% endif %}
+            {% if media.studio %}{{ media.studio }}{% endif %}
+            {% if media.release_year %} • {{ media.release_year }}{% endif %}
+          </div>
+          
+          <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+            {% csrf_token %}
+            <input type="hidden" name="media_type" value="{{ media.media_type }}">
+            <input type="hidden" name="external_id" value="{{ media.external_id }}">
+            <button type="submit" class="add-btn">Add to Library</button>
+          </form>
+        </div>
+      </div>
+    </a>
+    {% endif %}
     {% endfor %}
   </div>
   {% else %}
@@ -387,61 +741,235 @@
   {% endif %}
 </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // Filter buttons functionality
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const mediaCards = document.querySelectorAll('.media-card');
-    
-    filterButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        // Remove active class from all buttons
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        
-        // Add active class to clicked button
-        this.classList.add('active');
-        
-        const filter = this.textContent.toLowerCase();
-        
-        // Filter media cards
-        mediaCards.forEach(card => {
-          const mediaType = card.querySelector('.media-type-badge').textContent.toLowerCase();
-          
-          if (filter === 'all' || mediaType.includes(filter)) {
-            card.style.display = 'flex';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      });
-    });
-    
-    // Add to library form submission
-    document.querySelectorAll(".add-to-library-form").forEach(form => {
-      form.addEventListener("submit", function(event) {
-        event.preventDefault();
+<!-- Media Detail Modal from books.html -->
+<div class="media-modal" id="mediaDetailModal">
+  <div class="media-modal-dialog">
+    <div class="media-modal-header">
+      <h5 class="media-modal-title" id="mediaModalTitle">Book Details</h5>
+      <button type="button" class="media-modal-close" id="closeMediaModal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="media-modal-body">
+      <div class="media-modal-loading" id="mediaModalLoading">
+        <div class="media-modal-spinner"></div>
+      </div>
+      <div class="media-modal-content" id="mediaModalContent" style="display: none;">
+        <div class="media-modal-cover">
+          <img id="mediaModalImage" src="/placeholder.svg" alt="Book Cover">
+        </div>
+        <div class="media-modal-info">
+          <div class="media-modal-meta" id="mediaModalMeta"></div>
+          <div class="media-modal-description" id="mediaModalDescription"></div>
+          <div class="media-modal-actions">
+            <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
+              {% csrf_token %}
+              <input type="hidden" name="media_type" id="modalMediaType" value="book">
+              <input type="hidden" name="external_id" id="modalExternalId" value="">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add to Library
+              </button>
+            </form>
+            <a href="#" id="mediaModalViewDetails" class="btn btn-outline-primary">
+              <i class="fas fa-external-link-alt me-2"></i>View Full Details
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        let formData = new FormData(form);
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Filter buttons functionality
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const mediaCards = document.querySelectorAll('.media-card');
+  const bookItems = document.querySelectorAll('.book-item');
+  
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      // Remove active class from all buttons
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      
+      // Add active class to clicked button
+      this.classList.add('active');
+      
+      const filter = this.textContent.toLowerCase();
+      
+      // Filter media cards
+      mediaCards.forEach(card => {
+        const mediaType = card.querySelector('.media-type-badge').textContent.toLowerCase();
         
-        fetch(form.action, {
-          method: "POST",
-          body: formData,
-          headers: { "X-CSRFToken": formData.get("csrfmiddlewaretoken") }
-        })
-        .then(response => response.json())
-        .then(data => {
-          const button = form.querySelector('button');
-          button.textContent = data.message || "Added!";
-          button.disabled = true;
-          
-          setTimeout(() => {
-            button.textContent = "Add to Library";
-            button.disabled = false;
-          }, 2000);
-        })
-        .catch(error => console.error("Error:", error));
+        if (filter === 'all' || mediaType.includes(filter)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Filter book items
+      bookItems.forEach(item => {
+        const mediaType = item.getAttribute('data-media-type');
+        
+        if (filter === 'all' || mediaType === 'book') {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
       });
     });
   });
+  
+  // Media card click to show modal
+  const bookItems = document.querySelectorAll('.book-item');
+  const mediaModal = document.getElementById('mediaDetailModal');
+  const closeMediaModal = document.getElementById('closeMediaModal');
+  const mediaModalLoading = document.getElementById('mediaModalLoading');
+  const mediaModalContent = document.getElementById('mediaModalContent');
+  
+  bookItems.forEach(item => {
+    item.addEventListener('click', function(e) {
+      // Don't trigger modal if clicking on the action buttons
+      if (e.target.closest('.book-actions')) {
+        return;
+      }
+      
+      const mediaType = this.getAttribute('data-media-type');
+      const mediaId = this.getAttribute('data-media-id');
+      
+      // Show modal
+      mediaModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      
+      // Show loading, hide content
+      mediaModalLoading.style.display = 'flex';
+      mediaModalContent.style.display = 'none';
+      
+      // Fetch media details
+      fetch(`/api/media/${mediaType}/${mediaId}/`)
+        .then(response => response.json())
+        .then(data => {
+          // Update modal content
+          document.getElementById('mediaModalTitle').textContent = data.title;
+          document.getElementById('mediaModalImage').src = data.cover_image;
+          document.getElementById('mediaModalImage').alt = data.title;
+          
+          // Set form values
+          document.getElementById('modalMediaType').value = mediaType;
+          document.getElementById('modalExternalId').value = mediaId;
+          
+          // Set view details link
+          document.getElementById('mediaModalViewDetails').href = `/media/${mediaType}/${mediaId}/`;
+          
+          // Build meta information
+          let metaHTML = '';
+          
+          if (data.author) metaHTML += `<span><i class="fas fa-user me-2"></i>${data.author}</span>`;
+          if (data.release_year) metaHTML += `<span><i class="fas fa-calendar-alt me-2"></i>${data.release_year}</span>`;
+          if (data.genre) metaHTML += `<span><i class="fas fa-tag me-2"></i>${data.genre}</span>`;
+          
+          document.getElementById('mediaModalMeta').innerHTML = metaHTML;
+          
+          // Set description
+          document.getElementById('mediaModalDescription').innerHTML = data.description || 'No description available.';
+          
+          // Hide loading, show content
+          mediaModalLoading.style.display = 'none';
+          mediaModalContent.style.display = 'flex';
+        })
+        .catch(error => {
+          console.error('Error fetching media details:', error);
+          document.getElementById('mediaModalTitle').textContent = 'Error';
+          document.getElementById('mediaModalContent').innerHTML = '<p>There was an error loading the book details. Please try again.</p>';
+          
+          mediaModalLoading.style.display = 'none';
+          mediaModalContent.style.display = 'block';
+        });
+    });
+  });
+  
+  // Add to library buttons
+  document.querySelectorAll('.add-to-library').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.stopPropagation(); // Prevent modal from opening
+      
+      const mediaType = this.getAttribute('data-media-type');
+      const externalId = this.getAttribute('data-external-id');
+      
+      const formData = new FormData();
+      formData.append('media_type', mediaType);
+      formData.append('external_id', externalId);
+      
+      // Get CSRF token from cookies
+      const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken=')).split('=')[1];
+      
+      fetch('{% url "user_library:add" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': csrftoken
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Show success message
+        alert(data.message || 'Added to library successfully!');
+      })
+      .catch(error => {
+        console.error('Error adding to library:', error);
+        alert('There was an error adding this to your library. Please try again.');
+      });
+    });
+  });
+  
+  // Close modal
+  closeMediaModal.addEventListener('click', function() {
+    mediaModal.classList.remove('show');
+    document.body.style.overflow = '';
+  });
+  
+  // Close modal when clicking outside
+  mediaModal.addEventListener('click', function(e) {
+    if (e.target === mediaModal) {
+      mediaModal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  });
+  
+  // Close modal with escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && mediaModal.classList.contains('show')) {
+      mediaModal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  });
+  
+  // Handle add to library form submissions
+  document.querySelectorAll('.add-to-library-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      
+      fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Show success message
+        alert(data.message || 'Added to library successfully!');
+      })
+      .catch(error => {
+        console.error('Error adding to library:', error);
+        alert('There was an error adding this to your library. Please try again.');
+      });
+    });
+  });
+});
 </script>
 {% endblock %}

@@ -76,12 +76,12 @@
                     </div>
                     {% endif %}
                     
-                    {% if library_item.notes %}
+                    {% if library_item.review %}
                     <div class="mb-3">
-                        <h5>Notes from {{ shelf_owner.username }}:</h5>
+                        <h5>Review from {{ shelf_owner.username }}:</h5>
                         <div class="card bg-light">
                             <div class="card-body">
-                                {{ library_item.notes|linebreaks }}
+                                {{ library_item.review|linebreaks }}
                             </div>
                         </div>
                     </div>

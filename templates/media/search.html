@@ -647,43 +647,13 @@ body {
   {% if search_results %}
   <div class="search-results-grid">
     {% for media in search_results %}
-    {% if media.media_type == "book" %}
-    <!-- Book item using the books.html card structure -->
-    <div class="book-item" data-media-type="{{ media.media_type }}" data-media-id="{{ media.external_id }}">
-      <div class="book-cover">
-        <img src="{{ media.cover_image }}" alt="{{ media.title }}">
-        {% if forloop.counter|divisibleby:3 %}
-        <div class="book-tag finished">Finished</div>
-        {% else %}
-        <div class="book-tag new">New</div>
-        {% endif %}
-        <div class="book-actions">
-          <button class="book-action-btn add-to-library" data-media-type="{{ media.media_type }}" data-external-id="{{ media.external_id }}">
-            <i class="fas fa-plus"></i>
-          </button>
-          <button class="book-action-btn">
-            <i class="fas fa-ellipsis-h"></i>
-          </button>
-        </div>
-      </div>
-      <div class="book-info">
-        <h3 class="book-title">{{ media.title }}</h3>
-        <div class="book-author">{% if media.author %}{{ media.author }}{% endif %}</div>
-        {% if forloop.counter|divisibleby:3 %}
-        <div class="book-progress">100%</div>
-        {% elif forloop.counter|divisibleby:5 %}
-        <div class="book-progress">{{ forloop.counter }}%</div>
-        {% endif %}
-      </div>
-    </div>
-    {% else %}
     <!-- Original media card for non-book items -->
     <a href="{% url 'media_detail' media_type=media.media_type external_id=media.external_id %}">
       <div class="media-card">
         <div class="media-img">
           <img src="{{ media.cover_image }}" alt="{{ media.title }}">
           <div class="media-type-badge media-type-{{ media.media_type }}">
-            {% if media.media_type == "movie" %}MOVIE{% elif media.media_type == "game" %}GAME{% endif %}
+            {% if media.media_type == "movie" %}MOVIE{% elif media.media_type == "game" %}GAME{% elif media.media_type == "book" %}BOOK{% endif %}
           </div>
         </div>
         <div class="media-content">
@@ -703,7 +673,6 @@ body {
         </div>
       </div>
     </a>
-    {% endif %}
     {% endfor %}
   </div>
   {% else %}

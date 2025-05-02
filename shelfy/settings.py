@@ -156,6 +156,7 @@ STATIC_URL = 'static/'
 LOGIN_URL = "/login/"
 LOGOUT_REDIRECT_URL = '/login/'
 LOGIN_REDIRECT_URL = 'user_management:dashboard'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

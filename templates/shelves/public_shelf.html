@@ -186,12 +186,6 @@
             color: #718096;
             margin-bottom: 20px;
         }
-        .book-description {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #2d3748;
-            margin-bottom: 20px;
-        }
         .action-buttons {
             display: flex;
             justify-content: center;
@@ -231,6 +225,27 @@
         .spine.GAME {
             background-color: #48bb78;
         }
+        .user-rating {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #2d3748;
+        }
+        .user-review {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: left;
+            padding: 0 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .rating-stars {
+            color: #f6ad55;
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
     </style>
     
     {% if items %}
@@ -250,6 +265,8 @@
                            data-author="{% if shelf_item.item.media.author %}{{ shelf_item.item.media.author }}{% elif shelf_item.item.media.director %}{{ shelf_item.item.media.director }}{% elif shelf_item.item.media.studio %}{{ shelf_item.item.media.studio }}{% else %}Unknown{% endif %}"
                            data-year="{% if shelf_item.item.media.release_year %}{{ shelf_item.item.media.release_year }}{% else %}Unknown{% endif %}"
                            data-description="{% if shelf_item.item.media.description %}{{ shelf_item.item.media.description }}{% else %}No description available.{% endif %}"
+                           data-rating="{% if shelf_item.item.rating %}{{ shelf_item.item.rating }}{% else %}Not rated{% endif %}"
+                           data-review="{% if shelf_item.item.review %}{{ shelf_item.item.review }}{% else %}No review available.{% endif %}"
                            data-url="{% url 'shelves:shelf_item_detail' shelf_item.shelf.user.username shelf_item.item.id %}">
                          <div class="spine {{ shelf_item.item.media.media_type }}">
                                <div class="spine-content" style="color: #fff;">{{ shelf_item.item.media.title }}</div>
@@ -274,7 +291,8 @@
         <div class="book-details-card">
             <h1 class="book-title">Select an item</h1>
             <div class="book-meta">Click on any item to see details</div>
-            <div class="book-description">This shelf contains {{ items|length }} items. Select one to view more information.</div>
+            <div class="user-rating">Rating: <span id="item-rating">-</span></div>
+            <div class="user-review">Review: <span id="item-review">Select an item to see the review</span></div>
             <div class="action-buttons">
                 <a href="#" class="btn btn-primary view-details-btn" style="display: none;">View Full Details</a>
             </div>
@@ -294,7 +312,6 @@
         const nextButton = document.querySelector('.nav-button.next');
         const bookTitle = document.querySelector('.book-title');
         const bookMeta = document.querySelector('.book-meta');
-        const bookDescription = document.querySelector('.book-description');
         const viewDetailsBtn = document.querySelector('.view-details-btn');
         
         let currentPosition = 0;
@@ -344,7 +361,8 @@
                 const author = this.dataset.author;
                 const year = this.dataset.year;
                 const type = this.dataset.type;
-                const description = this.dataset.description;
+                const rating = this.dataset.rating;
+                const review = this.dataset.review;
                 const url = this.dataset.url;
                 
                 bookTitle.textContent = title;
@@ -356,7 +374,24 @@
                 else if (type === 'GAME') mediaTypeLabel = 'Game';
                 
                 bookMeta.innerHTML = `By: ${author} ${year !== 'Unknown' ? `(${year})` : ''} <span class="media-badge ${type}">${mediaTypeLabel}</span>`;
-                bookDescription.textContent = description;
+                
+                // Display rating as stars
+                const ratingElement = document.getElementById('item-rating');
+                if (rating && rating !== 'Not rated') {
+                    let stars = '';
+                    for (let i = 0; i < rating; i++) {
+                        stars += '★';
+                    }
+                    for (let i = rating; i < 5; i++) {
+                        stars += '☆';
+                    }
+                    ratingElement.innerHTML = `<span class="rating-stars">${stars}</span> (${rating}/5)`;
+                } else {
+                    ratingElement.textContent = 'Not rated';
+                }
+                
+                // Display review
+                document.getElementById('item-review').textContent = review;
                 
                 // Update view details button
                 viewDetailsBtn.style.display = 'inline-block';

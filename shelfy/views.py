@@ -466,22 +466,63 @@ def games_view(request):
 
 def media_detail_api(request, media_type, external_id):
     """API endpoint to get media details for the modal view"""
-    media = get_object_or_404(
-        Media, media_type=media_type, external_id=external_id)
+    try:
+        # First try to get from database
+        try:
+            media = Media.objects.get(
+                media_type=media_type, external_id=external_id)
+            # Return media details as JSON
+            return JsonResponse({
+                'title': media.title,
+                'cover_image': media.cover_image,
+                'description': media.description,
+                'author': media.author,
+                'director': media.director,
+                'studio': media.studio,
+                'release_year': media.release_year,
+                'genre': media.genre,
+                'media_type': media.media_type,
+                'external_id': media.external_id,
+            })
+        except Media.DoesNotExist:
+            # If not in database, fetch from API
+            details = MediaAPIClient.get_media_details(media_type, external_id)
 
-    # Return media details as JSON
-    return JsonResponse({
-        'title': media.title,
-        'cover_image': media.cover_image,
-        'description': media.description,
-        'author': media.author,
-        'director': media.director,
-        'studio': media.studio,
-        'release_year': media.release_year,
-        'genre': media.genre,
-        'media_type': media.media_type,
-        'external_id': media.external_id,
-    })
+            if not details or 'error' in details:
+                return JsonResponse({"error": "Media not found"}, status=404)
+
+            # Create media object
+            media, created = Media.objects.get_or_create(
+                external_id=external_id,
+                media_type=media_type,
+                defaults={
+                    "title": details.get("title", "Untitled"),
+                    "description": details.get("description", ""),
+                    "cover_image": details.get("cover_image", ""),
+                    "release_year": details.get("release_year", None),
+                    "genre": details.get("genre", ""),
+                    "author": details.get("author", ""),
+                    "director": details.get("director", ""),
+                    "studio": details.get("studio", ""),
+                }
+            )
+
+            # Return media details as JSON
+            return JsonResponse({
+                'title': media.title,
+                'cover_image': media.cover_image,
+                'description': media.description,
+                'author': media.author,
+                'director': media.director,
+                'studio': media.studio,
+                'release_year': media.release_year,
+                'genre': media.genre,
+                'media_type': media.media_type,
+                'external_id': media.external_id,
+            })
+    except Exception as e:
+        print(f"Error in media_detail_api: {e}")
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 def media_search(request):

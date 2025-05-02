@@ -685,7 +685,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Fetch media details
             fetch(`/api/media/${mediaType}/${mediaId}/`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     // Update modal content
                     document.getElementById('mediaModalTitle').textContent = data.title;
@@ -718,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error => {
                     console.error('Error fetching media details:', error);
                     document.getElementById('mediaModalTitle').textContent = 'Error';
-                    document.getElementById('mediaModalContent').innerHTML = '<p>There was an error loading the book details. Please try again.</p>';
+                    document.getElementById('mediaModalDescription').innerHTML = 'There was an error loading the book details. Please try again.';
                     
                     mediaModalLoading.style.display = 'none';
                     mediaModalContent.style.display = 'block';

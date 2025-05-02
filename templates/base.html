@@ -1600,7 +1600,7 @@ footer {
                 </li>
                 <li>
                   <a class="dropdown-item" href="/socials/">
-                      <i class="fas fa-bar-chart me-2"></i> Chat Room
+                      <i class="fas fa-comments me-2"></i> Chat Room
                       </a>
               </li>
                 <li><hr class="dropdown-divider"></li>
@@ -1818,7 +1818,7 @@ footer {
       }
     });
   </script>
-
+{% if request.user.is_authenticated %}
   <div class="chat-widget" id="chatWidget">
     <div class="chat-widget-header">
       <div class="chat-widget-title">
@@ -1862,6 +1862,7 @@ footer {
       </form>
     </div>
   </div>
+  {% endif %}
   
   <button class="floating-chat-btn" id="chatToggleBtn">
     <i class="fas fa-comments"></i>

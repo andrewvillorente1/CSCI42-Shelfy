@@ -9,7 +9,6 @@ class ProfileFormTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(username='testuser', password='password123')
-        # Profile is created by signal
         cls.profile = Profile.objects.get(user=cls.user)
 
     def test_profile_form_valid(self):
@@ -30,8 +29,6 @@ class ProfileFormTests(TestCase):
         else:
             self.fail(f"ProfileForm was not valid: {form.errors}")
 
-    # Add more tests if ProfileForm had more fields or complex validation
-
 class UserRegistrationFormTests(TestCase):
 
     def test_registration_form_valid(self):
@@ -46,7 +43,7 @@ class UserRegistrationFormTests(TestCase):
 
     def test_registration_form_missing_data(self):
         """Test UserRegistrationForm with missing fields."""
-        form_data = {'username': 'newuser'} # Missing email and password
+        form_data = {'username': 'newuser'} 
         form = UserRegistrationForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('email', form.errors)
@@ -56,7 +53,7 @@ class UserRegistrationFormTests(TestCase):
         """Test UserRegistrationForm with an already existing username."""
         User.objects.create_user(username='existinguser', password='password123')
         form_data = {
-            'username': 'existinguser', # This username already exists
+            'username': 'existinguser', 
             'email': 'new@example.com',
             'password': 'password123'
         }
@@ -70,7 +67,7 @@ class UserRegistrationFormTests(TestCase):
         User.objects.create_user(username='anotheruser', password='password123', email='existing@example.com')
         form_data = {
             'username': 'newuser',
-            'email': 'existing@example.com', # This email already exists
+            'email': 'existing@example.com', 
             'password': 'password123'
         }
         form = UserRegistrationForm(data=form_data)

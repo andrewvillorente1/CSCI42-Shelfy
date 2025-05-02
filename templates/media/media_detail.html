@@ -8,6 +8,7 @@
                 <img src="{{ media.cover_image }}" alt="{{ media.title }}" class="shadow-sm" 
                      style="width: 100%; max-width: 15rem; height: auto; object-fit: cover; border-radius: 0.5rem;">
             
+                {% if request.user.is_authenticated %}
                 <form method="POST" action="{% url 'user_library:add' %}" class="mt-3 w-100 add-to-library-form" style="max-width: 15rem;">
                     {% csrf_token %}
                     <input type="hidden" name="media_type" value="{{ media.media_type }}">
@@ -17,6 +18,7 @@
                     </button>
                     </form>
                 </form>
+                {% endif %}
             </div>
 
             <div class="col-md-9">

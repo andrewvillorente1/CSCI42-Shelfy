@@ -664,12 +664,6 @@ body {
             {% if media.release_year %} • {{ media.release_year }}{% endif %}
           </div>
           
-          <form method="POST" action="{% url 'user_library:add' %}" class="add-to-library-form">
-            {% csrf_token %}
-            <input type="hidden" name="media_type" value="{{ media.media_type }}">
-            <input type="hidden" name="external_id" value="{{ media.external_id }}">
-            <button type="submit" class="add-btn">Add to Library</button>
-          </form>
         </div>
       </div>
     </a>

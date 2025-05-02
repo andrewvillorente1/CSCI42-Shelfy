@@ -71,14 +71,6 @@
                 <div class="mb-3">
                     <input type="text" id="searchInput" class="form-control" placeholder="Search your library...">
                 </div>
-                <div class="mb-3">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-secondary filter-btn active" data-filter="all">All</button>
-                        <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="BOOK">Books</button>
-                        <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="MOVIE">Movies</button>
-                        <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="GAME">Games</button>
-                    </div>
-                </div>
                 <div class="row" id="libraryItems">
                     {% for item in library_items %}
                     <div class="col-md-4 mb-3 library-item" data-type="{{ item.media.media_type }}">
